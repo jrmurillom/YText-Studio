@@ -1,4 +1,5 @@
 import { YouTubeSafeZoneConfig } from '@/types';
+import { Point2D } from '@/core/canvas/Transform2D';
 
 export const YOUTUBE_SAFE_ZONE_CONFIG: YouTubeSafeZoneConfig = {
   // En base a la resolución nativa 1280 x 720
@@ -32,5 +33,25 @@ export class YouTubeSafeZoneGuard {
       rect.y > tsBottom;
 
     return !isSeparated;
+  }
+
+  /**
+   * Corrige elásticamente la posición si se invade la zona prohibida del timestamp
+   */
+  static applySnapBack(
+    pos: Point2D,
+    boxSize: { width: number; height: number },
+    config = YOUTUBE_SAFE_ZONE_CONFIG
+  ): Point2D {
+    if (!this.checkCollision({ ...pos, ...boxSize }, config)) {
+      return pos;
+    }
+
+    // Empujar hacia arriba de la caja de timestamp con margen de 16px
+    const safeY = Math.max(config.paddingY, config.timestampBox.y - boxSize.height - 16);
+    return {
+      x: pos.x,
+      y: safeY,
+    };
   }
 }

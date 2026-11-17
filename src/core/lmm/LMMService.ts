@@ -1,7 +1,7 @@
-import { LMMAdapter } from './LMMAdapter';
+import { LMMAdapter, LMMExecutionResult } from './LMMAdapter';
 import { GeminiProvider } from './GeminiProvider';
 import { OpenRouterProvider } from './OpenRouterProvider';
-import { LMMVisionRequest, LMMVisionResponse } from './types';
+import { LMMVisionRequest } from './types';
 import { LMMConfig } from '@/types';
 
 export class LMMService {
@@ -12,7 +12,7 @@ export class LMMService {
     ['ollama', new OpenRouterProvider()],
   ]);
 
-  static async analyze(request: LMMVisionRequest, config: LMMConfig): Promise<LMMVisionResponse> {
+  static async analyze(request: LMMVisionRequest, config: LMMConfig): Promise<LMMExecutionResult> {
     const adapter = this.adapters.get(config.provider);
     if (!adapter) {
       throw new Error(`Proveedor de LMM no soportado: ${config.provider}`);

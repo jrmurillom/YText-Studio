@@ -33,4 +33,19 @@ describe('YouTubeSafeZoneGuard', () => {
     expect(YOUTUBE_SAFE_ZONE_CONFIG.timestampBox.width).toBe(220);
     expect(YOUTUBE_SAFE_ZONE_CONFIG.timestampBox.height).toBe(60);
   });
+
+  it('aplica snap-back elástico correctivo si una caja invade el timestamp', () => {
+    const invadingPos = { x: 1050, y: 645 };
+    const boxSize = { width: 120, height: 50 };
+
+    const correctedPos = YouTubeSafeZoneGuard.applySnapBack(invadingPos, boxSize);
+
+    // Debe empujar Y por encima del timestamp (640 - 50 - 16 = 574)
+    expect(correctedPos.y).toBe(574);
+    expect(correctedPos.x).toBe(1050);
+
+    // La nueva posición corregida ya no debe colisionar
+    const stillColliding = YouTubeSafeZoneGuard.checkCollision({ ...correctedPos, ...boxSize });
+    expect(stillColliding).toBe(false);
+  });
 });

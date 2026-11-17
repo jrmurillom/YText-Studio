@@ -7,11 +7,18 @@ export class FontLoader {
   private static loadedFonts = new Set<string>();
 
   static readonly DISPLAY_FONTS = [
-    { family: 'Luckiest Guy', weight: '400' },
+    { family: 'Montserrat', weight: '900' },
     { family: 'Anton', weight: '400' },
     { family: 'Bebas Neue', weight: '400' },
+    { family: 'Cinzel', weight: '700' },
+    { family: 'Inter', weight: '800' },
+    { family: 'Rubik', weight: '900' },
+    { family: 'Luckiest Guy', weight: '400' },
     { family: 'Bangers', weight: '400' },
-    { family: 'Montserrat', weight: '900' },
+    { family: 'Teko', weight: '700' },
+    { family: 'Permanent Marker', weight: '400' },
+    { family: 'Poppins', weight: '900' },
+    { family: 'Playfair Display', weight: '900' },
   ];
 
   static async loadAll(): Promise<void> {

@@ -1,8 +1,8 @@
-import React from 'react';
-import { UploadCloud, Image as ImageIcon, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { UploadCloud, Image as ImageIcon, Sparkles, KeyRound, Loader2 } from 'lucide-react';
 import { IntentSelector } from './IntentSelector';
 import { ProposalsList } from './ProposalsList';
-import { IntentType, ProposalCard, BaseImageState } from '@/types';
+import { IntentType, ProposalCard, BaseImageState, LMMTelemetry } from '@/types';
 
 interface IngestionPanelProps {
   baseImage: BaseImageState;
@@ -11,11 +11,17 @@ interface IngestionPanelProps {
   onRawTextChange: (text: string) => void;
   selectedIntent: IntentType;
   onSelectIntent: (intent: IntentType) => void;
+  customIntentText: string;
+  onCustomIntentTextChange: (text: string) => void;
   onAnalyze: () => void;
   isAnalyzing: boolean;
   proposals: ProposalCard[];
   selectedProposalId: string | null;
   onSelectProposal: (proposal: ProposalCard) => void;
+  hasApiKey: boolean;
+  onOpenSettings: () => void;
+  errorMessage?: string;
+  telemetry?: LMMTelemetry | null;
 }
 
 export const IngestionPanel: React.FC<IngestionPanelProps> = ({
@@ -25,13 +31,34 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
   onRawTextChange,
   selectedIntent,
   onSelectIntent,
+  customIntentText,
+  onCustomIntentTextChange,
   onAnalyze,
   isAnalyzing,
   proposals,
   selectedProposalId,
   onSelectProposal,
+  hasApiKey,
+  onOpenSettings,
+  errorMessage,
+  telemetry,
 }) => {
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isAnalyzing) {
+      setElapsedSeconds(0);
+      const start = Date.now();
+      timer = setInterval(() => {
+        setElapsedSeconds(Math.round(((Date.now() - start) / 1000) * 10) / 10);
+      }, 100);
+    } else {
+      setElapsedSeconds(0);
+    }
+    return () => clearInterval(timer);
+  }, [isAnalyzing]);
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -94,26 +121,47 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
           type="text"
           value={rawText}
           onChange={(e) => onRawTextChange(e.target.value)}
-          placeholder="Ej: MEJOR DISCO DE ROCK"
+          placeholder="Escribe el gancho o tema de tu video..."
           className="w-full text-xs px-2.5 py-1.5 rounded-md border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white font-semibold text-slate-800 placeholder:text-slate-400"
         />
       </div>
 
-      {/* 3. Selector de Intención */}
+      {/* 3. Selector de Intención (con soporte 'other') */}
       <IntentSelector
         selectedIntent={selectedIntent}
         onSelectIntent={onSelectIntent}
+        customIntentText={customIntentText}
+        onCustomIntentTextChange={onCustomIntentTextChange}
       />
 
-      {/* 4. Botón de Disparo de IA */}
-      <button
-        onClick={onAnalyze}
-        disabled={isAnalyzing || !baseImage.dataUrl}
-        className="w-full py-2 px-3 rounded-md bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer disabled:cursor-not-allowed"
-      >
-        <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-        <span>{isAnalyzing ? 'Analizando Composición...' : 'Analizar & Proponer Portada'}</span>
-      </button>
+      {/* 4. Botón de Disparo de IA con Gatekeeping de API Key */}
+      {!hasApiKey ? (
+        <button
+          onClick={onOpenSettings}
+          className="w-full py-2 px-3 rounded-md bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+        >
+          <KeyRound className="w-3.5 h-3.5" />
+          <span>Configurar API Key para Analizar</span>
+        </button>
+      ) : (
+        <button
+          onClick={onAnalyze}
+          disabled={isAnalyzing || !baseImage.dataUrl}
+          className="w-full py-2 px-3 rounded-md bg-slate-900 hover:bg-slate-800 disabled:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer disabled:cursor-not-allowed"
+        >
+          {isAnalyzing ? (
+            <>
+              <Loader2 className="w-3.5 h-3.5 text-blue-400 animate-spin" />
+              <span>Analizando con IA ({elapsedSeconds.toFixed(1)}s)...</span>
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
+              <span>Analizar & Diseñar Portada (IA)</span>
+            </>
+          )}
+        </button>
+      )}
 
       {/* 5. Tira de Propuestas */}
       <ProposalsList
@@ -121,6 +169,8 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
         selectedId={selectedProposalId}
         onSelectProposal={onSelectProposal}
         isLoading={isAnalyzing}
+        errorMessage={errorMessage}
+        telemetry={telemetry}
       />
     </div>
   );

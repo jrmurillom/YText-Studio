@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Header } from '@/components/layout/Header';
 import { StudioShell } from '@/components/layout/StudioShell';
 import { IngestionPanel } from '@/components/left-panel/IngestionPanel';
@@ -8,13 +8,14 @@ import { SettingsModal } from '@/components/modals/SettingsModal';
 import { FeedSimulatorModal } from '@/components/modals/FeedSimulatorModal';
 import {
   IntentType,
-  TypoPresetId,
   ProposalCard,
   CompositeTextGroup,
   BaseImageState,
   LMMConfig,
+  LMMTelemetry,
 } from '@/types';
-import { TYPO_PRESETS } from '@/core/presets/typoPresets';
+import { ImagePreprocessor } from '@/core/image/ImagePreprocessor';
+import { VisionAnalysisPipeline } from '@/core/lmm/VisionAnalysisPipeline';
 
 export function App() {
   // 1. Estado de Configuración LMM
@@ -37,6 +38,7 @@ export function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
   const [safeZonesVisible, setSafeZonesVisible] = useState(true);
+  const [ruleOfThirdsVisible, setRuleOfThirdsVisible] = useState(false);
 
   // 2. Estado de Imagen Base
   const [baseImage, setBaseImage] = useState<BaseImageState>({
@@ -47,21 +49,37 @@ export function App() {
     isLoaded: false,
   });
 
-  // 3. Estado de Texto e Intención
-  const [rawText, setRawText] = useState('MEJOR DISCO DE ROCK');
+  // 3. Estado de Texto e Intención (Inicia 100% limpio sin sesgos ni dummy text)
+  const [rawText, setRawText] = useState('');
   const [selectedIntent, setSelectedIntent] = useState<IntentType>('hype');
-  const [selectedPresetId, setSelectedPresetId] = useState<TypoPresetId>('mrbeast_pop');
+  const [customIntentText, setCustomIntentText] = useState('');
 
   // 4. Estado de Propuestas e IA
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [proposals, setProposals] = useState<ProposalCard[]>([]);
   const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null);
+  const [analysisError, setAnalysisError] = useState<string | undefined>();
+  const [lmmTelemetry, setLmmTelemetry] = useState<LMMTelemetry | null>(null);
+  const [, setIsOfflineFallback] = useState(false);
 
-  // 5. Estado del Grupo de Texto Activo en Canvas
+  // 5. Estado del Grupo de Texto Activo en Canvas (Inicia null: Canvas 100% limpio)
   const [textGroup, setTextGroup] = useState<CompositeTextGroup | null>(null);
+  const cleanCanvasExporterRef = useRef<(() => string) | null>(null);
+
+  const handleRegisterCanvasExporter = useCallback((exporter: () => string) => {
+    cleanCanvasExporterRef.current = exporter;
+  }, []);
 
   // Manejo de carga de imagen
   const handleImageSelected = (file: File) => {
+    // Limpieza de estado previo para evitar confusión de contexto entre imágenes
+    setProposals([]);
+    setSelectedProposalId(null);
+    setLmmTelemetry(null);
+    setAnalysisError(undefined);
+    setTextGroup(null); // Canvas permanece 100% limpio con solo la imagen de fondo
+    VisionAnalysisPipeline.clearCache();
+
     const reader = new FileReader();
     reader.onload = (e) => {
       const dataUrl = e.target?.result as string;
@@ -74,210 +92,103 @@ export function App() {
           height: img.naturalHeight || 720,
           isLoaded: true,
         });
-
-        // Montar grupo inicial de texto al cargar la imagen si no existe
-        if (!textGroup) {
-          initDefaultTextGroup();
-        }
       };
       img.src = dataUrl;
     };
     reader.readAsDataURL(file);
   };
 
-  const initDefaultTextGroup = () => {
-    const preset = TYPO_PRESETS[selectedPresetId];
-    const initialGroup: CompositeTextGroup = {
-      id: 'default_group',
-      x: 64,
-      y: 64,
-      width: 480,
-      height: 180,
-      rotation: preset.slant,
-      scale: 1,
-      segments: [
-        {
-          id: 'seg_1',
-          text: 'MEJOR DISCO',
-          role: 'anchor_secondary',
-          presetId: selectedPresetId,
-          fontFamily: preset.fontFamily,
-          fontSize: 48,
-          colorHex: '#FFFFFF',
-          strokeColorHex: '#000000',
-          strokeWidth: 10,
-          shadowColorHex: '#000000',
-          shadowDepth: 4,
-          slant: preset.slant,
-        },
-        {
-          id: 'seg_2',
-          text: 'DE ROCK!',
-          role: 'power_primary',
-          presetId: selectedPresetId,
-          fontFamily: preset.fontFamily,
-          fontSize: 76,
-          colorHex: preset.fillColorHex,
-          strokeColorHex: preset.strokeColorHex,
-          strokeWidth: preset.strokeWidth,
-          shadowColorHex: preset.shadowColorHex,
-          shadowDepth: preset.shadowDepth,
-          slant: preset.slant,
-        },
-      ],
-    };
-    setTextGroup(initialGroup);
-  };
-
-  // Simulación del análisis y generación de propuestas
-  const handleAnalyze = () => {
+  // Pipeline Real de Visión One-Shot
+  const handleAnalyze = async () => {
     if (!baseImage.dataUrl) return;
     setIsAnalyzing(true);
+    setLmmTelemetry(null); // Reset inmediato de logs previos
+    setAnalysisError(undefined);
 
-    setTimeout(() => {
-      const propA: ProposalCard = {
-        id: 'prop_a',
-        title: 'Opción A: Arriba Izquierda',
-        subtitle: `${selectedIntent.toUpperCase()} • Máximo Espacio Libre`,
-        intent: selectedIntent,
-        presetId: selectedIntent === 'horror' ? 'docu_drama' : 'mrbeast_pop',
-        placement: 'TOP_LEFT',
-        previewGroup: {
-          id: 'group_a',
-          x: 64,
-          y: 48,
-          width: 460,
-          height: 180,
-          rotation: selectedIntent === 'horror' ? 0 : -2,
-          scale: 1,
-          segments: [
-            {
-              id: 'a1',
-              text: selectedIntent === 'horror' ? 'NO MIRES' : 'MEJOR DISCO',
-              role: 'anchor_secondary',
-              presetId: 'docu_drama',
-              fontFamily: 'Anton',
-              fontSize: 44,
-              colorHex: '#FFFFFF',
-              strokeColorHex: '#000000',
-              strokeWidth: 10,
-              shadowColorHex: '#000000',
-              shadowDepth: 6,
-              slant: 0,
-            },
-            {
-              id: 'a2',
-              text: selectedIntent === 'horror' ? 'ESTÁ AQUÍ...' : 'DE ROCK!',
-              role: 'power_primary',
-              presetId: selectedIntent === 'horror' ? 'docu_drama' : 'mrbeast_pop',
-              fontFamily: selectedIntent === 'horror' ? 'Anton' : 'Luckiest Guy',
-              fontSize: 74,
-              colorHex: selectedIntent === 'horror' ? '#E50914' : '#FFE600',
-              strokeColorHex: '#000000',
-              strokeWidth: 16,
-              shadowColorHex: '#000000',
-              shadowDepth: 10,
-              slant: selectedIntent === 'horror' ? 0 : -2,
-            },
-          ],
-        },
-      };
+    try {
+      // 1. Compresión instantánea en cliente a WebP 640px (<50KB)
+      const compressed = await ImagePreprocessor.compressForLMM(baseImage.dataUrl);
 
-      const propB: ProposalCard = {
-        id: 'prop_b',
-        title: 'Opción B: Lateral Centrado',
-        subtitle: 'Docu-Drama • Alto Contraste Vertical',
-        intent: selectedIntent,
-        presetId: 'docu_drama',
-        placement: 'CENTER_LEFT',
-        previewGroup: {
-          id: 'group_b',
-          x: 64,
-          y: 220,
-          width: 440,
-          height: 160,
-          rotation: 0,
-          scale: 1,
-          segments: [
-            {
-              id: 'b1',
-              text: 'EL VEREDICTO:',
-              role: 'anchor_secondary',
-              presetId: 'authority_badge',
-              fontFamily: 'Montserrat',
-              fontSize: 38,
-              colorHex: '#FFFFFF',
-              strokeColorHex: '#000000',
-              strokeWidth: 0,
-              shadowColorHex: '#000000',
-              shadowDepth: 4,
-              slant: 0,
-            },
-            {
-              id: 'b2',
-              text: 'INIGUALABLE.',
-              role: 'power_primary',
-              presetId: 'docu_drama',
-              fontFamily: 'Anton',
-              fontSize: 72,
-              colorHex: '#FFFFFF',
-              strokeColorHex: '#000000',
-              strokeWidth: 16,
-              shadowColorHex: '#000000',
-              shadowDepth: 12,
-              slant: 0,
-            },
-          ],
-        },
-      };
+      // 2. Ejecutar análisis semántico con el LMM (o fallback local)
+      const result = await VisionAnalysisPipeline.execute(
+        compressed.base64Data,
+        rawText,
+        selectedIntent,
+        lmmConfig,
+        customIntentText,
+        true // bypassCache: fuerza llamada fresca al modelo al hacer clic explícito
+      );
 
-      setProposals([propA, propB]);
-      setSelectedProposalId(propA.id);
-      setTextGroup(propA.previewGroup);
+      setProposals(result.proposals);
+      setIsOfflineFallback(result.isOfflineFallback);
+      setAnalysisError(result.errorMessage);
+      setLmmTelemetry(result.telemetry);
+
+      if (result.proposals.length > 0) {
+        const first = result.proposals[0];
+        setSelectedProposalId(first.id);
+        setTextGroup(first.previewGroup);
+        // Sincronizar texto de la propuesta al campo base
+        const joined = first.previewGroup.segments?.map((s) => s.text).filter(Boolean).join(' ');
+        if (joined) setRawText(joined);
+      }
+    } catch (err) {
+      console.error('Error durante el análisis de portada:', err);
+      setAnalysisError(err instanceof Error ? err.message : String(err));
+    } finally {
       setIsAnalyzing(false);
-    }, 900);
+    }
   };
 
   const handleSelectProposal = (proposal: ProposalCard) => {
     setSelectedProposalId(proposal.id);
     setTextGroup(proposal.previewGroup);
-    setSelectedPresetId(proposal.presetId);
+    // Sincronizar el texto de la propuesta seleccionada al input para evitar desfases
+    const joinedText = proposal.previewGroup.segments
+      ?.map((s) => s.text)
+      .filter(Boolean)
+      .join(' ');
+    if (joinedText) {
+      setRawText(joinedText);
+    } else if (proposal.copySummary) {
+      setRawText(proposal.copySummary);
+    }
   };
 
-  const handleSelectPreset = (presetId: TypoPresetId) => {
-    setSelectedPresetId(presetId);
-    if (!textGroup) return;
-
-    const preset = TYPO_PRESETS[presetId];
-    setTextGroup({
-      ...textGroup,
-      rotation: preset.slant,
-      segments: textGroup.segments.map((seg, idx) => ({
-        ...seg,
-        presetId,
-        fontFamily: preset.fontFamily,
-        colorHex: idx === 1 ? preset.fillColorHex : '#FFFFFF',
-        strokeColorHex: preset.strokeColorHex,
-        strokeWidth: idx === 1 ? preset.strokeWidth : 10,
-        shadowColorHex: preset.shadowColorHex,
-        shadowDepth: preset.shadowDepth,
-        slant: preset.slant,
-      })),
-    });
+  const handleUpdateTextGroup = (updated: CompositeTextGroup) => {
+    setTextGroup(updated);
+    const joined = updated.segments?.map((s) => s.text).filter(Boolean).join(' ');
+    if (joined && joined !== rawText) {
+      setRawText(joined);
+    }
   };
 
   const handleExport = () => {
-    alert('Exportando portada master a 1280x720 PNG sin pérdida (Lossless)...');
+    if (cleanCanvasExporterRef.current) {
+      const dataUrl = cleanCanvasExporterRef.current();
+      const link = document.createElement('a');
+      link.download = `ytext-cover-${Date.now()}.png`;
+      link.href = dataUrl;
+      link.click();
+    } else {
+      alert('Exportando portada master a 1280x720 PNG sin pérdida (Lossless)...');
+    }
   };
+
+  const hasApiKey = Boolean(lmmConfig.apiKey && lmmConfig.apiKey.trim().length > 0);
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-slate-50 font-sans">
       <Header
         onOpenSettings={() => setIsSettingsOpen(true)}
         onToggleSafeZones={() => setSafeZonesVisible(!safeZonesVisible)}
+        onToggleRuleOfThirds={() => setRuleOfThirdsVisible(!ruleOfThirdsVisible)}
         onOpenSimulator={() => setIsSimulatorOpen(true)}
         onExport={handleExport}
         safeZonesEnabled={safeZonesVisible}
+        ruleOfThirdsEnabled={ruleOfThirdsVisible}
+        lmmProviderName={lmmConfig.provider}
+        hasApiKey={hasApiKey}
       />
 
       <StudioShell
@@ -289,27 +200,33 @@ export function App() {
             onRawTextChange={setRawText}
             selectedIntent={selectedIntent}
             onSelectIntent={setSelectedIntent}
+            customIntentText={customIntentText}
+            onCustomIntentTextChange={setCustomIntentText}
             onAnalyze={handleAnalyze}
             isAnalyzing={isAnalyzing}
             proposals={proposals}
             selectedProposalId={selectedProposalId}
             onSelectProposal={handleSelectProposal}
+            hasApiKey={hasApiKey}
+            onOpenSettings={() => setIsSettingsOpen(true)}
+            errorMessage={analysisError}
+            telemetry={lmmTelemetry}
           />
         }
         centerStage={
           <CanvasStage
             baseImageUrl={baseImage.dataUrl}
             textGroup={textGroup}
-            onUpdateTextGroup={setTextGroup}
+            onUpdateTextGroup={handleUpdateTextGroup}
             safeZonesVisible={safeZonesVisible}
+            ruleOfThirdsVisible={ruleOfThirdsVisible}
+            onRegisterCanvasExporter={handleRegisterCanvasExporter}
           />
         }
         rightPanel={
           <InspectorPanel
             textGroup={textGroup}
-            selectedPresetId={selectedPresetId}
-            onSelectPreset={handleSelectPreset}
-            onUpdateTextGroup={setTextGroup}
+            onUpdateTextGroup={handleUpdateTextGroup}
           />
         }
       />
@@ -327,7 +244,7 @@ export function App() {
       <FeedSimulatorModal
         isOpen={isSimulatorOpen}
         onClose={() => setIsSimulatorOpen(false)}
-        canvasDataUrl={baseImage.dataUrl}
+        canvasDataUrl={cleanCanvasExporterRef.current ? cleanCanvasExporterRef.current() : baseImage.dataUrl}
         videoTitle={rawText}
       />
     </div>

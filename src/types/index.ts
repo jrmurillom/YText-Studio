@@ -2,9 +2,7 @@
  * Dominio de Tipos y Modelos de Datos para YText Studio
  */
 
-export type IntentType = 'hype' | 'horror' | 'mystery' | 'tech' | 'alert' | 'authority';
-
-export type TypoPresetId = 'mrbeast_pop' | 'docu_drama' | 'gaming_neon' | 'authority_badge';
+export type IntentType = 'hype' | 'horror' | 'mystery' | 'tech' | 'alert' | 'authority' | 'other';
 
 export type LMMProviderType = 'gemini' | 'openrouter' | 'openai' | 'ollama';
 
@@ -13,6 +11,7 @@ export interface LMMConfig {
   apiKey: string;
   model: string;
   customEndpoint?: string;
+  customPrompt?: string; // Prompt del sistema personalizable por el usuario
 }
 
 export interface BaseImageState {
@@ -27,10 +26,10 @@ export interface TextSegment {
   id: string;
   text: string;
   role: 'anchor_secondary' | 'power_primary';
-  presetId: TypoPresetId;
   fontFamily: string;
   fontSize: number; // En px relativos al master canvas de 1280x720
   colorHex: string;
+  gradientColorHex?: string; // Opcional: degradado vertical (luz cenital)
   strokeColorHex: string;
   strokeWidth: number; // En px
   shadowColorHex: string;
@@ -54,11 +53,26 @@ export interface CompositeTextGroup {
 export interface ProposalCard {
   id: string;
   title: string;
-  subtitle: string;
-  intent: IntentType;
-  presetId: TypoPresetId;
+  concept?: string;
+  copySummary: string; // Resumen del copy generado por la IA
   placement: 'TOP_LEFT' | 'CENTER_LEFT' | 'BOTTOM_LEFT' | 'TOP_RIGHT' | 'CENTER_RIGHT' | 'TOP_CENTER';
+  fontFamily: string;
   previewGroup: CompositeTextGroup;
+  isOfflineFallback?: boolean; // Indica si se generó por heurística local sin LMM real
+}
+
+export interface LMMTelemetry {
+  provider: string;
+  model: string;
+  latencyMs: number;
+  timestamp: string;
+  isOfflineFallback: boolean;
+  subjectZone?: string;
+  recommendedPlacement?: string;
+  contrastAccentColor?: string;
+  reasoning?: string;
+  rawPayloadSent?: string;
+  rawResponseText?: string;
 }
 
 export interface YouTubeSafeZoneConfig {

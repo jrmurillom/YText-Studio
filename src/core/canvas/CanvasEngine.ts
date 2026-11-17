@@ -36,10 +36,18 @@ export class CanvasEngine {
   }
 
   setTextGroup(group: CompositeTextGroup | null): void {
-    this.textGroup = group;
+    this.textGroup = group ? { ...group } : null;
     if (this.textGroup) {
       this.autoCalculateDimensions();
     }
+    this.render();
+  }
+
+  /**
+   * Actualiza el grupo de texto en memoria vectorial sin provocar renders de React (60-120 FPS)
+   */
+  updateTextGroupSilent(group: CompositeTextGroup): void {
+    this.textGroup = group;
     this.render();
   }
 
@@ -61,6 +69,49 @@ export class CanvasEngine {
       height: this.textGroup.height * this.textGroup.scale,
       rotation: this.textGroup.rotation,
     };
+  }
+
+  /**
+   * Exporta un DataURL limpio del canvas compuesto (sin tiradores ni bounding box)
+   */
+  exportCleanDataUrl(): string {
+    const offscreen = document.createElement('canvas');
+    offscreen.width = CanvasEngine.MASTER_WIDTH;
+    offscreen.height = CanvasEngine.MASTER_HEIGHT;
+    const ctx = offscreen.getContext('2d');
+    if (!ctx) return '';
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
+    if (this.bgImage) {
+      ctx.drawImage(this.bgImage, 0, 0, CanvasEngine.MASTER_WIDTH, CanvasEngine.MASTER_HEIGHT);
+    } else {
+      ctx.fillStyle = '#0F172A';
+      ctx.fillRect(0, 0, CanvasEngine.MASTER_WIDTH, CanvasEngine.MASTER_HEIGHT);
+    }
+
+    if (this.textGroup) {
+      const w = this.textGroup.width * this.textGroup.scale;
+      const h = this.textGroup.height * this.textGroup.scale;
+      const centerX = this.textGroup.x + w / 2;
+      const centerY = this.textGroup.y + h / 2;
+
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      ctx.rotate((this.textGroup.rotation * Math.PI) / 180);
+      ctx.translate(-w / 2, -h / 2);
+      ctx.scale(this.textGroup.scale, this.textGroup.scale);
+
+      let offsetY = 0;
+      for (const segment of this.textGroup.segments) {
+        const metrics = TextRenderer.renderSegment(ctx, segment, 0, offsetY);
+        offsetY += metrics.height + 10;
+      }
+      ctx.restore();
+    }
+
+    return offscreen.toDataURL('image/png');
   }
 
   /**
@@ -94,7 +145,6 @@ export class CanvasEngine {
       if (this.bgImage) {
         ctx.drawImage(this.bgImage, 0, 0, CanvasEngine.MASTER_WIDTH, CanvasEngine.MASTER_HEIGHT);
       } else {
-        // Fondo elegante si aún no hay foto cargada
         ctx.fillStyle = '#0F172A';
         ctx.fillRect(0, 0, CanvasEngine.MASTER_WIDTH, CanvasEngine.MASTER_HEIGHT);
       }

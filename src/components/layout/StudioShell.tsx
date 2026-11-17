@@ -23,7 +23,7 @@ export const StudioShell: React.FC<StudioShellProps> = ({
         {centerStage}
       </main>
 
-      {/* Columna Derecha: Inspector & Presets */}
+      {/* Columna Derecha: Inspector Tipográfico Manual */}
       <aside className="w-72 bg-white border-l border-slate-200 flex flex-col shrink-0 overflow-y-auto z-10 shadow-xs">
         {rightPanel}
       </aside>
