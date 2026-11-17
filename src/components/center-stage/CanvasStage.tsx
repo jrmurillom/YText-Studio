@@ -4,6 +4,7 @@ import { CompositeTextGroup } from '@/types';
 import { CanvasEngine } from '@/core/canvas/CanvasEngine';
 import { Transform2D, HandleType, Point2D } from '@/core/canvas/Transform2D';
 import { YouTubeSafeZoneGuard } from '@/core/safezones/YouTubeSafeZone';
+import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 
 interface CanvasStageProps {
   baseImageUrl: string | null;
@@ -29,6 +30,7 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
 
   const [hasCollision, setHasCollision] = useState(false);
   const [activeCursor, setActiveCursor] = useState('default');
+  const [zoomLevel, setZoomLevel] = useState(1.0);
 
   // Telemetría local desacoplada del render loop de React
   const [telemetry, setTelemetry] = useState<{ x: number; y: number; scale: number; rotation: number }>({
@@ -325,8 +327,12 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
     >
       {/* Marco 16:9 con sombra y borde sutil */}
       <div
-        className="relative w-full max-w-[768px] aspect-video bg-slate-900 rounded-xl overflow-hidden shadow-xl border border-slate-300 flex items-center justify-center"
-        style={{ cursor: activeCursor }}
+        className="relative w-full max-w-[768px] aspect-video bg-slate-900 rounded-xl overflow-hidden shadow-xl border border-slate-300 flex items-center justify-center transition-transform duration-100 ease-out"
+        style={{
+          cursor: activeCursor,
+          transform: `scale(${zoomLevel})`,
+          transformOrigin: 'center center',
+        }}
         onMouseDown={handleMouseDown}
       >
         <canvas
@@ -359,6 +365,45 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
             14:25
           </div>
         )}
+      </div>
+
+      {/* Barra Flotante de Zoom */}
+      <div className="absolute right-4 bottom-4 z-20 flex items-center gap-1 bg-white/95 backdrop-blur-xs border border-slate-200/90 rounded-lg p-1 shadow-md text-xs select-none">
+        <button
+          type="button"
+          onClick={() => setZoomLevel((prev) => Math.max(0.5, Number((prev - 0.1).toFixed(1))))}
+          disabled={zoomLevel <= 0.5}
+          className="p-1 rounded hover:bg-slate-100 text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+          title="Alejar (Zoom -)"
+        >
+          <ZoomOut className="w-3.5 h-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={() => setZoomLevel(1.0)}
+          className="px-1.5 py-0.5 text-[11px] font-mono font-bold text-slate-700 hover:text-slate-900 rounded hover:bg-slate-100 cursor-pointer transition-colors"
+          title="Restablecer zoom a 100%"
+        >
+          {Math.round(zoomLevel * 100)}%
+        </button>
+        <button
+          type="button"
+          onClick={() => setZoomLevel((prev) => Math.min(2.0, Number((prev + 0.1).toFixed(1))))}
+          disabled={zoomLevel >= 2.0}
+          className="p-1 rounded hover:bg-slate-100 text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+          title="Acercar (Zoom +)"
+        >
+          <ZoomIn className="w-3.5 h-3.5" />
+        </button>
+        <div className="w-px h-3.5 bg-slate-200 mx-0.5"></div>
+        <button
+          type="button"
+          onClick={() => setZoomLevel(1.0)}
+          className="p-1 rounded hover:bg-slate-100 text-slate-600 cursor-pointer transition-colors"
+          title="Ajustar a pantalla (Fit)"
+        >
+          <Maximize2 className="w-3.5 h-3.5" />
+        </button>
       </div>
 
       {textGroup && (

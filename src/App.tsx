@@ -182,6 +182,7 @@ export function App() {
         safeZonesEnabled={safeZonesVisible}
         ruleOfThirdsEnabled={ruleOfThirdsVisible}
         lmmProviderName={lmmConfig.provider}
+        lmmModelName={lmmConfig.model}
         hasApiKey={hasApiKey}
       />
 

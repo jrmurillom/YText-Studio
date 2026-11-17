@@ -25,6 +25,8 @@ Este documento es la **Fuente Única de la Verdad (Single Source of Truth - SST)
 | **Fase 4** | Dirección de Arte Autónoma 100% & Telemetría LMM | `feature/ai-autonomous-director` | **🟢 COMPLETADA** | Build OK (94kB) • 21 Tests OK |
 | **Fase 5** | Suite Gráfica Comercial de Alta Variabilidad ("Nivel Photoshop") | `feature/ai-autonomous-director` | **🟢 COMPLETADA** | Build OK (96kB) • 21 Tests OK |
 | **Fase 6** | Simulador de Feeds Multi-Contexto & Exportación Lossless | `feature/phase-6-simulator-export` | **🟢 COMPLETADA** | Build OK (99kB) • 23 Tests OK |
+| **Fase 7** | Ergonomía del Editor, Precision Controls & UX Fixes | `feature/phase-7-ergonomics-precision` | **🟢 COMPLETADA** | Build OK (100kB) • 23 Tests OK |
+| **Fase 8** | Global English Localization (i18n Nativo & Limpieza de Strings) | `feature/phase-8-global-english-i18n` | **⚪ PENDIENTE** | Requiere Plan + Task 0 |
 
 ---
 
@@ -34,9 +36,11 @@ Este documento es la **Fuente Única de la Verdad (Single Source of Truth - SST)
 flowchart LR
     Fase1["Fase 1: Cimientos & LMMs"] --> Fase2["Fase 2: Motor Canvas 2D"]
     Fase2 --> Fase3["Fase 3: Visión One-Shot & SafeZones"]
-    Fase3 --> Fase4["Fase 4: Dirección de Arte Autónoma LMM"]
+    Fase3 --> Fase4["Fase 4: Dirección Autónoma LMM"]
     Fase4 --> Fase5["Fase 5: Suite Gráfica Comercial"]
-    Fase5 --> Fase6["Fase 6: Simulador de Feeds & Exportación"]
+    Fase5 --> Fase6["Fase 6: Exportador & Simulador"]
+    Fase6 --> Fase7["Fase 7: Ergonomía & Controles de Precisión"]
+    Fase7 --> Fase8["Fase 8: Global English (i18n)"]
 ```
 
 ---
@@ -104,3 +108,25 @@ flowchart LR
     - Renderizado bicúbico de la imagen fuente original en máxima calidad (`imageSmoothingQuality = 'high'`).
     - Rasterizado vectorial directo de las capas de texto.
     - Exportación a PNG sin pérdida (*lossless*) y JPEG de calidad 1.0.
+
+---
+
+### Fase 7: Ergonomía del Editor, Precision Controls & UX Fixes
+* **Objetivo:** Pulir la experiencia de uso del creador, eliminando desbordamientos de interfaz y aportando control fino al lienzo y a las capas tipográficas.
+* **Contexto y Alcance Arquitectónico:**
+  - **Selector de Intenciones Dinámico:** Rediseño de tarjeta compacta de 2 líneas (título en negrita + descripción de apoyo) en `IntentSelector.tsx`, erradicando textos truncados con `...`.
+  - **AI Proposals en Acordeón Discreto:** Plegado por defecto de la consola de red cruda y diagnósticos técnicos en `ProposalsList.tsx`, dejando las tarjetas de propuesta limpias y accesibles.
+  - **Precisión Numérica en Inspector:** Sustitución de etiquetas pasivas por inputs numéricos editables en tiempo real (`<input type="number">`) sincronizados con el slider de tamaño.
+  - **Reordenamiento Vertical de Líneas:** Controles `[↑]` y `[↓]` para intercambiar jerarquías entre líneas y purga del botón obsoleto "Invertir".
+  - **Zoom de Espacio de Trabajo:** Barra flotante en `CanvasStage.tsx` (`[-]`, `100%`, `[+]`, `[Fit]`) con mapeo de coordenadas reactivo en `getBoundingClientRect()`.
+  - **Sincronización Reactiva en Header:** Badge de conectividad fiel que refleja el proveedor activo o el modo offline, con acceso directo a configuración.
+  - **Clarificación de Safe Zones:** Comunicación explícita del badge `14:25` de YouTube y renombramiento del simulador a `Feed Preview`.
+
+---
+
+### Fase 8: Global English Localization (i18n Nativo & Limpieza de Strings)
+* **Objetivo:** Estandarizar toda la terminología visible del sistema al inglés nativo de la industria audiovisual y creadores de contenido de YouTube.
+* **Contexto y Alcance Arquitectónico:**
+  - Migración limpia de textos en Header, paneles laterales, controles de inspector, safe zones, feed preview y modales.
+  - Sincronización de esquemas JSON, prompts del sistema y mensajes de validación sin mezclar con la lógica matemática del canvas.
+

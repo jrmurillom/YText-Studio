@@ -32,7 +32,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
   errorMessage,
   telemetry,
 }) => {
-  const [showNetworkLogs, setShowNetworkLogs] = useState(false);
+  const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
   const [activeLogTab, setActiveLogTab] = useState<'sent' | 'received'>('received');
   const [copiedTab, setCopiedTab] = useState<'sent' | 'received' | null>(null);
 
@@ -91,138 +91,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
         </div>
       )}
 
-      {/* Tarjeta de Diagnóstico y Razonamiento de la IA */}
-      {telemetry && (
-        <div className="p-2.5 rounded-lg bg-slate-900 text-slate-100 text-xs border border-slate-800 flex flex-col gap-2">
-          <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
-            <div className="flex items-center gap-1.5 text-blue-400 font-bold">
-              <Cpu className="w-3 h-3" />
-              <span>Diagnóstico del Director IA</span>
-            </div>
-            <span>{telemetry.timestamp}</span>
-          </div>
-
-          {telemetry.reasoning && (
-            <p className="text-[11px] text-slate-200 leading-relaxed italic bg-slate-800/60 p-2 rounded border border-slate-700/50">
-              "{telemetry.reasoning}"
-            </p>
-          )}
-
-          {/* Metadata semántica detectada */}
-          <div className="grid grid-cols-2 gap-1.5 text-[9px]">
-            <div className="bg-slate-800 p-1.5 rounded flex items-center justify-between">
-              <span className="text-slate-400">Sujeto:</span>
-              <span className="font-bold text-white font-mono">{telemetry.subjectZone || 'N/D'}</span>
-            </div>
-            <div className="bg-slate-800 p-1.5 rounded flex items-center justify-between">
-              <span className="text-slate-400">Espacio Libre:</span>
-              <span className="font-bold text-emerald-400 font-mono">{telemetry.recommendedPlacement || 'TOP_LEFT'}</span>
-            </div>
-          </div>
-
-          {/* Consola de Red LMM (Envío & Respuesta) */}
-          {(telemetry.rawPayloadSent || telemetry.rawResponseText) && (
-            <div className="border-t border-slate-800 pt-1.5 mt-0.5">
-              <button
-                type="button"
-                onClick={() => setShowNetworkLogs(!showNetworkLogs)}
-                className="w-full text-[10px] text-slate-300 hover:text-white py-1 px-2 rounded bg-slate-800/80 hover:bg-slate-800 flex items-center justify-between transition-colors cursor-pointer"
-              >
-                <div className="flex items-center gap-1.5">
-                  <Terminal className="w-3 h-3 text-blue-400" />
-                  <span className="font-semibold">Consola de Red LMM (Envío & Respuesta)</span>
-                </div>
-                <div className="flex items-center gap-1 text-[9px] text-slate-400">
-                  <span>{showNetworkLogs ? 'Ocultar' : 'Ver Logs'}</span>
-                  {showNetworkLogs ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                </div>
-              </button>
-
-              {showNetworkLogs && (
-                <div className="mt-2 flex flex-col gap-1.5">
-                  {/* Selector de pestañas: Enviar vs Recibir */}
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => setActiveLogTab('sent')}
-                        className={`px-2 py-0.5 rounded text-[9px] font-bold flex items-center gap-1 transition-all cursor-pointer ${
-                          activeLogTab === 'sent'
-                            ? 'bg-blue-600 text-white shadow-xs'
-                            : 'bg-slate-800 text-slate-400 hover:text-slate-200'
-                        }`}
-                      >
-                        <Send className="w-2.5 h-2.5" />
-                        <span>📤 Envío (Request)</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setActiveLogTab('received')}
-                        className={`px-2 py-0.5 rounded text-[9px] font-bold flex items-center gap-1 transition-all cursor-pointer ${
-                          activeLogTab === 'received'
-                            ? 'bg-emerald-600 text-white shadow-xs'
-                            : 'bg-slate-800 text-slate-400 hover:text-slate-200'
-                        }`}
-                      >
-                        <Inbox className="w-2.5 h-2.5" />
-                        <span>📥 Respuesta (LMM JSON)</span>
-                      </button>
-                    </div>
-
-                    {/* Botón copiar contenido activo */}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleCopy(
-                          (activeLogTab === 'sent' ? telemetry.rawPayloadSent : telemetry.rawResponseText) || '',
-                          activeLogTab
-                        )
-                      }
-                      className="text-[9px] text-slate-400 hover:text-slate-200 bg-slate-800/80 hover:bg-slate-700 px-1.5 py-0.5 rounded flex items-center gap-1 transition-colors cursor-pointer"
-                      title="Copiar contenido al portapapeles"
-                    >
-                      {copiedTab === activeLogTab ? (
-                        <>
-                          <Check className="w-2.5 h-2.5 text-emerald-400" />
-                          <span className="text-emerald-400 font-bold">¡Copiado!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-2.5 h-2.5" />
-                          <span>Copiar</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Vista de contenido */}
-                  {activeLogTab === 'sent' ? (
-                    <div className="flex flex-col gap-1">
-                      <div className="text-[9px] text-slate-400 font-mono flex items-center justify-between">
-                        <span>Payload estructurado enviado al proveedor:</span>
-                      </div>
-                      <pre className="p-2 bg-black/75 rounded border border-slate-700/80 text-[9px] text-blue-300 font-mono overflow-x-auto max-h-56 leading-tight select-all whitespace-pre-wrap break-all">
-                        {telemetry.rawPayloadSent || 'No hay registro del payload enviado.'}
-                      </pre>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-1">
-                      <div className="text-[9px] text-slate-400 font-mono flex items-center justify-between">
-                        <span>JSON Raw entregado por el modelo LMM:</span>
-                      </div>
-                      <pre className="p-2 bg-black/75 rounded border border-slate-700/80 text-[9px] text-emerald-400 font-mono overflow-x-auto max-h-56 leading-tight select-all whitespace-pre-wrap break-all">
-                        {telemetry.rawResponseText || 'No hay registro de la respuesta recibida.'}
-                      </pre>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Lista de Tarjetas de Propuesta */}
+      {/* Lista de Tarjetas de Propuesta (Directas y limpias) */}
       {isLoading ? (
         <div className="p-4 rounded-xl border border-blue-200 bg-blue-50/50 flex flex-col items-center justify-center text-center gap-2">
           <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 animate-spin">
@@ -293,6 +162,131 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Colapsable Discreto: Telemetría Técnica & Payloads (Oculto por defecto para evitar ruido) */}
+      {telemetry && (
+        <div className="rounded-lg border border-slate-200 bg-slate-50/70 overflow-hidden text-xs mt-1">
+          <button
+            type="button"
+            onClick={() => setShowTechnicalDetails(!showTechnicalDetails)}
+            className="w-full px-2.5 py-1.5 flex items-center justify-between text-[10px] font-semibold text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+          >
+            <div className="flex items-center gap-1.5">
+              <Cpu className="w-3 h-3 text-slate-400" />
+              <span>Detalles Técnicos & Red LMM</span>
+              <span className="text-[9px] font-mono text-slate-400 font-normal">
+                ({telemetry.latencyMs}ms)
+              </span>
+            </div>
+            <div className="flex items-center gap-1 text-[9px] text-slate-400">
+              <span>{showTechnicalDetails ? 'Ocultar' : 'Ver'}</span>
+              {showTechnicalDetails ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+            </div>
+          </button>
+
+          {showTechnicalDetails && (
+            <div className="p-2.5 border-t border-slate-200 bg-slate-900 text-slate-100 flex flex-col gap-2">
+              <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                <div className="flex items-center gap-1.5 text-blue-400 font-bold">
+                  <Terminal className="w-3 h-3" />
+                  <span>Diagnóstico del Director IA</span>
+                </div>
+                <span>{telemetry.timestamp}</span>
+              </div>
+
+              {telemetry.reasoning && (
+                <p className="text-[11px] text-slate-200 leading-relaxed italic bg-slate-800/60 p-2 rounded border border-slate-700/50">
+                  "{telemetry.reasoning}"
+                </p>
+              )}
+
+              {/* Metadata semántica detectada */}
+              <div className="grid grid-cols-2 gap-1.5 text-[9px]">
+                <div className="bg-slate-800 p-1.5 rounded flex items-center justify-between">
+                  <span className="text-slate-400">Sujeto:</span>
+                  <span className="font-bold text-white font-mono">{telemetry.subjectZone || 'N/D'}</span>
+                </div>
+                <div className="bg-slate-800 p-1.5 rounded flex items-center justify-between">
+                  <span className="text-slate-400">Espacio Libre:</span>
+                  <span className="font-bold text-emerald-400 font-mono">{telemetry.recommendedPlacement || 'TOP_LEFT'}</span>
+                </div>
+              </div>
+
+              {/* Consola de Red LMM (Envío & Respuesta) */}
+              {(telemetry.rawPayloadSent || telemetry.rawResponseText) && (
+                <div className="border-t border-slate-800 pt-1.5 mt-0.5">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setActiveLogTab('sent')}
+                        className={`px-2 py-0.5 rounded text-[9px] font-bold flex items-center gap-1 transition-all cursor-pointer ${
+                          activeLogTab === 'sent'
+                            ? 'bg-blue-600 text-white shadow-xs'
+                            : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                        }`}
+                      >
+                        <Send className="w-2.5 h-2.5" />
+                        <span>📤 Envío</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setActiveLogTab('received')}
+                        className={`px-2 py-0.5 rounded text-[9px] font-bold flex items-center gap-1 transition-all cursor-pointer ${
+                          activeLogTab === 'received'
+                            ? 'bg-emerald-600 text-white shadow-xs'
+                            : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                        }`}
+                      >
+                        <Inbox className="w-2.5 h-2.5" />
+                        <span>📥 Respuesta</span>
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleCopy(
+                          (activeLogTab === 'sent' ? telemetry.rawPayloadSent : telemetry.rawResponseText) || '',
+                          activeLogTab
+                        )
+                      }
+                      className="text-[9px] text-slate-400 hover:text-slate-200 bg-slate-800/80 hover:bg-slate-700 px-1.5 py-0.5 rounded flex items-center gap-1 transition-colors cursor-pointer"
+                      title="Copiar contenido al portapapeles"
+                    >
+                      {copiedTab === activeLogTab ? (
+                        <>
+                          <Check className="w-2.5 h-2.5 text-emerald-400" />
+                          <span className="text-emerald-400 font-bold">¡Copiado!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-2.5 h-2.5" />
+                          <span>Copiar</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {activeLogTab === 'sent' ? (
+                    <div className="flex flex-col gap-1 mt-1.5">
+                      <pre className="p-2 bg-black/75 rounded border border-slate-700/80 text-[9px] text-blue-300 font-mono overflow-x-auto max-h-48 leading-tight select-all whitespace-pre-wrap break-all">
+                        {telemetry.rawPayloadSent || 'No hay registro del payload enviado.'}
+                      </pre>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-1 mt-1.5">
+                      <pre className="p-2 bg-black/75 rounded border border-slate-700/80 text-[9px] text-emerald-400 font-mono overflow-x-auto max-h-48 leading-tight select-all whitespace-pre-wrap break-all">
+                        {telemetry.rawResponseText || 'No hay registro de la respuesta recibida.'}
+                      </pre>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import { FontFamilySelector } from './FontFamilySelector';
 import { FineTuningSliders } from './FineTuningSliders';
 import { CompositeTextGroup, TextSegment } from '@/types';
-import { Smartphone, ArrowUpDown, Shield, Sliders, Plus, Trash2, Sparkles } from 'lucide-react';
+import { Smartphone, Shield, Sliders, Plus, Trash2, Sparkles, ChevronUp, ChevronDown } from 'lucide-react';
 import { ReadabilityCalculator } from '@/core/metrics/ReadabilityCalculator';
 
 interface InspectorPanelProps {
@@ -31,12 +31,16 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
   const primarySegment = textGroup.segments[0];
   const currentFont = primarySegment?.fontFamily || 'Montserrat';
 
-  const handleInvertHierarchy = () => {
-    if (textGroup.segments.length < 2) return;
-    const [first, second, ...rest] = textGroup.segments;
+  const handleMoveLine = (idx: number, direction: 'up' | 'down') => {
+    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= textGroup.segments.length) return;
+    const newSegments = [...textGroup.segments];
+    const temp = newSegments[idx];
+    newSegments[idx] = newSegments[targetIdx];
+    newSegments[targetIdx] = temp;
     onUpdateTextGroup({
       ...textGroup,
-      segments: [second, first, ...rest],
+      segments: newSegments,
     });
   };
 
@@ -121,26 +125,15 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
             Líneas del Título ({textGroup.segments.length}/3)
           </label>
           <div className="flex items-center gap-1.5">
-            {textGroup.segments.length > 1 && (
-              <button
-                type="button"
-                onClick={handleInvertHierarchy}
-                className="text-[10px] text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-1 cursor-pointer"
-                title="Intercambiar orden de las dos primeras líneas"
-              >
-                <ArrowUpDown className="w-3 h-3" />
-                <span>Invertir</span>
-              </button>
-            )}
             {textGroup.segments.length < 3 && (
               <button
                 type="button"
                 onClick={handleAddLine}
-                className="text-[10px] bg-blue-50 text-blue-700 font-bold px-1.5 py-0.5 rounded border border-blue-200 flex items-center gap-1 cursor-pointer hover:bg-blue-100"
+                className="text-[10px] bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded border border-blue-200 flex items-center gap-1 cursor-pointer hover:bg-blue-100 transition-colors"
                 title="Añadir una nueva línea al título (máximo 3)"
               >
                 <Plus className="w-3 h-3" />
-                <span>Línea</span>
+                <span>+ Línea</span>
               </button>
             )}
           </div>
@@ -152,11 +145,35 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
               key={seg.id}
               className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs flex flex-col gap-2"
             >
-              {/* Header de la línea */}
+              {/* Header de la línea con reordenamiento */}
               <div className="flex items-center justify-between text-[10px]">
-                <span className="font-bold text-slate-700 font-mono">
-                  Línea {idx + 1}
-                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-bold text-slate-700 font-mono">
+                    Línea {idx + 1}
+                  </span>
+                  {textGroup.segments.length > 1 && (
+                    <div className="flex items-center bg-slate-200/80 rounded p-0.5 border border-slate-300/60">
+                      <button
+                        type="button"
+                        onClick={() => handleMoveLine(idx, 'up')}
+                        disabled={idx === 0}
+                        className="p-0.5 rounded hover:bg-white text-slate-600 hover:text-slate-900 disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                        title="Subir posición de esta línea"
+                      >
+                        <ChevronUp className="w-2.5 h-2.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleMoveLine(idx, 'down')}
+                        disabled={idx === textGroup.segments.length - 1}
+                        className="p-0.5 rounded hover:bg-white text-slate-600 hover:text-slate-900 disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                        title="Bajar posición de esta línea"
+                      >
+                        <ChevronDown className="w-2.5 h-2.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
 
                 <div className="flex items-center gap-1.5">
                   {/* Toggle Gradiente Cenital */}
@@ -261,13 +278,13 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
                   )}
                 </div>
 
-                {/* Slider de Tamaño (fontSize) independiente */}
+                {/* Slider y Entrada Numérica Exacta de Tamaño (fontSize) */}
                 <div className="flex items-center gap-1.5 justify-end">
                   <span className="text-[9px] text-slate-500 font-medium">Tamaño:</span>
                   <input
                     type="range"
-                    min={28}
-                    max={120}
+                    min={20}
+                    max={140}
                     value={seg.fontSize}
                     onChange={(e) => {
                       const size = Number(e.target.value);
@@ -278,11 +295,27 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
                         ),
                       });
                     }}
-                    className="w-16 accent-blue-600 cursor-pointer"
+                    className="w-14 accent-blue-600 cursor-pointer"
                   />
-                  <span className="text-[9px] font-mono font-bold text-slate-700 w-6 text-right">
-                    {seg.fontSize}
-                  </span>
+                  <input
+                    type="number"
+                    min={16}
+                    max={180}
+                    value={seg.fontSize}
+                    onChange={(e) => {
+                      const parsed = parseInt(e.target.value, 10);
+                      const size = isNaN(parsed) ? 20 : Math.max(16, Math.min(180, parsed));
+                      onUpdateTextGroup({
+                        ...textGroup,
+                        segments: textGroup.segments.map((s, i) =>
+                          i === idx ? { ...s, fontSize: size } : s
+                        ),
+                      });
+                    }}
+                    className="w-10 px-1 py-0.5 text-[10px] font-mono font-bold text-center bg-white border border-slate-300 rounded text-slate-800 focus:outline-none focus:border-blue-500 shadow-2xs"
+                    title="Escribe el tamaño exacto en píxeles"
+                  />
+                  <span className="text-[8px] text-slate-400 font-mono">px</span>
                 </div>
               </div>
             </div>

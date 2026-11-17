@@ -34,7 +34,7 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
             </div>
             <div>
               <span className="font-bold text-sm text-slate-900 block leading-tight">
-                Simulador Multi-Contexto (The Reality Check)
+                Feed Preview (The Reality Check)
               </span>
               <span className="text-[11px] text-slate-500 block">
                 Comprueba contraste, legibilidad del TRI y competencia de feed en tiempo real
@@ -333,7 +333,7 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
             onClick={onClose}
             className="px-4 py-1.5 text-xs font-bold rounded-lg bg-slate-900 text-white hover:bg-slate-800 cursor-pointer transition-colors"
           >
-            Cerrar Simulador
+            Cerrar Preview
           </button>
         </div>
       </div>

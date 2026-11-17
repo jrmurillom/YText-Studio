@@ -8,14 +8,14 @@ interface IntentSelectorProps {
   onCustomIntentTextChange?: (text: string) => void;
 }
 
-const INTENTS: Array<{ id: IntentType; label: string; icon: string }> = [
-  { id: 'hype', label: 'Hype / Viral', icon: '⚡' },
-  { id: 'horror', label: 'Horror / Tensión', icon: '👻' },
-  { id: 'mystery', label: 'Misterio / Docu', icon: '🕵️' },
-  { id: 'tech', label: 'Tech / Futuro', icon: '🔬' },
-  { id: 'alert', label: 'Alerta / Peligro', icon: '🚨' },
-  { id: 'authority', label: 'Autoridad / Veredicto', icon: '💼' },
-  { id: 'other', label: 'Tono Personalizado...', icon: '✨' },
+const INTENTS: Array<{ id: IntentType; name: string; desc: string; icon: string }> = [
+  { id: 'hype', name: 'Hype', desc: 'Viral & Energía', icon: '⚡' },
+  { id: 'horror', name: 'Horror', desc: 'Tensión & Miedo', icon: '👻' },
+  { id: 'mystery', name: 'Misterio', desc: 'Docu & Intriga', icon: '🕵️' },
+  { id: 'tech', name: 'Tech', desc: 'Futuro & Gadgets', icon: '🔬' },
+  { id: 'alert', name: 'Alerta', desc: 'Peligro & Urgente', icon: '🚨' },
+  { id: 'authority', name: 'Autoridad', desc: 'Veredicto & Crítica', icon: '💼' },
+  { id: 'other', name: 'Tono Libre', desc: 'Personalizado para la IA', icon: '✨' },
 ];
 
 export const IntentSelector: React.FC<IntentSelectorProps> = ({
@@ -36,14 +36,21 @@ export const IntentSelector: React.FC<IntentSelectorProps> = ({
             <button
               key={item.id}
               onClick={() => onSelectIntent(item.id)}
-              className={`p-2 rounded-md border text-left flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-2 py-1.5 rounded-lg border text-left flex items-center gap-2 transition-all cursor-pointer ${
                 isSelected
-                  ? 'border-blue-500 bg-blue-50/60 text-blue-900 shadow-xs ring-1 ring-blue-500/20'
+                  ? 'border-blue-600 bg-blue-50/80 text-blue-900 shadow-xs ring-1 ring-blue-600/30'
                   : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
               } ${item.id === 'other' ? 'col-span-2' : ''}`}
             >
-              <span className="text-xs shrink-0">{item.icon}</span>
-              <span className="text-[11px] font-semibold truncate">{item.label}</span>
+              <span className="text-sm shrink-0">{item.icon}</span>
+              <div className="min-w-0 flex-1 leading-tight">
+                <span className="text-[11px] font-bold block text-slate-900 leading-tight">
+                  {item.name}
+                </span>
+                <span className="text-[9px] text-slate-400 block truncate leading-tight">
+                  {item.desc}
+                </span>
+              </div>
             </button>
           );
         })}
