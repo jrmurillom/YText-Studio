@@ -18,10 +18,12 @@ export class GeminiProvider implements LMMAdapter {
         ? `Personalizado: ${request.customIntentText}`
         : request.intent;
 
+    const count = request.proposalCount || 3;
     const basePrompt = request.customPrompt || DEFAULT_LMM_SYSTEM_PROMPT;
     const prompt = basePrompt
       .replace('{RAW_TEXT}', request.rawText)
-      .replace('{INTENT}', effectiveIntent);
+      .replace('{INTENT}', effectiveIntent)
+      .replace(/{PROPOSAL_COUNT}/g, String(count));
 
     const payload = {
       contents: [

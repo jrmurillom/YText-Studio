@@ -54,6 +54,7 @@ export class VisionAnalysisPipeline {
         intent,
         customIntentText,
         customPrompt: config.customPrompt,
+        proposalCount: config.proposalCount || 3,
       };
 
       try {
@@ -66,13 +67,13 @@ export class VisionAnalysisPipeline {
         console.warn('[VisionPipeline] Remote API error, falling back to explicit local mode:', err);
         isOfflineFallback = true;
         errorMessage = err instanceof Error ? err.message : String(err);
-        response = this.runLocalHeuristic(rawText, intent, customIntentText);
+        response = this.runLocalHeuristic(rawText, intent, customIntentText, config.proposalCount || 3);
         rawPayloadSent = `[Remote API Failure]\nError: ${errorMessage}\nActivated contingency generator with hook: "${rawText}"`;
         rawResponseText = JSON.stringify(response, null, 2);
       }
     } else {
       isOfflineFallback = true;
-      response = this.runLocalHeuristic(rawText, intent, customIntentText);
+      response = this.runLocalHeuristic(rawText, intent, customIntentText, config.proposalCount || 3);
       rawPayloadSent = `[Offline Mode without API Key]\nLocal heuristic executed with hook: "${rawText}"`;
       rawResponseText = JSON.stringify(response, null, 2);
     }
@@ -98,15 +99,17 @@ export class VisionAnalysisPipeline {
   }
 
   /**
-   * Generador heurístico local explícito (construye 3 propuestas completas sin presets fijos)
+   * Generador heurístico local explícito (construye 3 a 5 propuestas dinámicas)
    */
   private static runLocalHeuristic(
     rawText: string,
     intent: IntentType,
-    customIntentText?: string
+    customIntentText?: string,
+    proposalCount = 3
   ): LMMVisionResponse {
     const cleanRaw = rawText.trim() || 'TITLE';
     const words = cleanRaw.split(/\s+/);
+    const targetCount = Math.max(3, Math.min(5, proposalCount || 3));
 
     // Baseline segmentation
     let l1 = 'IMPACT';
@@ -121,24 +124,46 @@ export class VisionAnalysisPipeline {
     let copyA: [string, string] = [l1, l2];
     let copyB: [string, string] = ['THE END?', 'IMPOSSIBLE!'];
     let copyC: [string, string] = ['VERDICT:', cleanRaw.toUpperCase()];
+    let copyD: [string, string] = ['WARNING:', 'DO NOT MISS'];
+    let copyE: [string, string] = ['THE TRUTH', cleanRaw.toUpperCase()];
 
     if (intent === 'horror') {
       copyA = ["DON'T LOOK", "IT'S HERE..."];
       copyB = ['WILL YOU SURVIVE?', 'THE TERROR'];
       copyC = ['REAL STORY', 'CASE FILE'];
+      copyD = ['ALONE IN DARK', 'THE ENTITY'];
+      copyE = ['NIGHTMARE', 'NEVER FORGET'];
     } else if (intent === 'mystery') {
       copyA = ['WHAT THEY HIDE?', 'THE TRUTH'];
       copyB = ['THE SECRET OF:', cleanRaw.toUpperCase()];
       copyC = ['CLASSIFIED', 'DOCUMENT'];
+      copyD = ['UNSOLVED', 'EVIDENCE'];
+      copyE = ['CONFIDENTIAL', 'CASE CLOSED'];
     } else if (intent === 'tech') {
       copyA = ['CHANGED EVERYTHING:', 'THE FUTURE'];
       copyB = ['WORTH IT?', 'NEW KING'];
       copyC = ['DEFINITIVE:', 'REVIEW'];
+      copyD = ['BREAKTHROUGH', 'NEXT GEN'];
+      copyE = ['THE UPGRADE', 'UNBOXED'];
+    } else if (intent === 'alert') {
+      copyA = ['BREAKING:', 'CRITICAL'];
+      copyB = ['TOO LATE?', 'WATCH NOW'];
+      copyC = ['OFFICIAL ALERT', cleanRaw.toUpperCase()];
+      copyD = ['EMERGENCY', 'EXPOSED'];
+      copyE = ['DANGER:', 'STAY SAFE'];
+    } else if (intent === 'authority') {
+      copyA = ['VERDICT:', 'THE FINAL WORD'];
+      copyB = ['PROVEN:', cleanRaw.toUpperCase()];
+      copyC = ['EXPERT OPINION', 'VALIDATED'];
+      copyD = ['RANKED:', 'TOP TIER'];
+      copyE = ['THE WINNER', 'UNDISPUTED'];
     } else if (intent === 'other' && customIntentText) {
       const hook = customIntentText.slice(0, 14).toUpperCase();
       copyA = [hook, l2];
       copyB = ['HOW IT HAPPENED?', cleanRaw.toUpperCase()];
       copyC = ['SPECIAL:', hook];
+      copyD = ['HIGHLIGHT:', cleanRaw.toUpperCase()];
+      copyE = ['INSIDER:', hook];
     }
 
     const prop1: LMMProposalSpecification = {
@@ -240,6 +265,74 @@ export class VisionAnalysisPipeline {
       ],
     };
 
+    const prop4: LMMProposalSpecification = {
+      id: 'prop_4',
+      title: 'Option D: Bold Statement',
+      concept: 'Ultra-tall typography with strong vertical punch and high-energy alert tone.',
+      placement: 'TOP_LEFT',
+      fontFamily: 'Teko',
+      rotation: 2,
+      hasBadge: false,
+      lines: [
+        {
+          text: copyD[0],
+          role: 'anchor_secondary',
+          fontSizeRatio: 0.65,
+          colorHex: '#F59E0B',
+          strokeColorHex: '#000000',
+          strokeWidth: 8,
+          shadowColorHex: '#000000',
+          shadowDepth: 3,
+        },
+        {
+          text: copyD[1],
+          role: 'power_primary',
+          fontSizeRatio: 1.1,
+          colorHex: '#FFFFFF',
+          strokeColorHex: '#000000',
+          strokeWidth: 14,
+          shadowColorHex: '#000000',
+          shadowDepth: 5,
+        },
+      ],
+    };
+
+    const prop5: LMMProposalSpecification = {
+      id: 'prop_5',
+      title: 'Option E: Clean Pop',
+      concept: 'Modern sans with high-punch contrast and clean editorial authority.',
+      placement: 'CENTER_LEFT',
+      fontFamily: 'Montserrat',
+      rotation: 0,
+      hasBadge: false,
+      lines: [
+        {
+          text: copyE[0],
+          role: 'anchor_secondary',
+          fontSizeRatio: 0.7,
+          colorHex: '#E2E8F0',
+          strokeColorHex: '#000000',
+          strokeWidth: 8,
+          shadowColorHex: '#000000',
+          shadowDepth: 3,
+        },
+        {
+          text: copyE[1],
+          role: 'power_primary',
+          fontSizeRatio: 1.0,
+          colorHex: '#22C55E',
+          gradientColorHex: '#15803D',
+          strokeColorHex: '#000000',
+          strokeWidth: 12,
+          shadowColorHex: '#000000',
+          shadowDepth: 4,
+        },
+      ],
+    };
+
+    const allProps = [prop1, prop2, prop3, prop4, prop5];
+    const selectedProps = allProps.slice(0, targetCount);
+
     return {
       analysis: {
         subjectZone: 'RIGHT_HALF',
@@ -247,8 +340,8 @@ export class VisionAnalysisPipeline {
         dominantColors: ['#0f172a', '#1e293b'],
         contrastAccentColor: '#FFE600',
       },
-      proposals: [prop1, prop2, prop3],
-      reasoning: `Local heuristic composition generated for '${intent}' intent. Subject detected on the right half; projected 3 differentiated proposals into the left negative space.`,
+      proposals: selectedProps,
+      reasoning: `Local heuristic composition generated for '${intent}' intent with ${targetCount} proposals. Subject detected on the right half; projected ${targetCount} differentiated proposals into the left negative space.`,
     };
   }
 

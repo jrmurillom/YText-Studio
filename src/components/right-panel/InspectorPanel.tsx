@@ -376,7 +376,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
                       : 'text-red-700'
                   }`}
                 >
-                  Mobile Readability (TRI)
+                  Mobile Readability
                 </span>
                 <span className="text-xs font-bold">
                   Score: {tri.score} / 100 • {tri.label}

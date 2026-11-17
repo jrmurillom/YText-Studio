@@ -12,6 +12,7 @@ export interface LMMConfig {
   model: string;
   customEndpoint?: string;
   customPrompt?: string; // Prompt del sistema personalizable por el usuario
+  proposalCount?: number; // Cantidad de propuestas deseadas (3, 4 o 5)
 }
 
 export interface BaseImageState {

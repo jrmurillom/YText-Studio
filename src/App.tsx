@@ -24,7 +24,11 @@ export function App() {
     const saved = localStorage.getItem('ytext_lmm_config');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        return {
+          ...parsed,
+          proposalCount: parsed.proposalCount || 3,
+        };
       } catch {
         // fallback
       }
@@ -33,6 +37,7 @@ export function App() {
       provider: 'gemini',
       apiKey: '',
       model: 'gemini-2.0-flash',
+      proposalCount: 3,
     };
   });
 
@@ -130,12 +135,9 @@ export function App() {
         const first = result.proposals[0];
         setSelectedProposalId(first.id);
         setTextGroup(first.previewGroup);
-        // Sincronizar texto de la propuesta al campo base
-        const joined = first.previewGroup.segments?.map((s) => s.text).filter(Boolean).join(' ');
-        if (joined) setRawText(joined);
       }
     } catch (err) {
-      console.error('Error durante el análisis de portada:', err);
+      console.error('Error during cover analysis:', err);
       setAnalysisError(err instanceof Error ? err.message : String(err));
     } finally {
       setIsAnalyzing(false);
@@ -145,24 +147,10 @@ export function App() {
   const handleSelectProposal = (proposal: ProposalCard) => {
     setSelectedProposalId(proposal.id);
     setTextGroup(proposal.previewGroup);
-    // Sincronizar el texto de la propuesta seleccionada al input para evitar desfases
-    const joinedText = proposal.previewGroup.segments
-      ?.map((s) => s.text)
-      .filter(Boolean)
-      .join(' ');
-    if (joinedText) {
-      setRawText(joinedText);
-    } else if (proposal.copySummary) {
-      setRawText(proposal.copySummary);
-    }
   };
 
   const handleUpdateTextGroup = (updated: CompositeTextGroup) => {
     setTextGroup(updated);
-    const joined = updated.segments?.map((s) => s.text).filter(Boolean).join(' ');
-    if (joined && joined !== rawText) {
-      setRawText(joined);
-    }
   };
 
   const handleExport = () => {

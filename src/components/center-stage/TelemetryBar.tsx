@@ -33,7 +33,7 @@ export const TelemetryBar: React.FC<TelemetryBarProps> = ({
         <>
           <span className="text-slate-300">•</span>
           <span className="text-red-600 font-bold flex items-center gap-1">
-            ⚠️ Timestamp Collision
+            ⚠️ Covered by Duration Badge
           </span>
         </>
       )}

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ProposalCard, LMMTelemetry } from '@/types';
 import {
-  Sparkles,
   Check,
   AlertCircle,
   ChevronDown,
@@ -69,12 +68,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
             <AlertCircle className="w-2.5 h-2.5" />
             <span>Local Offline Mode</span>
           </span>
-        ) : (
-          <span className="text-[10px] text-blue-600 font-semibold flex items-center gap-1">
-            <Sparkles className="w-3 h-3" />
-            <span>AI Vision Master</span>
-          </span>
-        )}
+        ) : null}
       </div>
 
       {/* Alerta de Error de API Explícita */}
@@ -175,7 +169,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
           >
             <div className="flex items-center gap-1.5">
               <Cpu className="w-3 h-3 text-slate-400" />
-              <span>Technical Telemetry & Network Logs</span>
+              <span>AI Reasoning & Debug</span>
               <span className="text-[9px] font-mono text-slate-400 font-normal">
                 ({telemetry.latencyMs}ms)
               </span>
@@ -191,7 +185,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
               <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
                 <div className="flex items-center gap-1.5 text-blue-400 font-bold">
                   <Terminal className="w-3 h-3" />
-                  <span>AI Creative Director Diagnostic</span>
+                  <span>AI Decision Log</span>
                 </div>
                 <span>{telemetry.timestamp}</span>
               </div>
@@ -209,7 +203,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
                   <span className="font-bold text-white font-mono">{telemetry.subjectZone || 'N/A'}</span>
                 </div>
                 <div className="bg-slate-800 p-1.5 rounded flex items-center justify-between">
-                  <span className="text-slate-400">Negative Space:</span>
+                  <span className="text-slate-400">Free Area:</span>
                   <span className="font-bold text-emerald-400 font-mono">{telemetry.recommendedPlacement || 'TOP_LEFT'}</span>
                 </div>
               </div>

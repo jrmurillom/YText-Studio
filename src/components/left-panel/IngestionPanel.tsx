@@ -72,7 +72,7 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
       {/* 1. Imagen Base */}
       <div>
         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-          Base Image (16:9 • Immutable)
+          Background Image (16:9)
         </label>
         <input
           ref={fileInputRef}
@@ -98,7 +98,7 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
                   {baseImage.file?.name || 'Uploaded image'}
                 </span>
                 <span className="text-[10px] text-slate-400">
-                  {baseImage.width}x{baseImage.height} • Locked
+                  {baseImage.width} × {baseImage.height}
                 </span>
               </div>
             </div>
@@ -115,7 +115,7 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
       {/* 2. Texto Base */}
       <div>
         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-          Video Title / Topic Hook
+          Video Title
         </label>
         <input
           type="text"
@@ -157,7 +157,7 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
           ) : (
             <>
               <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-              <span>Analyze & Generate Proposals (AI)</span>
+              <span>Generate Proposals</span>
             </>
           )}
         </button>

@@ -6,6 +6,7 @@ export interface LMMVisionRequest {
   intent: IntentType;
   customIntentText?: string; // Texto libre cuando intent === 'other'
   customPrompt?: string;     // Prompt de sistema personalizado opcional
+  proposalCount?: number;    // Cantidad de propuestas deseadas (3 a 5)
   marketingContext?: {
     niche?: string;
     videoTitle?: string;
@@ -73,17 +74,17 @@ Analyze the visual composition of the image:
 2. Identify negative space areas (detectedNegativeSpace: ["TOP_LEFT", "CENTER_LEFT", ...]).
 3. Extract dominant background colors and propose a high-contrast complement color (contrastAccentColor).
 
-Next, design 3 DISTINCT, HIGH-CTR TYPOGRAPHY PROPOSALS tailored specifically to this image and hook intent.
+Next, design {PROPOSAL_COUNT} DISTINCT, HIGH-CTR TYPOGRAPHY PROPOSALS tailored specifically to this image and hook intent.
 CRITERIA & FLEXIBILITY:
 - Number of lines: Choose 1, 2, or 3 lines based on the visual punch. If 1 word is massive and self-sufficient (e.g. "IMPOSSIBLE", "OVERRATED", "GUILTY", "WAIFU"), deliver 1 colossal line. If a setup and punchline are needed, deliver 2 lines. If dramatic cadence is needed, deliver 3 lines.
-- Fonts: Select from the 12 display fonts available in the studio:
+- Fonts: Select freely from the 12 display fonts available in the studio according to each proposal's mood and vibe:
   "Montserrat", "Anton", "Bebas Neue", "Teko", "Permanent Marker", "Poppins", "Cinzel", "Playfair Display", "Inter", "Rubik", "Luckiest Guy", "Bangers".
   Maintain clean typographic uniformity across lines by default; only pair fonts if it strongly amplifies the concept.
 - Colors & Gradients: Use solid flat colors for clean contrast, or optionally specify "gradientColorHex" (e.g. bright yellow to warm amber, or pure white to light silver) when vertical zenith lighting creates 3D volume.
 - Badges: Set hasBadge: true on a proposal or on an individual line when a pill container is needed to cut through noisy background textures.
 
 For EACH proposal, define complete visual specifications:
-- id: "prop_1", "prop_2", "prop_3"
+- id: "prop_1", "prop_2", ... up to "prop_{PROPOSAL_COUNT}"
 - title: clear title
 - concept: short rationale
 - placement: "TOP_LEFT" | "CENTER_LEFT" | "BOTTOM_LEFT" | "TOP_RIGHT" | "CENTER_RIGHT" | "TOP_CENTER" (NEVER place text on top of subject or on YouTube timestamp 1040,640)

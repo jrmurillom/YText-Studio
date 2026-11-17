@@ -34,10 +34,10 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
             </div>
             <div>
               <span className="font-bold text-sm text-slate-900 block leading-tight">
-                Feed Preview (The Reality Check)
+                Feed Preview
               </span>
               <span className="text-[11px] text-slate-500 block">
-                Evaluate contrast, TRI readability, and feed competition in real time
+                Compare contrast and readability against other videos in real time
               </span>
             </div>
           </div>

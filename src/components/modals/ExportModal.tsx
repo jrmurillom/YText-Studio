@@ -72,7 +72,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
           <div className="flex items-center gap-2">
             <Download className="w-4 h-4 text-blue-600" />
             <span className="font-bold text-sm text-slate-900">
-              Export Master Cover (Lossless)
+              Export Thumbnail
             </span>
           </div>
 
@@ -105,10 +105,10 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             </div>
           </div>
 
-          {/* 1. Resolution Selector */}
+          {/* Resolution Selector */}
           <div>
             <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
-              1. Output Resolution
+              Resolution
             </label>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -125,7 +125,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                   {resolution === '720p' && <Check className="w-3.5 h-3.5 text-blue-600" />}
                 </div>
                 <span className="text-[11px] text-slate-500 block leading-tight">
-                  Official YouTube native standard.
+                  Standard YouTube HD
                 </span>
               </button>
 
@@ -146,16 +146,16 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                   {resolution === '1080p' && <Check className="w-3.5 h-3.5 text-blue-600" />}
                 </div>
                 <span className="text-[11px] text-slate-500 block leading-tight">
-                  1.5× vector scaling for maximum sharpness on Retina/4K screens.
+                  1.5× Retina/4K Scaling
                 </span>
               </button>
             </div>
           </div>
 
-          {/* 2. Format Selector */}
+          {/* Format Selector */}
           <div>
             <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
-              2. Compression Format
+              Format
             </label>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -168,11 +168,11 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-xs text-slate-900">PNG Lossless</span>
+                  <span className="font-bold text-xs text-slate-900">PNG</span>
                   {format === 'png' && <Check className="w-3.5 h-3.5 text-blue-600" />}
                 </div>
                 <span className="text-[11px] text-slate-500 block leading-tight">
-                  Zero destructive compression on text strokes and 3D shadows.
+                  Lossless Quality
                 </span>
               </button>
 
@@ -186,11 +186,11 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-xs text-slate-900">JPEG (100% Quality)</span>
+                  <span className="font-bold text-xs text-slate-900">JPEG</span>
                   {format === 'jpeg' && <Check className="w-3.5 h-3.5 text-blue-600" />}
                 </div>
                 <span className="text-[11px] text-slate-500 block leading-tight">
-                  Smaller file size while preserving photographic fidelity.
+                  Smaller File
                 </span>
               </button>
             </div>
@@ -199,7 +199,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
           {/* Metadata */}
           <div className="bg-slate-50 rounded-lg p-3 border border-slate-200 text-xs text-slate-600 flex items-center justify-between">
             <span className="font-medium">Estimated size: <strong className="text-slate-900">{getEstimatedSize()}</strong></span>
-            <span className="text-[11px] text-slate-500">Fixed 16:9 aspect ratio</span>
+            <span className="text-[11px] text-slate-400 font-mono">16:9 HD</span>
           </div>
         </div>
 

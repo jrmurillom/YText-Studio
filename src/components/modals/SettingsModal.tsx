@@ -22,6 +22,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [provider, setProvider] = useState<LMMProviderType>(config.provider);
   const [apiKey, setApiKey] = useState(config.apiKey);
   const [model, setModel] = useState(config.model);
+  const [proposalCount, setProposalCount] = useState<number>(config.proposalCount || 3);
   const [customEndpoint, setCustomEndpoint] = useState(config.customEndpoint || '');
   const [customPrompt, setCustomPrompt] = useState(config.customPrompt || DEFAULT_LMM_SYSTEM_PROMPT);
 
@@ -32,6 +33,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       provider,
       apiKey,
       model,
+      proposalCount,
       customEndpoint: provider === 'ollama' ? customEndpoint : undefined,
       customPrompt: customPrompt.trim() !== DEFAULT_LMM_SYSTEM_PROMPT.trim() ? customPrompt : undefined,
     });
@@ -142,6 +144,35 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               />
             </div>
 
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                  AI Proposals Generated
+                </label>
+                <span className="text-[10px] text-slate-400 font-medium">{proposalCount} proposals</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {[3, 4, 5].map((count) => (
+                  <button
+                    key={count}
+                    type="button"
+                    onClick={() => setProposalCount(count)}
+                    className={`py-2 px-3 rounded-lg border text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                      proposalCount === count
+                        ? 'border-blue-500 bg-blue-50/70 text-blue-700 shadow-2xs'
+                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <span>{count} Options</span>
+                    {count === 3 && <span className="text-[9px] font-normal text-slate-400">(Default)</span>}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-slate-400 mt-1">
+                Configure between 3 (faster response) and 5 (maximum creative diversity) thumbnail proposals per run.
+              </p>
+            </div>
+
             {provider === 'ollama' && (
               <div>
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
@@ -184,7 +215,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 className="w-full text-[11px] p-2.5 font-mono rounded-md border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:border-blue-500 leading-relaxed"
               />
               <span className="text-[10px] text-slate-400 block mt-1">
-                Required runtime interpolated variables: <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;RAW_TEXT&#125;</code> and <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;INTENT&#125;</code>.
+                Required runtime interpolated variables: <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;RAW_TEXT&#125;</code>, <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;INTENT&#125;</code>, and <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;PROPOSAL_COUNT&#125;</code>.
               </span>
             </div>
 

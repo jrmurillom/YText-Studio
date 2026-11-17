@@ -27,7 +27,7 @@ export const IntentSelector: React.FC<IntentSelectorProps> = ({
   return (
     <div>
       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
-        Marketing Intent / Emotional Tone
+        Thumbnail Tone
       </label>
       <div className="grid grid-cols-2 gap-1.5">
         {INTENTS.map((item) => {

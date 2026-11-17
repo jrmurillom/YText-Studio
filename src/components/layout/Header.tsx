@@ -81,10 +81,10 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={onOpenSettings}
           className="px-2.5 py-1.5 text-xs font-medium rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition-colors cursor-pointer"
-          title="Configure LMM APIs, System Prompt & Visual Contracts"
+          title="Configure AI APIs, System Prompt & Visual Contracts"
         >
           <Settings className="w-3.5 h-3.5 text-slate-500" />
-          <span>Configure LMM</span>
+          <span>AI Settings</span>
         </button>
 
         <button
@@ -94,10 +94,10 @@ export const Header: React.FC<HeaderProps> = ({
               ? 'border-blue-500 bg-blue-50 text-blue-700'
               : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
           }`}
-          title="YouTube Safe Zones: highlights the bottom-right timestamp (14:25) and top overlays"
+          title="Safe Zones: highlights the bottom-right timestamp (14:25) and top overlays"
         >
           <Eye className="w-3.5 h-3.5" />
-          <span>YT Safe Zones</span>
+          <span>Safe Zones</span>
         </button>
 
         <button
@@ -107,10 +107,10 @@ export const Header: React.FC<HeaderProps> = ({
               ? 'border-blue-500 bg-blue-50 text-blue-700'
               : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
           }`}
-          title="Rule of Thirds: 3x3 grid guides for visual anchor points"
+          title="Grid: Rule of Thirds guides for visual balance"
         >
           <Grid3x3 className="w-3.5 h-3.5" />
-          <span>3x3 Grid</span>
+          <span>Grid</span>
         </button>
 
         <button
@@ -127,10 +127,10 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={onExport}
           className="px-3.5 py-1.5 text-xs font-semibold rounded-md bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
-          title="Export master cover in 1280x720 (HD) or 1920x1080 (Full HD) Lossless PNG/JPEG"
+          title="Export thumbnail in 1280x720 (HD) or 1920x1080 (Full HD) Lossless PNG/JPEG"
         >
           <Download className="w-3.5 h-3.5" />
-          <span>Export Cover</span>
+          <span>Export</span>
         </button>
       </div>
     </header>

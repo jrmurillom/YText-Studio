@@ -27,7 +27,8 @@ Este documento es la **Fuente Única de la Verdad (Single Source of Truth - SST)
 | **Fase 6** | Simulador de Feeds Multi-Contexto & Exportación Lossless | `feature/phase-6-simulator-export` | **🟢 COMPLETADA** | Build OK (99kB) • 23 Tests OK |
 | **Fase 7** | Ergonomía del Editor, Precision Controls & UX Fixes | `feature/phase-7-ergonomics-precision` | **🟢 COMPLETADA** | Build OK (100kB) • 23 Tests OK |
 | **Fase 8** | Estandarización de Vocabulario en Inglés (en-US Baseline) | `feature/phase-8-global-english-i18n` | **🟢 COMPLETADA** | Build OK (342kB) • 23 Tests OK |
-| **Fase 9** | Arquitectura de Internacionalización Dinámica (i18n Engine & Multilenguaje) | `feature/phase-9-dynamic-i18n` | **⚪ PENDIENTE** | Requiere Plan + Task 0 |
+| **Fase 9** | Viewport Ergonomics (Paneles Colapsables) & UI Jargon Purge | `feature/phase-9-viewport-ergonomics-jargon-purge` | **🟢 COMPLETADA** | Build OK (345kB) • 23 Tests OK |
+| **Fase 10** | Arquitectura de Internacionalización Dinámica (i18n Engine & Multilenguaje) | `feature/phase-10-dynamic-i18n` | **⚪ PENDIENTE** | Requiere Plan + Task 0 |
 
 ---
 
@@ -42,7 +43,8 @@ flowchart LR
     Fase5 --> Fase6["Fase 6: Exportador & Simulador"]
     Fase6 --> Fase7["Fase 7: Ergonomía & Controles de Precisión"]
     Fase7 --> Fase8["Fase 8: English Baseline"]
-    Fase8 --> Fase9["Fase 9: Motor Dinámico i18n"]
+    Fase8 --> Fase9["Fase 9: Ergonomía & Jargon Purge"]
+    Fase9 --> Fase10["Fase 10: Motor Dinámico i18n"]
 ```
 
 ---
@@ -134,14 +136,54 @@ flowchart LR
 
 ---
 
-### Fase 9: Arquitectura de Internacionalización Dinámica (i18n Engine & Multilenguaje)
+### Fase 9: Viewport Ergonomics (Paneles Colapsables), UI Jargon Purge & Proposal Depth Control (Completada)
+* **Objetivo:** Maximizar el espacio de trabajo en el lienzo para resoluciones reducidas, purgar la jerga de programación y redundancias visuales, blindar la inmutabilidad del título del video e incorporar control de volumen de propuestas (3 a 5).
+* **Contexto y Alcance Arquitectónico:**
+  - **Paneles Colapsables (`StudioShell.tsx`):** Colapso independiente de paneles izquierdo (`w-68` a `w-0`) y derecho (`w-72` a `w-0`) con animación CSS fluida (`transition-all duration-200`) y pestañas flotantes minimalistas (`[◀ Tools]`, `[Inspector ▶]`) para reabrir con un clic, liberando hasta 560px de área de trabajo.
+  - **Purga de Jerga Técnica y Redundancias:**
+    - `Configure LMM` -> `AI Settings`, `YT Safe Zones` -> `Safe Zones`, `3x3 Grid` -> `Grid`, `Export Cover` -> `Export`.
+    - `Base Image 16:9 (Immutable)` -> `Background Image (16:9)`, `Locked 1280x720` -> `1280 × 720`.
+    - Purgado total del badge residual `AI Vision Master` y de `AI Reasoning & Debug`.
+    - `Outline Stroke` -> `Stroke`, `3D Hard Shadow (45°)` -> `3D Shadow`, `Slant Angle` -> `Slant`.
+    - `Timestamp Collision Alert` -> `Covered by Duration Badge`.
+    - Simplificación concisa de los modales de Exportación y Simulador de Feed.
+  - **Inmutabilidad Absoluta del Título del Video (`rawText`):**
+    - Desacoplamiento total entre el título original del creador (`Video Title`) y los textos autónomos de las propuestas o ediciones del lienzo, garantizando coherencia para exportación y feed simulator.
+  - **Control Dinámico de Propuestas IA (3 a 5 Opciones):**
+    - Selector configurable en `SettingsModal` (`[3 | 4 | 5 Options]`) persistido en `localStorage`.
+    - Soporte multi-proveedor (Gemini, OpenRouter, Heurística Local) con interpolación de `{PROPOSAL_COUNT}` y libertad tipográfica sin restricciones artificiales.
+
+---
+
+### Fase 10: Arquitectura de Internacionalización Dinámica (i18n Engine & Multilenguaje)
 * **Objetivo:** Desacoplar al 100% todos los textos de la interfaz mediante un motor de internacionalización ligero con tipado estricto, diccionarios externos y selector en vivo.
 * **Contexto y Alcance Arquitectónico:**
   - **Motor Ligero Tipado (`I18nProvider` & `useTranslation`):** Contexto nativo de React (<1.5 KB, cero dependencias pesadas de terceros) con validación estricta de llaves en TypeScript (`keyof typeof en`).
   - **Catálogos Desacoplados (`src/locales/`):**
-    - `en.json`: Diccionario canónico en inglés (vocabulario depurado en Fase 8).
+    - `en.json`: Diccionario canónico en inglés (vocabulario depurado en Fase 8 y 9).
     - `es.json`: Diccionario en español neutro profesional.
   - **Selector de Idioma en Vivo:** Switch interactivo `[EN / ES]` en el `Header` con re-renderizado instantáneo de la interfaz.
   - **Persistencia & Detección:** Detección automática del idioma del sistema (`navigator.language`) y persistencia en `localStorage ('ytext_locale')`.
   - **Aislamiento Total del Canvas:** El micro-motor gráfico Canvas 2D permanece inmune a los re-renders de idioma.
+
+---
+
+### Fase 11: Multi-Layer Canvas & Graphic Assets / Sticker Engine (Logos, Icons, Badges & Cutouts)
+* **Objetivo:** Evolucionar la composición visual permitiendo importar, manipular e integrar elementos gráficos complementarios (logos, iconos, flechas, emojis y stickers PNG con transparencia) junto a las capas tipográficas en el lienzo de 1280x720.
+* **Contexto y Alcance Arquitectónico:**
+  - **Arquitectura de Capas Multielemento (`CanvasLayer`):**
+    - Desacoplar el modelo de datos de "Texto único" a un árbol de capas ordenables (`z-index`) que admita tipos `text`, `image_asset` y `vector_shape`.
+    - Soporte unificado de transformaciones afines en `Transform2D`: escala independiente, posición $(x, y)$, rotación angular (-180° a +180°) y opacidad.
+  - **Pipeline de Ingesta de Assets Gráficos:**
+    - Carga local de imágenes con canal alfa (PNG, WebP, SVG) mediante drag & drop o selector de archivos.
+    - Decodificación y optimización automática en memoria mediante `createImageBitmap` / OffscreenCanvas para evitar bloqueos en el hilo principal.
+  - **Efectos Gráficos para Stickers de YouTube:**
+    - *Sticker Stroke / Outer Glow:* Generación de siluetas con borde blanco o de color alrededor de recortes con canal alfa mediante operaciones de composición de Canvas (`destination-over` / `filter`).
+    - *3D Drop Shadow:* Proyección de sombra dura direccional consistente con la tipografía.
+  - **Librería de Assets Curados para YouTube:**
+    - Catálogo integrado de recursos vectoriales de alto CTR: flechas de intriga, círculos de énfasis, badges de verificación, signos de exclamación y emojis de alto contraste.
+  - **Manipulación Directa e Inspector de Elemento:**
+    - Controles interactivos en el lienzo para arrastrar, redimensionar y rotar el elemento activo.
+    - Panel lateral contextual en el Inspector según el tipo de capa seleccionada (ajustes tipográficos para texto vs. ajustes de filtro, escala y borde para imágenes).
+
 
