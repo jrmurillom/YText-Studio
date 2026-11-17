@@ -6,6 +6,7 @@ import { CanvasStage } from '@/components/center-stage/CanvasStage';
 import { InspectorPanel } from '@/components/right-panel/InspectorPanel';
 import { SettingsModal } from '@/components/modals/SettingsModal';
 import { FeedSimulatorModal } from '@/components/modals/FeedSimulatorModal';
+import { ExportModal } from '@/components/modals/ExportModal';
 import {
   IntentType,
   ProposalCard,
@@ -37,6 +38,7 @@ export function App() {
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
   const [safeZonesVisible, setSafeZonesVisible] = useState(true);
   const [ruleOfThirdsVisible, setRuleOfThirdsVisible] = useState(false);
 
@@ -164,15 +166,7 @@ export function App() {
   };
 
   const handleExport = () => {
-    if (cleanCanvasExporterRef.current) {
-      const dataUrl = cleanCanvasExporterRef.current();
-      const link = document.createElement('a');
-      link.download = `ytext-cover-${Date.now()}.png`;
-      link.href = dataUrl;
-      link.click();
-    } else {
-      alert('Exportando portada master a 1280x720 PNG sin pérdida (Lossless)...');
-    }
+    setIsExportOpen(true);
   };
 
   const hasApiKey = Boolean(lmmConfig.apiKey && lmmConfig.apiKey.trim().length > 0);
@@ -245,6 +239,15 @@ export function App() {
         isOpen={isSimulatorOpen}
         onClose={() => setIsSimulatorOpen(false)}
         canvasDataUrl={cleanCanvasExporterRef.current ? cleanCanvasExporterRef.current() : baseImage.dataUrl}
+        videoTitle={rawText}
+      />
+
+      <ExportModal
+        isOpen={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
+        bgImage={baseImage.dataUrl}
+        textGroup={textGroup}
+        canvasPreviewUrl={cleanCanvasExporterRef.current ? cleanCanvasExporterRef.current() : baseImage.dataUrl}
         videoTitle={rawText}
       />
     </div>

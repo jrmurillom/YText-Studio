@@ -112,9 +112,10 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={onExport}
           className="px-3.5 py-1.5 text-xs font-semibold rounded-md bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+          title="Exportar en 1280x720 (HD) o 1920x1080 (Full HD) en PNG/JPEG Lossless"
         >
           <Download className="w-3.5 h-3.5" />
-          <span>Exportar 1280x720</span>
+          <span>Exportar Portada</span>
         </button>
       </div>
     </header>
