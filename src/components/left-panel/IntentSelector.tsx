@@ -9,13 +9,13 @@ interface IntentSelectorProps {
 }
 
 const INTENTS: Array<{ id: IntentType; name: string; desc: string; icon: string }> = [
-  { id: 'hype', name: 'Hype', desc: 'Viral & Energía', icon: '⚡' },
-  { id: 'horror', name: 'Horror', desc: 'Tensión & Miedo', icon: '👻' },
-  { id: 'mystery', name: 'Misterio', desc: 'Docu & Intriga', icon: '🕵️' },
-  { id: 'tech', name: 'Tech', desc: 'Futuro & Gadgets', icon: '🔬' },
-  { id: 'alert', name: 'Alerta', desc: 'Peligro & Urgente', icon: '🚨' },
-  { id: 'authority', name: 'Autoridad', desc: 'Veredicto & Crítica', icon: '💼' },
-  { id: 'other', name: 'Tono Libre', desc: 'Personalizado para la IA', icon: '✨' },
+  { id: 'hype', name: 'Hype', desc: 'Viral & Energy', icon: '⚡' },
+  { id: 'horror', name: 'Horror', desc: 'Tension & Fear', icon: '👻' },
+  { id: 'mystery', name: 'Mystery', desc: 'Docu & Intrigue', icon: '🕵️' },
+  { id: 'tech', name: 'Tech', desc: 'Future & Gadgets', icon: '🔬' },
+  { id: 'alert', name: 'Alert', desc: 'Danger & Breaking', icon: '🚨' },
+  { id: 'authority', name: 'Authority', desc: 'Verdict & Review', icon: '💼' },
+  { id: 'other', name: 'Custom', desc: 'Custom AI Prompt', icon: '✨' },
 ];
 
 export const IntentSelector: React.FC<IntentSelectorProps> = ({
@@ -27,7 +27,7 @@ export const IntentSelector: React.FC<IntentSelectorProps> = ({
   return (
     <div>
       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
-        Intención / Atmósfera Emocional
+        Marketing Intent / Emotional Tone
       </label>
       <div className="grid grid-cols-2 gap-1.5">
         {INTENTS.map((item) => {
@@ -60,13 +60,13 @@ export const IntentSelector: React.FC<IntentSelectorProps> = ({
       {selectedIntent === 'other' && (
         <div className="mt-2 animate-in fade-in duration-200">
           <label className="text-[9px] font-bold text-blue-600 uppercase tracking-wider block mb-1">
-            Describe la intención libre para la IA:
+            Custom AI prompt or style tone:
           </label>
           <input
             type="text"
             value={customIntentText}
             onChange={(e) => onCustomIntentTextChange?.(e.target.value)}
-            placeholder="Ej: Sarcasmo fino, comedia absurda, nostalgia noventera..."
+            placeholder="e.g. Dark comedy, high-stakes drama, 90s nostalgia..."
             className="w-full text-xs px-2.5 py-1.5 rounded-md border border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-blue-50/20 font-medium text-slate-800"
           />
         </div>

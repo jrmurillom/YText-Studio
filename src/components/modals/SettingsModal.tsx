@@ -49,7 +49,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <div className="h-12 border-b border-slate-200 px-4 flex items-center justify-between bg-slate-50 shrink-0">
           <div className="flex items-center gap-2">
             <Cpu className="w-4 h-4 text-blue-600" />
-            <span className="font-bold text-sm text-slate-900">Configuración de Inteligencia & LMMs</span>
+            <span className="font-bold text-sm text-slate-900">Intelligence & LMM Settings</span>
           </div>
 
           <div className="flex items-center gap-1 bg-slate-200/60 p-0.5 rounded-lg text-xs">
@@ -61,7 +61,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Conexión & API
+              Connection & API
             </button>
             <button
               onClick={() => setActiveTab('prompt_contracts')}
@@ -72,7 +72,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               }`}
             >
               <Code2 className="w-3.5 h-3.5 text-blue-600" />
-              <span>Prompt & Contratos</span>
+              <span>Prompt & Contracts</span>
             </button>
           </div>
 
@@ -84,12 +84,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </button>
         </div>
 
-        {/* Tab 1: Conexión & Credenciales */}
+        {/* Tab 1: Connection & Credentials */}
         {activeTab === 'connection' && (
           <div className="p-5 space-y-4 text-xs overflow-y-auto">
             <div>
               <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                Proveedor de IA Multimodal
+                Multimodal AI Provider
               </label>
               <select
                 value={provider}
@@ -103,36 +103,36 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 }}
                 className="w-full text-xs p-2 rounded-md border border-slate-200 bg-white font-medium text-slate-800 focus:outline-none focus:border-blue-500"
               >
-                <option value="gemini">Google Gemini (Gemini 2.0 Flash • Ultra-rápido y recomendado)</option>
+                <option value="gemini">Google Gemini (Gemini 2.0 Flash • Ultra-fast & recommended)</option>
                 <option value="openrouter">OpenRouter (Claude 3.5 Sonnet, GPT-4o, Qwen 2.5-VL)</option>
-                <option value="openai">OpenAI Directo (GPT-4o, GPT-4o-mini)</option>
-                <option value="ollama">Local / Ollama (Self-Hosted en tu máquina)</option>
+                <option value="openai">Direct OpenAI (GPT-4o, GPT-4o-mini)</option>
+                <option value="ollama">Local / Ollama (Self-Hosted on your machine)</option>
               </select>
             </div>
 
             <div>
               <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                API Key (Persistida exclusivamente en tu navegador)
+                API Key (Stored exclusively in local browser)
               </label>
               <div className="relative">
                 <input
                   type="password"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="Pega tu clave (ej. AIzaSy... o sk-or-...)"
+                  placeholder="Paste your key (e.g. AIzaSy... or sk-or-...)"
                   className="w-full text-xs p-2 pl-8 rounded-md border border-slate-200 bg-white font-mono text-slate-800 focus:outline-none focus:border-blue-500"
                 />
                 <Key className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
               </div>
               <div className="mt-1 flex items-center gap-1.5 text-[10px] text-slate-500">
                 <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                <span>Tu clave jamás viaja a servidores de terceros; se comunica directamente con la API oficial del proveedor.</span>
+                <span>Your key never leaves your browser; it communicates directly with the provider's official endpoint.</span>
               </div>
             </div>
 
             <div>
               <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                ID del Modelo de Visión
+                Vision Model ID
               </label>
               <input
                 type="text"
@@ -145,7 +145,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             {provider === 'ollama' && (
               <div>
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                  Endpoint Custom
+                  Custom Endpoint
                 </label>
                 <input
                   type="text"
@@ -159,21 +159,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
         )}
 
-        {/* Tab 2: Prompt del Sistema & Contratos JSON */}
+        {/* Tab 2: System Prompt & JSON Contracts */}
         {activeTab === 'prompt_contracts' && (
           <div className="p-5 space-y-4 text-xs overflow-y-auto">
-            {/* Editor de Prompt */}
+            {/* Prompt Editor */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                  Prompt del Sistema Inyectado al LMM (Customizable)
+                  Injected LMM System Prompt (Customizable)
                 </label>
                 <button
                   onClick={handleResetPrompt}
                   className="text-[10px] text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 cursor-pointer"
                 >
                   <RotateCcw className="w-3 h-3" />
-                  <span>Restaurar Default</span>
+                  <span>Restore Default</span>
                 </button>
               </div>
 
@@ -184,35 +184,35 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 className="w-full text-[11px] p-2.5 font-mono rounded-md border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:border-blue-500 leading-relaxed"
               />
               <span className="text-[10px] text-slate-400 block mt-1">
-                Variables obligatorias interpoladas en runtime: <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;RAW_TEXT&#125;</code> e <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;INTENT&#125;</code>.
+                Required runtime interpolated variables: <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;RAW_TEXT&#125;</code> and <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;INTENT&#125;</code>.
               </span>
             </div>
 
-            {/* Contratos de Entrada y Salida */}
+            {/* In / Out Contracts */}
             <div className="space-y-2 pt-2 border-t border-slate-200">
               <div className="flex items-center gap-1.5 text-slate-700 font-bold text-xs">
                 <FileJson className="w-4 h-4 text-blue-600" />
-                <span>Contratos de Datos JSON (SSOT STANDARDS.md)</span>
+                <span>JSON Data Contracts (SSOT STANDARDS.md)</span>
               </div>
 
               <details className="rounded-lg border border-slate-200 bg-slate-50 p-2 text-[10px]">
                 <summary className="font-semibold text-slate-700 cursor-pointer select-none">
-                  Contrato de Entrada: <code className="font-mono text-blue-600">LMMVisionRequest</code>
+                  Input Contract: <code className="font-mono text-blue-600">LMMVisionRequest</code>
                 </summary>
                 <pre className="mt-1.5 p-2 bg-white rounded border border-slate-200 font-mono text-[9px] text-slate-800 overflow-x-auto">
 {`{
   "imageBase64WebP": "string (<50KB base64)",
   "rawText": "string",
   "intent": "hype | horror | mystery | tech | alert | authority | other",
-  "customIntentText": "string (opcional)",
-  "customPrompt": "string (opcional)"
+  "customIntentText": "string (optional)",
+  "customPrompt": "string (optional)"
 }`}
                 </pre>
               </details>
 
               <details className="rounded-lg border border-slate-200 bg-slate-50 p-2 text-[10px]">
                 <summary className="font-semibold text-slate-700 cursor-pointer select-none">
-                  Contrato de Salida Autónomo: <code className="font-mono text-blue-600">LMMVisionResponse</code>
+                  Autonomous Output Contract: <code className="font-mono text-blue-600">LMMVisionResponse</code>
                 </summary>
                 <pre className="mt-1.5 p-2 bg-white rounded border border-slate-200 font-mono text-[9px] text-slate-800 overflow-x-auto">
 {`{
@@ -225,15 +225,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   "proposals": [
     {
       "id": "prop_1",
-      "title": "Opción A: Impacto Directo",
-      "concept": "Explicación visual del contraste y marketing",
+      "title": "Option A: Direct Impact",
+      "concept": "Visual contrast & marketing explanation",
       "placement": "TOP_LEFT | CENTER_LEFT | BOTTOM_LEFT | ...",
       "fontFamily": "Montserrat | Anton | Bebas Neue | Cinzel | Inter | Rubik",
       "rotation": -3,
       "hasBadge": false,
       "lines": [
         {
-          "text": "HOOK CORTO",
+          "text": "SHORT HOOK",
           "role": "anchor_secondary",
           "fontSizeRatio": 0.7,
           "colorHex": "#FFFFFF",
@@ -243,10 +243,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           "shadowDepth": 4
         },
         {
-          "text": "PALABRA IMPACTO",
+          "text": "POWER WORD",
           "role": "power_primary",
           "fontSizeRatio": 1.0,
-          "colorHex": "#HEX_CONTRASTE",
+          "colorHex": "#CONTRAST_HEX",
           "strokeColorHex": "#000000",
           "strokeWidth": 16,
           "shadowColorHex": "#000000",
@@ -255,7 +255,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       ]
     }
   ],
-  "reasoning": "Razón de composición global"
+  "reasoning": "Global artistic reasoning rationale"
 }`}
                 </pre>
               </details>
@@ -269,13 +269,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             onClick={onClose}
             className="px-3.5 py-1.5 text-xs font-medium rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 cursor-pointer"
           >
-            Cancelar
+            Cancel
           </button>
           <button
             onClick={handleSave}
             className="px-4 py-1.5 text-xs font-semibold rounded-md bg-blue-600 hover:bg-blue-700 text-white shadow-xs cursor-pointer"
           >
-            Guardar Configuración
+            Save Settings
           </button>
         </div>
       </div>

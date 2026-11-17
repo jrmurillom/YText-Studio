@@ -20,13 +20,13 @@ export const FineTuningSliders: React.FC<FineTuningSlidersProps> = ({
   return (
     <div className="space-y-2.5 pt-2 border-t border-slate-100 text-xs">
       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-        Ajustes Finos de Impacto
+        Fine-Tuning Controls
       </label>
 
       {/* Stroke */}
       <div>
         <div className="flex justify-between text-slate-600 mb-0.5">
-          <span className="font-medium text-[11px]">Borde Masivo (Stroke)</span>
+          <span className="font-medium text-[11px]">Outline Stroke</span>
           <span className="font-mono text-slate-800 font-bold">{strokeWidth}px</span>
         </div>
         <input
@@ -39,10 +39,10 @@ export const FineTuningSliders: React.FC<FineTuningSlidersProps> = ({
         />
       </div>
 
-      {/* Sombra 3D */}
+      {/* 3D Shadow */}
       <div>
         <div className="flex justify-between text-slate-600 mb-0.5">
-          <span className="font-medium text-[11px]">Sombra 3D Dura (Offset)</span>
+          <span className="font-medium text-[11px]">3D Hard Shadow (45°)</span>
           <span className="font-mono text-slate-800 font-bold">{shadowDepth}px</span>
         </div>
         <input
@@ -58,7 +58,7 @@ export const FineTuningSliders: React.FC<FineTuningSlidersProps> = ({
       {/* Slant */}
       <div>
         <div className="flex justify-between text-slate-600 mb-0.5">
-          <span className="font-medium text-[11px]">Inclinación (Slant)</span>
+          <span className="font-medium text-[11px]">Slant Angle</span>
           <span className="font-mono text-slate-800 font-bold">{slant}°</span>
         </div>
         <input

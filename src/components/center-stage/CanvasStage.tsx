@@ -374,7 +374,7 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
           onClick={() => setZoomLevel((prev) => Math.max(0.5, Number((prev - 0.1).toFixed(1))))}
           disabled={zoomLevel <= 0.5}
           className="p-1 rounded hover:bg-slate-100 text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
-          title="Alejar (Zoom -)"
+          title="Zoom Out (-)"
         >
           <ZoomOut className="w-3.5 h-3.5" />
         </button>
@@ -382,7 +382,7 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
           type="button"
           onClick={() => setZoomLevel(1.0)}
           className="px-1.5 py-0.5 text-[11px] font-mono font-bold text-slate-700 hover:text-slate-900 rounded hover:bg-slate-100 cursor-pointer transition-colors"
-          title="Restablecer zoom a 100%"
+          title="Reset zoom to 100%"
         >
           {Math.round(zoomLevel * 100)}%
         </button>
@@ -391,7 +391,7 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
           onClick={() => setZoomLevel((prev) => Math.min(2.0, Number((prev + 0.1).toFixed(1))))}
           disabled={zoomLevel >= 2.0}
           className="p-1 rounded hover:bg-slate-100 text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
-          title="Acercar (Zoom +)"
+          title="Zoom In (+)"
         >
           <ZoomIn className="w-3.5 h-3.5" />
         </button>
@@ -400,7 +400,7 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
           type="button"
           onClick={() => setZoomLevel(1.0)}
           className="p-1 rounded hover:bg-slate-100 text-slate-600 cursor-pointer transition-colors"
-          title="Ajustar a pantalla (Fit)"
+          title="Fit to Screen"
         >
           <Maximize2 className="w-3.5 h-3.5" />
         </button>

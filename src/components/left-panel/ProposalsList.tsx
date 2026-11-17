@@ -50,13 +50,13 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
       {/* Header con Badge de Estado y Latencia */}
       <div className="flex items-center justify-between">
         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-          Propuestas de Composición
+          Composition Proposals
         </label>
         {telemetry ? (
           telemetry.isOfflineFallback ? (
             <span className="text-[9px] bg-amber-50 text-amber-700 font-bold px-1.5 py-0.5 rounded border border-amber-200 flex items-center gap-1">
               <AlertCircle className="w-2.5 h-2.5" />
-              <span>Modo Local • {telemetry.latencyMs}ms</span>
+              <span>Local Mode • {telemetry.latencyMs}ms</span>
             </span>
           ) : (
             <span className="text-[9px] bg-emerald-50 text-emerald-700 font-bold px-1.5 py-0.5 rounded border border-emerald-200 flex items-center gap-1">
@@ -67,12 +67,12 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
         ) : isAnyOffline ? (
           <span className="text-[9px] bg-amber-50 text-amber-700 font-bold px-1.5 py-0.5 rounded border border-amber-200 flex items-center gap-1">
             <AlertCircle className="w-2.5 h-2.5" />
-            <span>Modo Local Offline</span>
+            <span>Local Offline Mode</span>
           </span>
         ) : (
           <span className="text-[10px] text-blue-600 font-semibold flex items-center gap-1">
             <Sparkles className="w-3 h-3" />
-            <span>IA Vision Master</span>
+            <span>AI Vision Master</span>
           </span>
         )}
       </div>
@@ -82,11 +82,11 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
         <div className="p-2 rounded-md bg-red-50 border border-red-200 text-[10px] text-red-700 leading-tight flex flex-col gap-1">
           <div className="font-bold flex items-center gap-1 text-red-800">
             <AlertCircle className="w-3 h-3" />
-            <span>Fallo de Conexión LMM:</span>
+            <span>LMM Connection Error:</span>
           </div>
           <p className="font-mono text-[9px] break-all bg-red-100/60 p-1 rounded">{errorMessage}</p>
           <span className="text-[9px] text-red-600 italic">
-            Se activó el simulador heurístico local como contingencia.
+            Fallback local heuristic simulator activated as contingency.
           </span>
         </div>
       )}
@@ -98,15 +98,15 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
             <Loader2 className="w-4 h-4" />
           </div>
           <div>
-            <span className="text-xs font-bold text-slate-800 block">Diseñando 3 Propuestas con IA...</span>
+            <span className="text-xs font-bold text-slate-800 block">Designing 3 AI Proposals...</span>
             <span className="text-[10px] text-slate-500">
-              Analizando rostros, espacio negativo y paleta cromática en 1280x720
+              Analyzing faces, negative space, and chromatic contrast in 1280x720
             </span>
           </div>
         </div>
       ) : proposals.length === 0 ? (
         <div className="p-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 text-center text-slate-400 text-xs">
-          Haz clic en "Analizar & Diseñar Portada" para que la IA proponga 3 composiciones a medida.
+          Click "Analyze & Generate Proposals" to let the AI design 3 custom compositions.
         </div>
       ) : (
         <div className="space-y-2">
@@ -165,7 +165,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
         </div>
       )}
 
-      {/* Colapsable Discreto: Telemetría Técnica & Payloads (Oculto por defecto para evitar ruido) */}
+      {/* Discrete Collapsible: Technical Telemetry & Payloads */}
       {telemetry && (
         <div className="rounded-lg border border-slate-200 bg-slate-50/70 overflow-hidden text-xs mt-1">
           <button
@@ -175,13 +175,13 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
           >
             <div className="flex items-center gap-1.5">
               <Cpu className="w-3 h-3 text-slate-400" />
-              <span>Detalles Técnicos & Red LMM</span>
+              <span>Technical Telemetry & Network Logs</span>
               <span className="text-[9px] font-mono text-slate-400 font-normal">
                 ({telemetry.latencyMs}ms)
               </span>
             </div>
             <div className="flex items-center gap-1 text-[9px] text-slate-400">
-              <span>{showTechnicalDetails ? 'Ocultar' : 'Ver'}</span>
+              <span>{showTechnicalDetails ? 'Hide' : 'View'}</span>
               {showTechnicalDetails ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
             </div>
           </button>
@@ -191,7 +191,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
               <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
                 <div className="flex items-center gap-1.5 text-blue-400 font-bold">
                   <Terminal className="w-3 h-3" />
-                  <span>Diagnóstico del Director IA</span>
+                  <span>AI Creative Director Diagnostic</span>
                 </div>
                 <span>{telemetry.timestamp}</span>
               </div>
@@ -202,19 +202,19 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
                 </p>
               )}
 
-              {/* Metadata semántica detectada */}
+              {/* Detected semantic metadata */}
               <div className="grid grid-cols-2 gap-1.5 text-[9px]">
                 <div className="bg-slate-800 p-1.5 rounded flex items-center justify-between">
-                  <span className="text-slate-400">Sujeto:</span>
-                  <span className="font-bold text-white font-mono">{telemetry.subjectZone || 'N/D'}</span>
+                  <span className="text-slate-400">Subject:</span>
+                  <span className="font-bold text-white font-mono">{telemetry.subjectZone || 'N/A'}</span>
                 </div>
                 <div className="bg-slate-800 p-1.5 rounded flex items-center justify-between">
-                  <span className="text-slate-400">Espacio Libre:</span>
+                  <span className="text-slate-400">Negative Space:</span>
                   <span className="font-bold text-emerald-400 font-mono">{telemetry.recommendedPlacement || 'TOP_LEFT'}</span>
                 </div>
               </div>
 
-              {/* Consola de Red LMM (Envío & Respuesta) */}
+              {/* LMM Network Console (Sent & Received) */}
               {(telemetry.rawPayloadSent || telemetry.rawResponseText) && (
                 <div className="border-t border-slate-800 pt-1.5 mt-0.5">
                   <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
@@ -229,7 +229,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
                         }`}
                       >
                         <Send className="w-2.5 h-2.5" />
-                        <span>📤 Envío</span>
+                        <span>📤 Request</span>
                       </button>
                       <button
                         type="button"
@@ -241,7 +241,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
                         }`}
                       >
                         <Inbox className="w-2.5 h-2.5" />
-                        <span>📥 Respuesta</span>
+                        <span>📥 Response</span>
                       </button>
                     </div>
 
@@ -254,17 +254,17 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
                         )
                       }
                       className="text-[9px] text-slate-400 hover:text-slate-200 bg-slate-800/80 hover:bg-slate-700 px-1.5 py-0.5 rounded flex items-center gap-1 transition-colors cursor-pointer"
-                      title="Copiar contenido al portapapeles"
+                      title="Copy content to clipboard"
                     >
                       {copiedTab === activeLogTab ? (
                         <>
                           <Check className="w-2.5 h-2.5 text-emerald-400" />
-                          <span className="text-emerald-400 font-bold">¡Copiado!</span>
+                          <span className="text-emerald-400 font-bold">Copied!</span>
                         </>
                       ) : (
                         <>
                           <Copy className="w-2.5 h-2.5" />
-                          <span>Copiar</span>
+                          <span>Copy</span>
                         </>
                       )}
                     </button>
@@ -273,13 +273,13 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
                   {activeLogTab === 'sent' ? (
                     <div className="flex flex-col gap-1 mt-1.5">
                       <pre className="p-2 bg-black/75 rounded border border-slate-700/80 text-[9px] text-blue-300 font-mono overflow-x-auto max-h-48 leading-tight select-all whitespace-pre-wrap break-all">
-                        {telemetry.rawPayloadSent || 'No hay registro del payload enviado.'}
+                        {telemetry.rawPayloadSent || 'No record of sent payload.'}
                       </pre>
                     </div>
                   ) : (
                     <div className="flex flex-col gap-1 mt-1.5">
                       <pre className="p-2 bg-black/75 rounded border border-slate-700/80 text-[9px] text-emerald-400 font-mono overflow-x-auto max-h-48 leading-tight select-all whitespace-pre-wrap break-all">
-                        {telemetry.rawResponseText || 'No hay registro de la respuesta recibida.'}
+                        {telemetry.rawResponseText || 'No record of response received.'}
                       </pre>
                     </div>
                   )}

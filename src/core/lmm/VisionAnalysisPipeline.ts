@@ -45,7 +45,7 @@ export class VisionAnalysisPipeline {
         'color: #8b5cf6; font-weight: bold;'
       );
       response = this.cache.get(cacheKey)!;
-      rawPayloadSent = `[Session Cache Local]\nKey: ${cacheKey}\nTexto base: "${rawText}"\nIntención: "${intent}"`;
+      rawPayloadSent = `[Local Session Cache]\nKey: ${cacheKey}\nBase hook: "${rawText}"\nIntent: "${intent}"`;
       rawResponseText = JSON.stringify(response, null, 2);
     } else if (config.apiKey && config.apiKey.trim().length > 0) {
       const request: LMMVisionRequest = {
@@ -63,24 +63,24 @@ export class VisionAnalysisPipeline {
         rawResponseText = execResult.rawResponseText;
         this.cache.set(cacheKey, response);
       } catch (err) {
-        console.warn('[VisionPipeline] Fallo en API remota, recurriendo a modo offline explícito:', err);
+        console.warn('[VisionPipeline] Remote API error, falling back to explicit local mode:', err);
         isOfflineFallback = true;
         errorMessage = err instanceof Error ? err.message : String(err);
         response = this.runLocalHeuristic(rawText, intent, customIntentText);
-        rawPayloadSent = `[Fallo en API Remota]\nError: ${errorMessage}\nSe activó generador de contingencia con texto: "${rawText}"`;
+        rawPayloadSent = `[Remote API Failure]\nError: ${errorMessage}\nActivated contingency generator with hook: "${rawText}"`;
         rawResponseText = JSON.stringify(response, null, 2);
       }
     } else {
       isOfflineFallback = true;
       response = this.runLocalHeuristic(rawText, intent, customIntentText);
-      rawPayloadSent = `[Modo Offline sin API Key]\nHeurística local ejecutada con texto: "${rawText}"`;
+      rawPayloadSent = `[Offline Mode without API Key]\nLocal heuristic executed with hook: "${rawText}"`;
       rawResponseText = JSON.stringify(response, null, 2);
     }
 
     const latencyMs = Math.round(performance.now() - startTime);
 
     const telemetry: LMMTelemetry = {
-      provider: isOfflineFallback ? 'Motor Local Heurístico' : config.provider,
+      provider: isOfflineFallback ? 'Local Heuristic Engine' : config.provider,
       model: isOfflineFallback ? 'OffscreenCanvas Pixel-Sampling' : config.model,
       latencyMs,
       timestamp: new Date().toLocaleTimeString(),
@@ -105,11 +105,11 @@ export class VisionAnalysisPipeline {
     intent: IntentType,
     customIntentText?: string
   ): LMMVisionResponse {
-    const cleanRaw = rawText.trim() || 'TITULO';
+    const cleanRaw = rawText.trim() || 'TITLE';
     const words = cleanRaw.split(/\s+/);
 
-    // Segmentación base
-    let l1 = 'IMPACTO';
+    // Baseline segmentation
+    let l1 = 'IMPACT';
     let l2 = cleanRaw.toUpperCase();
     if (words.length >= 2) {
       const mid = Math.ceil(words.length / 2);
@@ -117,34 +117,34 @@ export class VisionAnalysisPipeline {
       l2 = words.slice(mid).join(' ').toUpperCase();
     }
 
-    // Adaptar textos y estilo según intención
+    // Adapt copy & style by intent
     let copyA: [string, string] = [l1, l2];
-    let copyB: [string, string] = ['¿EL FINAL?', 'IMPOSIBLE!'];
-    let copyC: [string, string] = ['VEREDICTO:', cleanRaw.toUpperCase()];
+    let copyB: [string, string] = ['THE END?', 'IMPOSSIBLE!'];
+    let copyC: [string, string] = ['VERDICT:', cleanRaw.toUpperCase()];
 
     if (intent === 'horror') {
-      copyA = ['NO MIRES', 'ESTÁ AQUÍ...'];
-      copyB = ['¿SOBREVIVIRÁS?', 'EL TERROR'];
-      copyC = ['HISTORIA REAL', 'EXPEDIENTE X'];
+      copyA = ["DON'T LOOK", "IT'S HERE..."];
+      copyB = ['WILL YOU SURVIVE?', 'THE TERROR'];
+      copyC = ['REAL STORY', 'CASE FILE'];
     } else if (intent === 'mystery') {
-      copyA = ['¿QUÉ OCULTAN?', 'LA VERDAD'];
-      copyB = ['EL SECRETO DE:', cleanRaw.toUpperCase()];
-      copyC = ['DOCUMENTO', 'CONFIDENCIAL'];
+      copyA = ['WHAT THEY HIDE?', 'THE TRUTH'];
+      copyB = ['THE SECRET OF:', cleanRaw.toUpperCase()];
+      copyC = ['CLASSIFIED', 'DOCUMENT'];
     } else if (intent === 'tech') {
-      copyA = ['CAMBIÓ TODO:', 'EL FUTURO'];
-      copyB = ['¿VALE LA PENA?', 'NUEVO REY'];
-      copyC = ['ANÁLISIS:', 'DEFINITIVO'];
+      copyA = ['CHANGED EVERYTHING:', 'THE FUTURE'];
+      copyB = ['WORTH IT?', 'NEW KING'];
+      copyC = ['DEFINITIVE:', 'REVIEW'];
     } else if (intent === 'other' && customIntentText) {
       const hook = customIntentText.slice(0, 14).toUpperCase();
       copyA = [hook, l2];
-      copyB = ['¿CÓMO PASÓ?', cleanRaw.toUpperCase()];
-      copyC = ['ESPECIAL:', hook];
+      copyB = ['HOW IT HAPPENED?', cleanRaw.toUpperCase()];
+      copyC = ['SPECIAL:', hook];
     }
 
     const prop1: LMMProposalSpecification = {
       id: 'prop_1',
-      title: 'Opción A: Impacto Directo',
-      concept: 'Máximo choque visual en espacio negativo con amarillo de contraste.',
+      title: 'Option A: Direct Impact',
+      concept: 'Maximum visual punch in negative space with high-contrast accent.',
       placement: 'TOP_LEFT',
       fontFamily: 'Anton',
       rotation: -2,
@@ -176,8 +176,8 @@ export class VisionAnalysisPipeline {
 
     const prop2: LMMProposalSpecification = {
       id: 'prop_2',
-      title: 'Opción B: Gancho de Intriga',
-      concept: 'Provocación angular dinámica con cian de alta saturación y degradado.',
+      title: 'Option B: Intrigue Hook',
+      concept: 'Dynamic angular slant with high-saturation accent gradient.',
       placement: 'CENTER_LEFT',
       fontFamily: 'Bebas Neue',
       rotation: -4,
@@ -209,8 +209,8 @@ export class VisionAnalysisPipeline {
 
     const prop3: LMMProposalSpecification = {
       id: 'prop_3',
-      title: 'Opción C: Autoridad & Badge',
-      concept: 'Contenedor oscuro protector para legibilidad absoluta sobre fondos ruidosos.',
+      title: 'Option C: Authority Badge',
+      concept: 'Protective dark container for absolute legibility over busy backgrounds.',
       placement: 'TOP_LEFT',
       fontFamily: 'Poppins',
       rotation: 0,
@@ -248,7 +248,7 @@ export class VisionAnalysisPipeline {
         contrastAccentColor: '#FFE600',
       },
       proposals: [prop1, prop2, prop3],
-      reasoning: `Composición heurística local generada para la intención '${intent}'. Se detectó sujeto a la derecha y se proyectaron 3 propuestas diferenciadas en el espacio negativo izquierdo.`,
+      reasoning: `Local heuristic composition generated for '${intent}' intent. Subject detected on the right half; projected 3 differentiated proposals into the left negative space.`,
     };
   }
 
@@ -299,8 +299,8 @@ export class VisionAnalysisPipeline {
 
       return {
         id: spec.id || `prop_${index}`,
-        title: spec.title || `Propuesta ${index + 1}`,
-        concept: spec.concept || 'Diseño balanceado',
+        title: spec.title || `Proposal ${index + 1}`,
+        concept: spec.concept || 'Balanced design',
         copySummary,
         placement,
         fontFamily: spec.fontFamily || 'Montserrat',

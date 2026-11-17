@@ -20,9 +20,9 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
         <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-1">
           <Sliders className="w-5 h-5" />
         </div>
-        <span className="text-xs font-bold text-slate-600">Ajustes Tipográficos Inactivos</span>
+        <span className="text-xs font-bold text-slate-600">Typography Inspector Idle</span>
         <span className="text-[11px] leading-relaxed max-w-[200px]">
-          Sube tu imagen y analiza con IA para generar propuestas y desbloquear los controles vectoriales.
+          Upload an image and run AI analysis to generate proposals and unlock vector controls.
         </span>
       </div>
     );
@@ -55,7 +55,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
     if (textGroup.segments.length >= 3) return;
     const newLine: TextSegment = {
       id: `seg_${Date.now()}`,
-      text: 'NUEVA PALABRA',
+      text: 'NEW LINE',
       role: 'power_primary',
       fontFamily: currentFont,
       fontSize: 52,
@@ -122,7 +122,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
       <div className="pt-2 border-t border-slate-100">
         <div className="flex items-center justify-between mb-1.5">
           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-            Líneas del Título ({textGroup.segments.length}/3)
+            Title Lines ({textGroup.segments.length}/3)
           </label>
           <div className="flex items-center gap-1.5">
             {textGroup.segments.length < 3 && (
@@ -130,10 +130,10 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
                 type="button"
                 onClick={handleAddLine}
                 className="text-[10px] bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded border border-blue-200 flex items-center gap-1 cursor-pointer hover:bg-blue-100 transition-colors"
-                title="Añadir una nueva línea al título (máximo 3)"
+                title="Add a new title line (max 3)"
               >
                 <Plus className="w-3 h-3" />
-                <span>+ Línea</span>
+                <span>+ Line</span>
               </button>
             )}
           </div>
@@ -149,7 +149,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
               <div className="flex items-center justify-between text-[10px]">
                 <div className="flex items-center gap-1.5">
                   <span className="font-bold text-slate-700 font-mono">
-                    Línea {idx + 1}
+                    Line {idx + 1}
                   </span>
                   {textGroup.segments.length > 1 && (
                     <div className="flex items-center bg-slate-200/80 rounded p-0.5 border border-slate-300/60">
@@ -158,7 +158,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
                         onClick={() => handleMoveLine(idx, 'up')}
                         disabled={idx === 0}
                         className="p-0.5 rounded hover:bg-white text-slate-600 hover:text-slate-900 disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer transition-colors"
-                        title="Subir posición de esta línea"
+                        title="Move line up"
                       >
                         <ChevronUp className="w-2.5 h-2.5" />
                       </button>
@@ -167,7 +167,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
                         onClick={() => handleMoveLine(idx, 'down')}
                         disabled={idx === textGroup.segments.length - 1}
                         className="p-0.5 rounded hover:bg-white text-slate-600 hover:text-slate-900 disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer transition-colors"
-                        title="Bajar posición de esta línea"
+                        title="Move line down"
                       >
                         <ChevronDown className="w-2.5 h-2.5" />
                       </button>
@@ -185,10 +185,10 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
                         ? 'bg-amber-100 border-amber-300 text-amber-800'
                         : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800'
                     }`}
-                    title="Degradado vertical 3D"
+                    title="Vertical 3D gradient"
                   >
                     <Sparkles className="w-2.5 h-2.5" />
-                    <span>Gradiente</span>
+                    <span>Gradient</span>
                   </button>
 
                   {/* Toggle Badge */}
@@ -200,7 +200,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
                         ? 'bg-blue-100 border-blue-300 text-blue-800'
                         : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800'
                     }`}
-                    title="Cápsula oscura de contraste"
+                    title="Dark contrast container"
                   >
                     <Shield className="w-2.5 h-2.5" />
                     <span>Badge</span>
@@ -212,7 +212,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
                       type="button"
                       onClick={() => handleRemoveLine(idx)}
                       className="p-1 rounded text-slate-400 hover:text-red-600 hover:bg-red-50 cursor-pointer transition-colors"
-                      title="Eliminar esta línea"
+                      title="Remove this line"
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>
@@ -254,7 +254,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
                       });
                     }}
                     className="w-5 h-5 rounded border border-slate-300 p-0 cursor-pointer shrink-0"
-                    title="Color principal o superior"
+                    title="Primary or top color"
                   />
                   {seg.gradientColorHex && (
                     <>
@@ -272,15 +272,15 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
                           });
                         }}
                         className="w-5 h-5 rounded border border-slate-300 p-0 cursor-pointer shrink-0"
-                        title="Color inferior del degradado"
+                        title="Bottom gradient color"
                       />
                     </>
                   )}
                 </div>
 
-                {/* Slider y Entrada Numérica Exacta de Tamaño (fontSize) */}
+                {/* Slider and Exact Numeric Input for Font Size (fontSize) */}
                 <div className="flex items-center gap-1.5 justify-end">
-                  <span className="text-[9px] text-slate-500 font-medium">Tamaño:</span>
+                  <span className="text-[9px] text-slate-500 font-medium">Size:</span>
                   <input
                     type="range"
                     min={20}
@@ -313,7 +313,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
                       });
                     }}
                     className="w-10 px-1 py-0.5 text-[10px] font-mono font-bold text-center bg-white border border-slate-300 rounded text-slate-800 focus:outline-none focus:border-blue-500 shadow-2xs"
-                    title="Escribe el tamaño exacto en píxeles"
+                    title="Enter exact size in pixels"
                   />
                   <span className="text-[8px] text-slate-400 font-mono">px</span>
                 </div>
@@ -323,7 +323,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
         </div>
       </div>
 
-      {/* 3. Sliders de Ajuste Fino */}
+      {/* 3. Fine-Tuning Controls */}
       <FineTuningSliders
         strokeWidth={primarySegment?.strokeWidth || 14}
         onStrokeChange={(val) => {
@@ -349,7 +349,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
         }}
       />
 
-      {/* 4. Score TRI Dinámico */}
+      {/* 4. Dynamic TRI Score */}
       {(() => {
         const tri = ReadabilityCalculator.calculate(textGroup);
         const isOptimal = tri.level === 'optimal';
@@ -376,7 +376,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
                       : 'text-red-700'
                   }`}
                 >
-                  Legibilidad en Móvil (TRI)
+                  Mobile Readability (TRI)
                 </span>
                 <span className="text-xs font-bold">
                   Score: {tri.score} / 100 • {tri.label}

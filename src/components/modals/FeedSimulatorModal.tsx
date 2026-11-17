@@ -21,7 +21,7 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
 
   if (!isOpen) return null;
 
-  const displayTitle = videoTitle.trim() || 'EL SECRETO MEJOR GUARDADO DE LA HISTORIA (REVELADO)';
+  const displayTitle = videoTitle.trim() || 'THE MOST GUARDED SECRET IN HISTORY (REVEALED)';
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
@@ -37,7 +37,7 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
                 Feed Preview (The Reality Check)
               </span>
               <span className="text-[11px] text-slate-500 block">
-                Comprueba contraste, legibilidad del TRI y competencia de feed en tiempo real
+                Evaluate contrast, TRI readability, and feed competition in real time
               </span>
             </div>
           </div>
@@ -54,7 +54,7 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                Todos
+                All
               </button>
               <button
                 type="button"
@@ -66,7 +66,7 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
                 }`}
               >
                 <Smartphone className="w-3.5 h-3.5" />
-                <span>Móvil (70%)</span>
+                <span>Mobile (70%)</span>
               </button>
               <button
                 type="button"
@@ -99,17 +99,17 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
               type="button"
               onClick={() => setIsDarkMode(!isDarkMode)}
               className="px-2.5 py-1.5 rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 flex items-center gap-1.5 text-xs font-semibold cursor-pointer transition-colors"
-              title="Alternar entre modo oscuro y claro de YouTube"
+              title="Toggle YouTube dark and light mode"
             >
               {isDarkMode ? (
                 <>
                   <Sun className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Modo Claro</span>
+                  <span>Light Mode</span>
                 </>
               ) : (
                 <>
                   <Moon className="w-3.5 h-3.5 text-slate-600" />
-                  <span>Modo Oscuro</span>
+                  <span>Dark Mode</span>
                 </>
               )}
             </button>
@@ -137,10 +137,10 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
                 <div className="flex items-center gap-2">
                   <Smartphone className="w-4 h-4 text-blue-500" />
                   <span className="text-xs font-bold uppercase tracking-wider text-neutral-400">
-                    1. Mobile Feed (App YouTube • ~70% del Consumo Total)
+                    1. Mobile Feed (YouTube App • ~70% of Total Views)
                   </span>
                 </div>
-                <span className="text-[11px] text-neutral-400 font-mono">Ancho simulado: ~360px</span>
+                <span className="text-[11px] text-neutral-400 font-mono">Simulated width: ~360px</span>
               </div>
 
               <div className="flex justify-center py-2">
@@ -152,10 +152,10 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
                   {/* Thumbnail Card */}
                   <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-800 shadow-sm">
                     {canvasDataUrl ? (
-                      <img src={canvasDataUrl} alt="Thumbnail Móvil" className="w-full h-full object-cover" />
+                      <img src={canvasDataUrl} alt="Mobile Thumbnail" className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-slate-500 text-xs">
-                        Cargando miniatura...
+                        Loading thumbnail...
                       </div>
                     )}
                     <div className="absolute right-2 bottom-2 px-1.5 py-0.5 bg-black/85 text-white rounded text-[11px] font-mono font-bold tracking-tight">
@@ -173,9 +173,9 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
                         {displayTitle}
                       </span>
                       <div className={`text-[11px] flex items-center gap-1.5 mt-1 ${isDarkMode ? 'text-neutral-400' : 'text-slate-500'}`}>
-                        <span className="font-medium truncate">Canal Oficial</span>
+                        <span className="font-medium truncate">Official Channel</span>
                         <CheckCircle className="w-3 h-3 text-neutral-400 shrink-0" />
-                        <span>• 450K vistas • hace 3 horas</span>
+                        <span>• 450K views • 3 hours ago</span>
                       </div>
                     </div>
                   </div>
@@ -191,28 +191,28 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
                 <div className="flex items-center gap-2">
                   <LayoutGrid className="w-4 h-4 text-emerald-500" />
                   <span className="text-xs font-bold uppercase tracking-wider text-neutral-400">
-                    2. Desktop Home Grid (Comprobación de Contraste vs Competencia)
+                    2. Desktop Home Grid (Contrast check vs competitors)
                   </span>
                 </div>
-                <span className="text-[11px] text-neutral-400 font-mono">Grid de 3 columnas</span>
+                <span className="text-[11px] text-neutral-400 font-mono">3-column grid</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5 py-2">
-                {/* Tu Portada */}
+                {/* Your Cover */}
                 <div className="space-y-2.5">
                   <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-800 shadow-md ring-2 ring-blue-500/80">
                     {canvasDataUrl ? (
-                      <img src={canvasDataUrl} alt="Tu Portada" className="w-full h-full object-cover" />
+                      <img src={canvasDataUrl} alt="Your Cover" className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-slate-500 text-xs">
-                        Tu Portada
+                        Your Cover
                       </div>
                     )}
                     <div className="absolute right-1.5 bottom-1.5 px-1.5 py-0.5 bg-black/85 text-white rounded text-[10px] font-mono font-bold">
                       14:25
                     </div>
                     <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 bg-blue-600 text-white rounded text-[9px] font-bold uppercase tracking-wider">
-                      Tu Video
+                      Your Video
                     </div>
                   </div>
                   <div className="flex gap-2.5">
@@ -224,16 +224,16 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
                         {displayTitle}
                       </span>
                       <span className={`text-[11px] block mt-1 ${isDarkMode ? 'text-neutral-400' : 'text-slate-500'}`}>
-                        Tu Canal • 100K vistas • hace 2 horas
+                        Your Channel • 100K views • 2 hours ago
                       </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Video Competidor 1 (Simulado) */}
+                {/* Competitor Video 1 */}
                 <div className="space-y-2.5 opacity-80 hover:opacity-100 transition-opacity">
                   <div className="relative aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-neutral-800 to-neutral-900 flex items-center justify-center text-neutral-500 border border-neutral-700/40">
-                    <span className="text-xs font-mono font-semibold">[Video Competidor A]</span>
+                    <span className="text-xs font-mono font-semibold">[Competitor Video A]</span>
                     <div className="absolute right-1.5 bottom-1.5 px-1.5 py-0.5 bg-black/85 text-white rounded text-[10px] font-mono font-bold">
                       21:04
                     </div>
@@ -242,19 +242,19 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
                     <div className="w-8 h-8 rounded-full bg-neutral-700 shrink-0"></div>
                     <div className="leading-tight text-left">
                       <span className="text-xs font-semibold block line-clamp-2 leading-snug text-neutral-400">
-                        Cómo Crear Miniaturas con Millones de Vistas (Guía 2026)
+                        How to Create Thumbnails with Millions of Views (2026 Guide)
                       </span>
                       <span className={`text-[11px] block mt-1 ${isDarkMode ? 'text-neutral-500' : 'text-slate-400'}`}>
-                        Creator Lab • 1.2M vistas • hace 1 mes
+                        Creator Lab • 1.2M views • 1 month ago
                       </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Video Competidor 2 (Simulado) */}
+                {/* Competitor Video 2 */}
                 <div className="space-y-2.5 opacity-80 hover:opacity-100 transition-opacity">
                   <div className="relative aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-neutral-800 to-neutral-900 flex items-center justify-center text-neutral-500 border border-neutral-700/40">
-                    <span className="text-xs font-mono font-semibold">[Video Competidor B]</span>
+                    <span className="text-xs font-mono font-semibold">[Competitor Video B]</span>
                     <div className="absolute right-1.5 bottom-1.5 px-1.5 py-0.5 bg-black/85 text-white rounded text-[10px] font-mono font-bold">
                       08:42
                     </div>
@@ -263,10 +263,10 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
                     <div className="w-8 h-8 rounded-full bg-neutral-700 shrink-0"></div>
                     <div className="leading-tight text-left">
                       <span className="text-xs font-semibold block line-clamp-2 leading-snug text-neutral-400">
-                        Los 5 Errores Fatales que Arruinan tu CTR en YouTube
+                        5 Fatal Mistakes That Ruin Your YouTube CTR
                       </span>
                       <span className={`text-[11px] block mt-1 ${isDarkMode ? 'text-neutral-500' : 'text-slate-400'}`}>
-                        Tech Insider • 890K vistas • hace 2 semanas
+                        Tech Insider • 890K views • 2 weeks ago
                       </span>
                     </div>
                   </div>
@@ -275,17 +275,17 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
             </section>
           )}
 
-          {/* 3. Sidebar / Relacionados Context (~168px) */}
+          {/* 3. Sidebar / Up Next Context (~168px) */}
           {(activeTab === 'all' || activeTab === 'sidebar') && (
             <section className="space-y-3">
               <div className="flex items-center justify-between border-b border-neutral-700/30 pb-2">
                 <div className="flex items-center gap-2">
                   <Monitor className="w-4 h-4 text-purple-500" />
                   <span className="text-xs font-bold uppercase tracking-wider text-neutral-400">
-                    3. Sidebar / Recomendados ("Up Next" • Escala Crítica Reducida)
+                    3. Sidebar / Up Next (Critical reduced scale)
                   </span>
                 </div>
-                <span className="text-[11px] text-neutral-400 font-mono">Miniatura: ~168 × 94 px</span>
+                <span className="text-[11px] text-neutral-400 font-mono">Thumbnail: ~168 × 94 px</span>
               </div>
 
               <div className="flex justify-start py-2">
@@ -296,7 +296,7 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
                 >
                   <div className="relative w-42 aspect-video rounded-lg overflow-hidden bg-slate-800 shrink-0 shadow-xs">
                     {canvasDataUrl ? (
-                      <img src={canvasDataUrl} alt="Thumbnail sidebar" className="w-full h-full object-cover" />
+                      <img src={canvasDataUrl} alt="Sidebar thumbnail" className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-slate-500 text-[10px]">
                         Up Next
@@ -311,10 +311,10 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
                       {displayTitle}
                     </span>
                     <span className={`text-[11px] block mt-1.5 ${isDarkMode ? 'text-neutral-400' : 'text-slate-500'}`}>
-                      Canal Oficial
+                      Official Channel
                     </span>
                     <span className={`text-[10px] block ${isDarkMode ? 'text-neutral-500' : 'text-slate-400'}`}>
-                      450K vistas • hace 3 horas
+                      450K views • 3 hours ago
                     </span>
                   </div>
                 </div>
@@ -326,14 +326,14 @@ export const FeedSimulatorModal: React.FC<FeedSimulatorModalProps> = ({
         {/* Footer */}
         <div className="h-13 border-t border-slate-200 px-5 flex items-center justify-between bg-slate-50 shrink-0">
           <span className="text-xs text-slate-500">
-            Simulación fiel basada en los lineamientos visuales oficiales de YouTube (Web & App).
+            Accurate simulation based on official YouTube feed guidelines (Web & Mobile App).
           </span>
           <button
             type="button"
             onClick={onClose}
             className="px-4 py-1.5 text-xs font-bold rounded-lg bg-slate-900 text-white hover:bg-slate-800 cursor-pointer transition-colors"
           >
-            Cerrar Preview
+            Close Preview
           </button>
         </div>
       </div>

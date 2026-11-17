@@ -57,7 +57,7 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               onClick={onOpenSettings}
               className="text-[11px] bg-emerald-50 text-emerald-800 font-semibold px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1 cursor-pointer hover:bg-emerald-100 transition-colors"
-              title={`API Key activa para ${formattedProvider}. Haz clic para cambiar modelo o prompt.`}
+              title={`API Key active for ${formattedProvider}. Click to adjust model or prompt settings.`}
             >
               <CheckCircle2 className="w-3 h-3 text-emerald-600" />
               <span>{formattedProvider}{shortModel ? ` (${shortModel})` : ''}</span>
@@ -67,10 +67,10 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               onClick={onOpenSettings}
               className="text-[11px] bg-amber-50 text-amber-800 font-semibold px-2 py-0.5 rounded-full border border-amber-200 flex items-center gap-1 cursor-pointer hover:bg-amber-100 transition-colors"
-              title="Sin API Key configurada. Se usará el motor heurístico local offline. Haz clic para conectar una API."
+              title="No API Key configured. Using local offline heuristics. Click to connect an API."
             >
               <AlertCircle className="w-3 h-3 text-amber-600" />
-              <span>Modo Local (Offline)</span>
+              <span>Local Offline Mode</span>
             </button>
           )}
         </div>
@@ -81,10 +81,10 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={onOpenSettings}
           className="px-2.5 py-1.5 text-xs font-medium rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition-colors cursor-pointer"
-          title="Configuración de APIs, Prompt del Sistema y Contratos"
+          title="Configure LMM APIs, System Prompt & Visual Contracts"
         >
           <Settings className="w-3.5 h-3.5 text-slate-500" />
-          <span>Configurar LMM</span>
+          <span>Configure LMM</span>
         </button>
 
         <button
@@ -94,7 +94,7 @@ export const Header: React.FC<HeaderProps> = ({
               ? 'border-blue-500 bg-blue-50 text-blue-700'
               : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
           }`}
-          title="Zonas críticas de YouTube: muestra el badge de duración (14:25) que tapa la esquina inferior derecha"
+          title="YouTube Safe Zones: highlights the bottom-right timestamp (14:25) and top overlays"
         >
           <Eye className="w-3.5 h-3.5" />
           <span>YT Safe Zones</span>
@@ -107,16 +107,16 @@ export const Header: React.FC<HeaderProps> = ({
               ? 'border-blue-500 bg-blue-50 text-blue-700'
               : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
           }`}
-          title="Regla de los Tercios (Guías 3x3 para composición cinematográfica)"
+          title="Rule of Thirds: 3x3 grid guides for visual anchor points"
         >
           <Grid3x3 className="w-3.5 h-3.5" />
-          <span>Guías 3x3</span>
+          <span>3x3 Grid</span>
         </button>
 
         <button
           onClick={onOpenSimulator}
           className="px-2.5 py-1.5 text-xs font-medium rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition-colors cursor-pointer"
-          title="Vista previa real de la miniatura en YouTube (Móvil, Desktop y Sidebar)"
+          title="Live preview across YouTube Mobile, Desktop Home, and Sidebar feeds"
         >
           <Smartphone className="w-3.5 h-3.5 text-slate-500" />
           <span>Feed Preview</span>
@@ -127,10 +127,10 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={onExport}
           className="px-3.5 py-1.5 text-xs font-semibold rounded-md bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
-          title="Exportar en 1280x720 (HD) o 1920x1080 (Full HD) en PNG/JPEG Lossless"
+          title="Export master cover in 1280x720 (HD) or 1920x1080 (Full HD) Lossless PNG/JPEG"
         >
           <Download className="w-3.5 h-3.5" />
-          <span>Exportar Portada</span>
+          <span>Export Cover</span>
         </button>
       </div>
     </header>

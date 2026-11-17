@@ -27,7 +27,7 @@ export class OffscreenExporter {
       width: 1280,
       height: 720,
       scale: 1.0,
-      label: '1280×720 (Estándar YouTube HD)',
+      label: '1280×720 (YouTube HD Standard)',
     },
     '1080p': {
       width: 1920,
@@ -55,7 +55,7 @@ export class OffscreenExporter {
 
     const ctx = canvas.getContext('2d', { alpha: options.format !== 'jpeg' });
     if (!ctx) {
-      throw new Error('No se pudo inicializar el contexto 2D del Canvas de exportación');
+      throw new Error('Failed to initialize 2D context for export canvas');
     }
 
     // Configuración de máxima fidelidad bicúbica

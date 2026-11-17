@@ -72,7 +72,7 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
       {/* 1. Imagen Base */}
       <div>
         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-          Imagen Base (16:9 • Inmutable)
+          Base Image (16:9 • Immutable)
         </label>
         <input
           ref={fileInputRef}
@@ -95,18 +95,18 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
               <ImageIcon className="w-5 h-5 text-blue-600" />
               <div className="text-left leading-tight">
                 <span className="text-xs font-semibold text-slate-800 block truncate max-w-[170px]">
-                  {baseImage.file?.name || 'Imagen cargada'}
+                  {baseImage.file?.name || 'Uploaded image'}
                 </span>
                 <span className="text-[10px] text-slate-400">
-                  {baseImage.width}x{baseImage.height} • Bloqueada
+                  {baseImage.width}x{baseImage.height} • Locked
                 </span>
               </div>
             </div>
           ) : (
             <>
               <UploadCloud className="w-5 h-5 text-slate-400 group-hover:text-blue-500 mb-1 transition-colors" />
-              <span className="text-xs font-medium text-slate-700">Arrastra una imagen o haz clic</span>
-              <span className="text-[10px] text-slate-400">JPG, PNG, WebP (Ideal 1280x720)</span>
+              <span className="text-xs font-medium text-slate-700">Drop an image or click to browse</span>
+              <span className="text-[10px] text-slate-400">JPG, PNG, WebP (Ideal: 1280x720)</span>
             </>
           )}
         </div>
@@ -115,13 +115,13 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
       {/* 2. Texto Base */}
       <div>
         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-          Texto Base del Título
+          Video Title / Topic Hook
         </label>
         <input
           type="text"
           value={rawText}
           onChange={(e) => onRawTextChange(e.target.value)}
-          placeholder="Escribe el gancho o tema de tu video..."
+          placeholder="Enter your video hook or topic..."
           className="w-full text-xs px-2.5 py-1.5 rounded-md border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white font-semibold text-slate-800 placeholder:text-slate-400"
         />
       </div>
@@ -141,7 +141,7 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
           className="w-full py-2 px-3 rounded-md bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
         >
           <KeyRound className="w-3.5 h-3.5" />
-          <span>Configurar API Key para Analizar</span>
+          <span>Configure API Key to Analyze</span>
         </button>
       ) : (
         <button
@@ -152,12 +152,12 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
           {isAnalyzing ? (
             <>
               <Loader2 className="w-3.5 h-3.5 text-blue-400 animate-spin" />
-              <span>Analizando con IA ({elapsedSeconds.toFixed(1)}s)...</span>
+              <span>Analyzing with AI ({elapsedSeconds.toFixed(1)}s)...</span>
             </>
           ) : (
             <>
               <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-              <span>Analizar & Diseñar Portada (IA)</span>
+              <span>Analyze & Generate Proposals (AI)</span>
             </>
           )}
         </button>

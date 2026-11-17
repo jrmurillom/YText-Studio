@@ -50,8 +50,8 @@ export const ExportModal: React.FC<ExportModalProps> = ({
         setDownloadSuccess(false);
       }, 3000);
     } catch (err) {
-      console.error('Error durante la exportación:', err);
-      alert('Ocurrió un error al generar la imagen. Por favor, reintenta.');
+      console.error('Error during export:', err);
+      alert('An error occurred while generating the image. Please try again.');
     } finally {
       setIsExporting(false);
     }
@@ -72,7 +72,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
           <div className="flex items-center gap-2">
             <Download className="w-4 h-4 text-blue-600" />
             <span className="font-bold text-sm text-slate-900">
-              Exportar Portada Master (Lossless)
+              Export Master Cover (Lossless)
             </span>
           </div>
 
@@ -86,18 +86,18 @@ export const ExportModal: React.FC<ExportModalProps> = ({
 
         {/* Body */}
         <div className="p-5 space-y-5 overflow-y-auto max-h-[80vh]">
-          {/* Vista Previa del Canvas */}
+          {/* Canvas Preview */}
           <div className="rounded-lg border border-slate-200 overflow-hidden bg-slate-900 shadow-inner relative aspect-video flex items-center justify-center">
             {canvasPreviewUrl ? (
               <img
                 src={canvasPreviewUrl}
-                alt="Vista previa de exportación"
+                alt="Export preview"
                 className="w-full h-full object-contain"
               />
             ) : (
               <div className="text-slate-500 text-xs flex items-center gap-2">
                 <ImageIcon className="w-5 h-5 opacity-40" />
-                <span>Sin imagen en canvas</span>
+                <span>No image in canvas</span>
               </div>
             )}
             <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/70 backdrop-blur-xs text-[10px] font-mono text-white/90">
@@ -105,10 +105,10 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             </div>
           </div>
 
-          {/* 1. Selector de Resolución */}
+          {/* 1. Resolution Selector */}
           <div>
             <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
-              1. Resolución de Salida
+              1. Output Resolution
             </label>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -125,7 +125,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                   {resolution === '720p' && <Check className="w-3.5 h-3.5 text-blue-600" />}
                 </div>
                 <span className="text-[11px] text-slate-500 block leading-tight">
-                  Estándar nativo oficial recomendado por YouTube.
+                  Official YouTube native standard.
                 </span>
               </button>
 
@@ -146,16 +146,16 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                   {resolution === '1080p' && <Check className="w-3.5 h-3.5 text-blue-600" />}
                 </div>
                 <span className="text-[11px] text-slate-500 block leading-tight">
-                  Escalado vectorial a 1.5× para máxima nitidez en pantallas Retina/4K.
+                  1.5× vector scaling for maximum sharpness on Retina/4K screens.
                 </span>
               </button>
             </div>
           </div>
 
-          {/* 2. Selector de Formato */}
+          {/* 2. Format Selector */}
           <div>
             <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
-              2. Formato de Compresión
+              2. Compression Format
             </label>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -172,7 +172,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                   {format === 'png' && <Check className="w-3.5 h-3.5 text-blue-600" />}
                 </div>
                 <span className="text-[11px] text-slate-500 block leading-tight">
-                  Cero compresión destructiva en bordes tipográficos y sombras.
+                  Zero destructive compression on text strokes and 3D shadows.
                 </span>
               </button>
 
@@ -186,20 +186,20 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-xs text-slate-900">JPEG (100% Calidad)</span>
+                  <span className="font-bold text-xs text-slate-900">JPEG (100% Quality)</span>
                   {format === 'jpeg' && <Check className="w-3.5 h-3.5 text-blue-600" />}
                 </div>
                 <span className="text-[11px] text-slate-500 block leading-tight">
-                  Archivo más liviano conservando máxima fidelidad fotográfica.
+                  Smaller file size while preserving photographic fidelity.
                 </span>
               </button>
             </div>
           </div>
 
-          {/* Metadata de Entrega */}
+          {/* Metadata */}
           <div className="bg-slate-50 rounded-lg p-3 border border-slate-200 text-xs text-slate-600 flex items-center justify-between">
-            <span className="font-medium">Peso estimado: <strong className="text-slate-900">{getEstimatedSize()}</strong></span>
-            <span className="text-[11px] text-slate-500">Relación de aspecto 16:9 fija</span>
+            <span className="font-medium">Estimated size: <strong className="text-slate-900">{getEstimatedSize()}</strong></span>
+            <span className="text-[11px] text-slate-500">Fixed 16:9 aspect ratio</span>
           </div>
         </div>
 
@@ -210,7 +210,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             onClick={onClose}
             className="px-3.5 py-1.5 text-xs font-semibold rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 cursor-pointer transition-colors"
           >
-            Cancelar
+            Cancel
           </button>
 
           <button
@@ -226,17 +226,17 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             {isExporting ? (
               <>
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Rasterizando en Alta Resolución...</span>
+                <span>Rasterizing High Resolution...</span>
               </>
             ) : downloadSuccess ? (
               <>
                 <Check className="w-4 h-4" />
-                <span>¡Descargado con Éxito!</span>
+                <span>Downloaded Successfully!</span>
               </>
             ) : (
               <>
                 <Download className="w-4 h-4" />
-                <span>Descargar {resolution === '720p' ? '1280×720' : '1920×1080'}</span>
+                <span>Download {resolution === '720p' ? '1280×720' : '1920×1080'}</span>
               </>
             )}
           </button>

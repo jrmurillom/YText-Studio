@@ -6,18 +6,18 @@ interface FontFamilySelectorProps {
 }
 
 export const AVAILABLE_FONTS = [
-  { id: 'Montserrat', name: 'Montserrat', desc: 'Sans Masiva / Punch' },
-  { id: 'Anton', name: 'Anton', desc: 'Condensada / Impacto' },
-  { id: 'Bebas Neue', name: 'Bebas Neue', desc: 'YouTube Clásica' },
-  { id: 'Teko', name: 'Teko', desc: 'Ultra-Alta / Gaming' },
-  { id: 'Permanent Marker', name: 'Permanent Marker', desc: 'Rotulador / Urgente' },
-  { id: 'Poppins', name: 'Poppins', desc: 'Geométrica / Limpia' },
-  { id: 'Cinzel', name: 'Cinzel', desc: 'Serif Cinemática / Drama' },
-  { id: 'Playfair Display', name: 'Playfair Display', desc: 'Editorial / True Crime' },
-  { id: 'Inter', name: 'Inter', desc: 'Clean / Autoridad Tech' },
-  { id: 'Rubik', name: 'Rubik', desc: 'Moderna / Pop Curvo' },
-  { id: 'Luckiest Guy', name: 'Luckiest Guy', desc: 'Cómic / Caricatura' },
-  { id: 'Bangers', name: 'Bangers', desc: 'Viral / Alta Adrenalina' },
+  { id: 'Montserrat', name: 'Montserrat', desc: 'Bold Sans • High Punch' },
+  { id: 'Anton', name: 'Anton', desc: 'Condensed • High Impact' },
+  { id: 'Bebas Neue', name: 'Bebas Neue', desc: 'YouTube Classic' },
+  { id: 'Teko', name: 'Teko', desc: 'Ultra-Tall • Gaming' },
+  { id: 'Permanent Marker', name: 'Permanent Marker', desc: 'Marker • Urgent Hook' },
+  { id: 'Poppins', name: 'Poppins', desc: 'Geometric • Clean' },
+  { id: 'Cinzel', name: 'Cinzel', desc: 'Cinematic Serif • Drama' },
+  { id: 'Playfair Display', name: 'Playfair Display', desc: 'Editorial • True Crime' },
+  { id: 'Inter', name: 'Inter', desc: 'Clean • Tech Authority' },
+  { id: 'Rubik', name: 'Rubik', desc: 'Modern • Rounded Pop' },
+  { id: 'Luckiest Guy', name: 'Luckiest Guy', desc: 'Cartoon • Fun Humor' },
+  { id: 'Bangers', name: 'Bangers', desc: 'Viral • High Adrenaline' },
 ];
 
 export const FontFamilySelector: React.FC<FontFamilySelectorProps> = ({
@@ -28,7 +28,7 @@ export const FontFamilySelector: React.FC<FontFamilySelectorProps> = ({
     <div>
       <div className="flex items-center justify-between mb-1.5">
         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-          Familia Tipográfica
+          Font Family
         </label>
         <span className="text-[9px] text-blue-600 font-mono font-bold">
           {currentFont || 'Montserrat'}

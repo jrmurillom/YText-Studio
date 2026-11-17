@@ -26,7 +26,8 @@ Este documento es la **Fuente Única de la Verdad (Single Source of Truth - SST)
 | **Fase 5** | Suite Gráfica Comercial de Alta Variabilidad ("Nivel Photoshop") | `feature/ai-autonomous-director` | **🟢 COMPLETADA** | Build OK (96kB) • 21 Tests OK |
 | **Fase 6** | Simulador de Feeds Multi-Contexto & Exportación Lossless | `feature/phase-6-simulator-export` | **🟢 COMPLETADA** | Build OK (99kB) • 23 Tests OK |
 | **Fase 7** | Ergonomía del Editor, Precision Controls & UX Fixes | `feature/phase-7-ergonomics-precision` | **🟢 COMPLETADA** | Build OK (100kB) • 23 Tests OK |
-| **Fase 8** | Global English Localization (i18n Nativo & Limpieza de Strings) | `feature/phase-8-global-english-i18n` | **⚪ PENDIENTE** | Requiere Plan + Task 0 |
+| **Fase 8** | Estandarización de Vocabulario en Inglés (en-US Baseline) | `feature/phase-8-global-english-i18n` | **🟢 COMPLETADA** | Build OK (342kB) • 23 Tests OK |
+| **Fase 9** | Arquitectura de Internacionalización Dinámica (i18n Engine & Multilenguaje) | `feature/phase-9-dynamic-i18n` | **⚪ PENDIENTE** | Requiere Plan + Task 0 |
 
 ---
 
@@ -40,7 +41,8 @@ flowchart LR
     Fase4 --> Fase5["Fase 5: Suite Gráfica Comercial"]
     Fase5 --> Fase6["Fase 6: Exportador & Simulador"]
     Fase6 --> Fase7["Fase 7: Ergonomía & Controles de Precisión"]
-    Fase7 --> Fase8["Fase 8: Global English (i18n)"]
+    Fase7 --> Fase8["Fase 8: English Baseline"]
+    Fase8 --> Fase9["Fase 9: Motor Dinámico i18n"]
 ```
 
 ---
@@ -124,9 +126,22 @@ flowchart LR
 
 ---
 
-### Fase 8: Global English Localization (i18n Nativo & Limpieza de Strings)
-* **Objetivo:** Estandarizar toda la terminología visible del sistema al inglés nativo de la industria audiovisual y creadores de contenido de YouTube.
+### Fase 8: Estandarización de Vocabulario en Inglés (en-US Baseline)
+* **Objetivo:** Depurar y unificar el vocabulario de la interfaz al inglés nativo de la industria audiovisual de YouTube, erradicando el Spanglish para sentar la base canónica de términos.
 * **Contexto y Alcance Arquitectónico:**
-  - Migración limpia de textos en Header, paneles laterales, controles de inspector, safe zones, feed preview y modales.
-  - Sincronización de esquemas JSON, prompts del sistema y mensajes de validación sin mezclar con la lógica matemática del canvas.
+  - Unificación de terminología en Header, paneles de ingesta e inspección, selector de intenciones, diagnósticos y modales de exportación y previsualización.
+  - Base de redacción pulida lista para ser extraída al catálogo de traducciones.
+
+---
+
+### Fase 9: Arquitectura de Internacionalización Dinámica (i18n Engine & Multilenguaje)
+* **Objetivo:** Desacoplar al 100% todos los textos de la interfaz mediante un motor de internacionalización ligero con tipado estricto, diccionarios externos y selector en vivo.
+* **Contexto y Alcance Arquitectónico:**
+  - **Motor Ligero Tipado (`I18nProvider` & `useTranslation`):** Contexto nativo de React (<1.5 KB, cero dependencias pesadas de terceros) con validación estricta de llaves en TypeScript (`keyof typeof en`).
+  - **Catálogos Desacoplados (`src/locales/`):**
+    - `en.json`: Diccionario canónico en inglés (vocabulario depurado en Fase 8).
+    - `es.json`: Diccionario en español neutro profesional.
+  - **Selector de Idioma en Vivo:** Switch interactivo `[EN / ES]` en el `Header` con re-renderizado instantáneo de la interfaz.
+  - **Persistencia & Detección:** Detección automática del idioma del sistema (`navigator.language`) y persistencia en `localStorage ('ytext_locale')`.
+  - **Aislamiento Total del Canvas:** El micro-motor gráfico Canvas 2D permanece inmune a los re-renders de idioma.
 

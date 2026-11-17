@@ -19,7 +19,7 @@ export class ReadabilityCalculator {
         level: 'optimal',
         wordCount: 0,
         projectedMobileFontSize: 24,
-        label: 'Sin texto',
+        label: 'No text',
       };
     }
 
@@ -55,14 +55,14 @@ export class ReadabilityCalculator {
     const score = Math.max(10, Math.min(100, rawScore));
 
     let level: 'optimal' | 'acceptable' | 'critical' = 'optimal';
-    let label = 'Óptimo para móvil';
+    let label = 'Optimal for mobile';
 
     if (score < 65) {
       level = 'critical';
-      label = 'Ilegible en smartphone';
+      label = 'Illegible on mobile';
     } else if (score < 85) {
       level = 'acceptable';
-      label = 'Aceptable';
+      label = 'Acceptable';
     }
 
     return {
