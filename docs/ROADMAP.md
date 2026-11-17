@@ -15,6 +15,18 @@ Este documento rige la secuencia maestra de construcción del sistema.
 
 ---
 
+## Tabla de Estado Maestro (Phase Status Tracker)
+
+| Fase | Nombre del Hito | Rama en Git | Estado Actual | Verificación |
+| :---: | :--- | :--- | :---: | :---: |
+| **Fase 1** | Cimientos, LMMs Universales & Workspace Base | `feature/phase-1-setup-and-foundation` | **🟢 COMPLETADA** | Build OK (87kB) • Vitest OK |
+| **Fase 2** | Micro-Motor Gráfico Canvas 2D & Bounding Box | `feature/phase-2-canvas-engine` | **🟢 COMPLETADA** | Build OK (89kB) • 7 Tests OK |
+| **Fase 3** | Visión One-Shot & Safe Zones de YouTube | `feature/phase-3-vision-safezones` | **🟡 EN PLANIFICACIÓN** | Requiere Aprobación + Task 0 |
+| **Fase 4** | Títulos Combinados & Presets de Alto CTR | `feature/phase-4-typo-hierarchy` | **⚪ PENDIENTE** | Requiere Plan + Task 0 |
+| **Fase 5** | Simulador de Feeds & Exportación Lossless | `feature/phase-5-simulator-export` | **⚪ PENDIENTE** | Requiere Plan + Task 0 |
+
+---
+
 ## Fases Maestras de Desarrollo
 
 ```mermaid
