@@ -1,5 +1,6 @@
 import React from 'react';
 import { Settings, Eye, Smartphone, Download, CheckCircle2, AlertCircle, Grid3x3, Undo2, Redo2 } from 'lucide-react';
+import { BrandLogo } from '../common/BrandLogo';
 
 interface HeaderProps {
   onOpenSettings: () => void;
@@ -49,14 +50,7 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="h-12 bg-white border-b border-slate-200 px-4 flex items-center justify-between shrink-0 select-none">
       {/* Brand & LMM Status */}
       <div className="flex items-center gap-3">
-        <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-xs">
-          YT
-        </div>
-        <div>
-          <span className="font-bold text-sm tracking-tight text-slate-900">
-            YText <span className="text-blue-600 font-mono text-xs font-normal px-1.5 py-0.5 bg-blue-50 rounded">Studio</span>
-          </span>
-        </div>
+        <BrandLogo variant="full" size="sm" />
 
         {/* Status Badge Transparente */}
         <div className="border-l border-slate-200 pl-3">

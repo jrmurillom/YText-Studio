@@ -11,6 +11,9 @@ interface FineTuningSlidersProps {
   onShadowColorChange?: (color: string) => void;
   slant: number;
   onSlantChange: (val: number) => void;
+  title?: string;
+  applyToAll?: boolean;
+  onToggleApplyToAll?: (val: boolean) => void;
 }
 
 export const FineTuningSliders: React.FC<FineTuningSlidersProps> = ({
@@ -24,12 +27,28 @@ export const FineTuningSliders: React.FC<FineTuningSlidersProps> = ({
   onShadowColorChange,
   slant,
   onSlantChange,
+  title = 'Fine-Tuning Controls',
+  applyToAll = false,
+  onToggleApplyToAll,
 }) => {
   return (
     <div className="space-y-2.5 pt-2 border-t border-slate-100 text-xs">
-      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-        Fine-Tuning Controls
-      </label>
+      <div className="flex items-center justify-between">
+        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+          {title}
+        </label>
+        {onToggleApplyToAll && (
+          <label className="flex items-center gap-1 cursor-pointer text-[10px] text-slate-500 hover:text-slate-800">
+            <input
+              type="checkbox"
+              checked={applyToAll}
+              onChange={(e) => onToggleApplyToAll(e.target.checked)}
+              className="accent-blue-600 rounded cursor-pointer"
+            />
+            <span>Apply to all lines</span>
+          </label>
+        )}
+      </div>
 
       {/* Stroke */}
       <div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { FontFamilySelector } from './FontFamilySelector';
 import { FineTuningSliders } from './FineTuningSliders';
+import { LineTransformControls } from './LineTransformControls';
 import { AssetInspector } from './AssetInspector';
 import { CompositeTextGroup, TextSegment, GraphicAssetElement, ActiveCanvasElement } from '@/types';
 import { Smartphone, Shield, Sliders, Plus, Trash2, Sparkles, ChevronUp, ChevronDown, Info, X } from 'lucide-react';
@@ -132,6 +133,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
 
   const [activeLineIndex, setActiveLineIndex] = React.useState<number>(0);
   const [applyFontToAll, setApplyFontToAll] = React.useState<boolean>(false);
+  const [applyFineTuningToAll, setApplyFineTuningToAll] = React.useState<boolean>(false);
   const [isReadabilityModalOpen, setIsReadabilityModalOpen] = React.useState<boolean>(false);
 
   // Ensure active index is strictly within bounds
@@ -553,44 +555,106 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
               />
             </div>
           </div>
+
+          {/* Micro-Layout & Individual Line Positioning */}
+          <LineTransformControls
+            offsetX={activeSegment.offsetX || 0}
+            offsetY={activeSegment.offsetY || 0}
+            rotation={activeSegment.rotation || 0}
+            onChangeOffsetX={(val) => {
+              onUpdateTextGroup({
+                ...textGroup,
+                segments: textGroup.segments.map((s, i) =>
+                  i === safeActiveIndex ? { ...s, offsetX: val } : s
+                ),
+              });
+            }}
+            onChangeOffsetY={(val) => {
+              onUpdateTextGroup({
+                ...textGroup,
+                segments: textGroup.segments.map((s, i) =>
+                  i === safeActiveIndex ? { ...s, offsetY: val } : s
+                ),
+              });
+            }}
+            onChangeRotation={(val) => {
+              onUpdateTextGroup({
+                ...textGroup,
+                segments: textGroup.segments.map((s, i) =>
+                  i === safeActiveIndex ? { ...s, rotation: val } : s
+                ),
+              });
+            }}
+            onReset={() => {
+              onUpdateTextGroup({
+                ...textGroup,
+                segments: textGroup.segments.map((s, i) =>
+                  i === safeActiveIndex ? { ...s, offsetX: 0, offsetY: 0, rotation: 0 } : s
+                ),
+              });
+            }}
+          />
         </div>
       )}
 
-      {/* 3. Global Fine-Tuning Controls */}
+      {/* 3. Granular Fine-Tuning Controls */}
       <FineTuningSliders
-        strokeWidth={primarySegment?.strokeWidth || 14}
-        strokeColorHex={primarySegment?.strokeColorHex || '#000000'}
+        title={`Line ${safeActiveIndex + 1} Fine-Tuning`}
+        applyToAll={applyFineTuningToAll}
+        onToggleApplyToAll={setApplyFineTuningToAll}
+        strokeWidth={activeSegment?.strokeWidth ?? 14}
+        strokeColorHex={activeSegment?.strokeColorHex || '#000000'}
         onStrokeChange={(val) => {
           onUpdateTextGroup({
             ...textGroup,
-            segments: textGroup.segments.map((s) => ({ ...s, strokeWidth: val })),
+            segments: textGroup.segments.map((s, i) =>
+              applyFineTuningToAll || i === safeActiveIndex
+                ? { ...s, strokeWidth: val }
+                : s
+            ),
           });
         }}
         onStrokeColorChange={(color) => {
           onUpdateTextGroup({
             ...textGroup,
-            segments: textGroup.segments.map((s) => ({ ...s, strokeColorHex: color })),
+            segments: textGroup.segments.map((s, i) =>
+              applyFineTuningToAll || i === safeActiveIndex
+                ? { ...s, strokeColorHex: color }
+                : s
+            ),
           });
         }}
-        shadowDepth={primarySegment?.shadowDepth || 6}
-        shadowColorHex={primarySegment?.shadowColorHex || '#000000'}
+        shadowDepth={activeSegment?.shadowDepth ?? 6}
+        shadowColorHex={activeSegment?.shadowColorHex || '#000000'}
         onShadowChange={(val) => {
           onUpdateTextGroup({
             ...textGroup,
-            segments: textGroup.segments.map((s) => ({ ...s, shadowDepth: val })),
+            segments: textGroup.segments.map((s, i) =>
+              applyFineTuningToAll || i === safeActiveIndex
+                ? { ...s, shadowDepth: val }
+                : s
+            ),
           });
         }}
         onShadowColorChange={(color) => {
           onUpdateTextGroup({
             ...textGroup,
-            segments: textGroup.segments.map((s) => ({ ...s, shadowColorHex: color })),
+            segments: textGroup.segments.map((s, i) =>
+              applyFineTuningToAll || i === safeActiveIndex
+                ? { ...s, shadowColorHex: color }
+                : s
+            ),
           });
         }}
-        slant={primarySegment?.slant || 0}
+        slant={activeSegment?.slant ?? 0}
         onSlantChange={(val) => {
           onUpdateTextGroup({
             ...textGroup,
-            segments: textGroup.segments.map((s) => ({ ...s, slant: val })),
+            segments: textGroup.segments.map((s, i) =>
+              applyFineTuningToAll || i === safeActiveIndex
+                ? { ...s, slant: val }
+                : s
+            ),
           });
         }}
       />

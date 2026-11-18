@@ -27,22 +27,35 @@ export class TextRenderer {
     const textWidth = metrics.width;
     const textHeight = segment.fontSize * 1.05;
 
-    if (typeof segment.slant === 'number' && segment.slant !== 0) {
-      const skew = Math.tan((-segment.slant * Math.PI) / 180);
-      ctx.translate(x, y + textHeight / 2);
-      ctx.transform(1, 0, skew, 1, 0, 0);
-      ctx.translate(-x, -(y + textHeight / 2));
+    const posX = x + (segment.offsetX || 0);
+    const posY = y + (segment.offsetY || 0);
+
+    // 0. Rotación angular independiente de la línea
+    if (typeof segment.rotation === 'number' && segment.rotation !== 0) {
+      const lineCenterX = posX + textWidth / 2;
+      const lineCenterY = posY + textHeight / 2;
+      ctx.translate(lineCenterX, lineCenterY);
+      ctx.rotate((segment.rotation * Math.PI) / 180);
+      ctx.translate(-lineCenterX, -lineCenterY);
     }
 
-    // 0. Si tiene Badge contenedor (pill con esquinas redondeadas)
+    // 0.1 Inclinación tipográfica (Slant / Italic skew)
+    if (typeof segment.slant === 'number' && segment.slant !== 0) {
+      const skew = Math.tan((-segment.slant * Math.PI) / 180);
+      ctx.translate(posX, posY + textHeight / 2);
+      ctx.transform(1, 0, skew, 1, 0, 0);
+      ctx.translate(-posX, -(posY + textHeight / 2));
+    }
+
+    // 0.2 Si tiene Badge contenedor (pill con esquinas redondeadas)
     if (segment.hasBadge) {
       const padX = 14;
       const padY = 6;
       ctx.fillStyle = segment.badgeBgColor || '#000000';
       this.drawRoundedRect(
         ctx,
-        x - padX,
-        y - padY,
+        posX - padX,
+        posY - padY,
         textWidth + padX * 2,
         textHeight + padY * 2,
         6
@@ -53,8 +66,8 @@ export class TextRenderer {
     if (segment.shadowDepth > 0) {
       ctx.fillStyle = segment.shadowColorHex || '#000000';
       for (let i = 1; i <= segment.shadowDepth; i++) {
-        const offsetX = Math.round(i * 0.75);
-        ctx.fillText(segment.text, x + offsetX, y + i);
+        const offX = Math.round(i * 0.75);
+        ctx.fillText(segment.text, posX + offX, posY + i);
       }
     }
 
@@ -64,26 +77,26 @@ export class TextRenderer {
       ctx.lineWidth = segment.strokeWidth;
       ctx.lineJoin = 'miter';
       ctx.miterLimit = 3;
-      ctx.strokeText(segment.text, x, y);
+      ctx.strokeText(segment.text, posX, posY);
     }
 
     // 3. Pasada 3: Relleno Vectorial (Gradiente Cenital o Color Plano Sólido)
     if (segment.gradientColorHex) {
-      const grad = ctx.createLinearGradient(0, y, 0, y + textHeight);
+      const grad = ctx.createLinearGradient(0, posY, 0, posY + textHeight);
       grad.addColorStop(0, segment.colorHex);
       grad.addColorStop(1, segment.gradientColorHex);
       ctx.fillStyle = grad;
     } else {
       ctx.fillStyle = segment.colorHex;
     }
-    ctx.fillText(segment.text, x, y);
+    ctx.fillText(segment.text, posX, posY);
 
     ctx.restore();
 
     const shadowOffsetX = Math.round(segment.shadowDepth * 0.75);
     return {
-      width: textWidth + segment.strokeWidth + shadowOffsetX,
-      height: textHeight + segment.shadowDepth,
+      width: textWidth + segment.strokeWidth + shadowOffsetX + Math.abs(segment.offsetX || 0),
+      height: textHeight + segment.shadowDepth + Math.abs(segment.offsetY || 0),
       ascent: metrics.actualBoundingBoxAscent || segment.fontSize * 0.8,
       descent: metrics.actualBoundingBoxDescent || segment.fontSize * 0.2,
     };
@@ -102,8 +115,8 @@ export class TextRenderer {
     const shadowOffsetX = Math.round(segment.shadowDepth * 0.75);
     const pad = segment.hasBadge ? 28 : (segment.strokeWidth + shadowOffsetX);
     return {
-      width: metrics.width + pad,
-      height: segment.fontSize * 1.05 + segment.shadowDepth,
+      width: metrics.width + pad + Math.abs(segment.offsetX || 0),
+      height: segment.fontSize * 1.05 + segment.shadowDepth + Math.abs(segment.offsetY || 0),
       ascent: metrics.actualBoundingBoxAscent || segment.fontSize * 0.8,
       descent: metrics.actualBoundingBoxDescent || segment.fontSize * 0.2,
     };

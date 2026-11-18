@@ -101,7 +101,14 @@ Analyze the attached cover image alongside the input context below, and generate
 - Choose fonts freely from the 12 studio fonts below to best match each proposal's unique creative concept and the requested <art_direction_and_tone>:
   "Montserrat" | "Anton" | "Bebas Neue" | "Teko" | "Permanent Marker" | "Poppins" | "Cinzel" | "Playfair Display" | "Inter" | "Rubik" | "Luckiest Guy" | "Bangers"
 
-### 5. OUTPUT JSON SCHEMA
+### 5. MANDATORY CHROMATIC & STYLISTIC DIVERSITY (CRITICAL)
+- NEVER repeat the exact same color combination across all proposals. Giving the user proposals with identical "white secondary + orange primary" is strictly forbidden.
+- Each proposal MUST explore a distinct visual and color strategy:
+  - Strategy A (Warm Contrast / High-Energy): Warm complementary pop (amber, gold, neon orange, or sunset yellow) against cold backgrounds (or vice-versa), paired with white or light neutral anchor text.
+  - Strategy B (Electric / Neon Secondary): Sample secondary accent lights from the actual image (electric cyan, violet, neon lime, or hot magenta) to create an atmospheric, high-tech, or cinematic mood.
+  - Strategy C (Protective Container / Brutalist Contrast): Use a dark contrast badge/pill (hasBadge: true with dark badgeBgColor), or an intense high-visibility scheme (titanium white, signal yellow, or electric lime) that cuts cleanly through busy backgrounds.
+
+### 6. OUTPUT JSON SCHEMA
 Respond ONLY with valid JSON matching this structure:
 {
   "analysis": {

@@ -37,6 +37,9 @@ export interface TextSegment {
   slant: number; // Grados de inclinación (-10 a 10)
   hasBadge?: boolean;
   badgeBgColor?: string;
+  offsetX?: number; // Desplazamiento horizontal relativo en px (-150 a 150)
+  offsetY?: number; // Desplazamiento vertical relativo en px (-80 a 80)
+  rotation?: number; // Rotación angular individual en grados (-25 a 25)
 }
 
 export interface CompositeTextGroup {

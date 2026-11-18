@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LMMConfig, LMMProviderType } from '@/types';
 import { DEFAULT_LMM_SYSTEM_PROMPT } from '@/core/lmm/types';
-import { X, Key, Cpu, ShieldCheck, Code2, FileJson } from 'lucide-react';
+import { X, Key, Cpu, ShieldCheck, Sparkles } from 'lucide-react';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -16,7 +16,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   config,
   onSaveConfig,
 }) => {
-  const [activeTab, setActiveTab] = useState<'connection' | 'prompt_contracts'>('connection');
+  const [activeTab, setActiveTab] = useState<'connection' | 'creative_guidelines'>('connection');
 
   // Form states
   const [provider, setProvider] = useState<LMMProviderType>(config.provider);
@@ -55,7 +55,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <div className="h-12 border-b border-slate-200 px-4 flex items-center justify-between bg-slate-50 shrink-0">
           <div className="flex items-center gap-2">
             <Cpu className="w-4 h-4 text-blue-600" />
-            <span className="font-bold text-sm text-slate-900">Intelligence & LMM Settings</span>
+            <span className="font-bold text-sm text-slate-900">AI Studio & Intelligence Settings</span>
           </div>
 
           <div className="flex items-center gap-1 bg-slate-200/60 p-0.5 rounded-lg text-xs">
@@ -70,15 +70,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               Connection & API
             </button>
             <button
-              onClick={() => setActiveTab('prompt_contracts')}
+              onClick={() => setActiveTab('creative_guidelines')}
               className={`px-3 py-1 rounded-md font-medium transition-colors flex items-center gap-1 cursor-pointer ${
-                activeTab === 'prompt_contracts'
+                activeTab === 'creative_guidelines'
                   ? 'bg-white text-slate-900 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Code2 className="w-3.5 h-3.5 text-blue-600" />
-              <span>Prompt & Contracts</span>
+              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+              <span>Creative AI Guidelines</span>
             </button>
           </div>
 
@@ -118,7 +118,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
             <div>
               <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                API Key (Stored exclusively in local browser)
+                API Key (Stored locally in your browser)
               </label>
               <div className="relative">
                 <input
@@ -131,8 +131,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <Key className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
               </div>
               <div className="mt-1 flex items-center gap-1.5 text-[10px] text-slate-500">
-                <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                <span>Your key never leaves your browser; it communicates directly with the provider's official endpoint.</span>
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Your key never leaves your browser; it communicates directly and securely with the official provider endpoint.</span>
               </div>
             </div>
 
@@ -151,7 +151,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                  AI Proposals Generated
+                  Thumbnail Proposals Generated
                 </label>
                 <span className="text-[10px] text-slate-400 font-medium">{proposalCount} proposals</span>
               </div>
@@ -194,102 +194,58 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
         )}
 
-        {/* Tab 2: System Prompt & JSON Contracts */}
-        {activeTab === 'prompt_contracts' && (
+        {/* Tab 2: Creative Guidelines & Packaging Prompt */}
+        {activeTab === 'creative_guidelines' && (
           <div className="p-5 space-y-4 text-xs overflow-y-auto">
-            {/* Canonical System Prompt Viewer (SSOT) */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                  Canonical LMM System Prompt (SSOT: src/core/lmm/types.ts)
-                </label>
-                <span className="text-[10px] text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                  Active & Synced
-                </span>
+            {/* Header for Creators */}
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div>
+                <h4 className="font-bold text-slate-800 text-xs">Art Direction & Packaging Guidelines</h4>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Composition rules, click psychology, and safe zones applied by AI to your thumbnails.
+                </p>
               </div>
+              <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 shrink-0">
+                Calibrated for YouTube
+              </span>
+            </div>
 
+            {/* Strategic Criteria Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+              <div className="p-3 rounded-lg border border-slate-200 bg-slate-50 space-y-1">
+                <span className="text-base block">🛡️</span>
+                <strong className="block text-[11px] text-slate-800 font-bold">Safe Zones Protected</strong>
+                <p className="text-[10px] text-slate-500 leading-tight">
+                  Protects the subject's face and avoids the bottom-right corner (YouTube duration badge).
+                </p>
+              </div>
+              <div className="p-3 rounded-lg border border-slate-200 bg-slate-50 space-y-1">
+                <span className="text-base block">🎨</span>
+                <strong className="block text-[11px] text-slate-800 font-bold">Chromatic Diversity</strong>
+                <p className="text-[10px] text-slate-500 leading-tight">
+                  Each proposal explores a distinct palette: warm pop, cinematic neon, or high-contrast badge.
+                </p>
+              </div>
+              <div className="p-3 rounded-lg border border-slate-200 bg-slate-50 space-y-1">
+                <span className="text-base block">⚡</span>
+                <strong className="block text-[11px] text-slate-800 font-bold">Sub-Second Hook</strong>
+                <p className="text-[10px] text-slate-500 leading-tight">
+                  Punchy 1 to 3 word copy designed to capture attention in mobile feeds in under 0.3 seconds.
+                </p>
+              </div>
+            </div>
+
+            {/* System Prompt View */}
+            <div>
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                AI Packaging System Prompt
+              </label>
               <textarea
                 readOnly
                 value={DEFAULT_LMM_SYSTEM_PROMPT}
                 rows={9}
-                className="w-full text-[11px] p-2.5 font-mono rounded-md border border-slate-200 bg-slate-50 text-slate-700 focus:outline-none leading-relaxed select-all"
+                className="w-full text-[11px] p-2.5 font-mono rounded-lg border border-slate-200 bg-slate-50 text-slate-700 focus:outline-none leading-relaxed select-all"
               />
-              <span className="text-[10px] text-slate-400 block mt-1">
-                Runtime interpolated variables: <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;RAW_TEXT&#125;</code>, <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;INTENT&#125;</code>, and <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;PROPOSAL_COUNT&#125;</code>.
-              </span>
-            </div>
-
-            {/* In / Out Contracts */}
-            <div className="space-y-2 pt-2 border-t border-slate-200">
-              <div className="flex items-center gap-1.5 text-slate-700 font-bold text-xs">
-                <FileJson className="w-4 h-4 text-blue-600" />
-                <span>JSON Data Contracts (SSOT STANDARDS.md)</span>
-              </div>
-
-              <details className="rounded-lg border border-slate-200 bg-slate-50 p-2 text-[10px]">
-                <summary className="font-semibold text-slate-700 cursor-pointer select-none">
-                  Input Contract: <code className="font-mono text-blue-600">LMMVisionRequest</code>
-                </summary>
-                <pre className="mt-1.5 p-2 bg-white rounded border border-slate-200 font-mono text-[9px] text-slate-800 overflow-x-auto">
-{`{
-  "imageBase64WebP": "string (<50KB base64)",
-  "rawText": "string",
-  "intent": "hype | horror | mystery | tech | alert | authority | other",
-  "customIntentText": "string (optional)",
-  "customPrompt": "string (optional)"
-}`}
-                </pre>
-              </details>
-
-              <details className="rounded-lg border border-slate-200 bg-slate-50 p-2 text-[10px]">
-                <summary className="font-semibold text-slate-700 cursor-pointer select-none">
-                  Autonomous Output Contract: <code className="font-mono text-blue-600">LMMVisionResponse</code>
-                </summary>
-                <pre className="mt-1.5 p-2 bg-white rounded border border-slate-200 font-mono text-[9px] text-slate-800 overflow-x-auto">
-{`{
-  "analysis": {
-    "subjectZone": "LEFT_HALF | RIGHT_HALF | CENTER | FULL_BOTTOM",
-    "detectedNegativeSpace": ["TOP_LEFT", "CENTER_LEFT", ...],
-    "dominantColors": ["#hex", "#hex"],
-    "contrastAccentColor": "#hex"
-  },
-  "proposals": [
-    {
-      "id": "prop_1",
-      "title": "Option A: Direct Impact",
-      "concept": "Visual contrast & marketing explanation",
-      "placement": "TOP_LEFT | CENTER_LEFT | BOTTOM_LEFT | ...",
-      "fontFamily": "Montserrat | Anton | Bebas Neue | Cinzel | Inter | Rubik",
-      "rotation": -3,
-      "hasBadge": false,
-      "lines": [
-        {
-          "text": "SHORT HOOK",
-          "role": "anchor_secondary",
-          "fontSizeRatio": 0.7,
-          "colorHex": "#FFFFFF",
-          "strokeColorHex": "#000000",
-          "strokeWidth": 12,
-          "shadowColorHex": "#000000",
-          "shadowDepth": 4
-        },
-        {
-          "text": "POWER WORD",
-          "role": "power_primary",
-          "fontSizeRatio": 1.0,
-          "colorHex": "#CONTRAST_HEX",
-          "strokeColorHex": "#000000",
-          "strokeWidth": 16,
-          "shadowColorHex": "#000000",
-          "shadowDepth": 6
-        }
-      ]
-    }
-  ],
-  "reasoning": "Global artistic reasoning rationale"
-}`}
-                </pre>
-              </details>
             </div>
           </div>
         )}
