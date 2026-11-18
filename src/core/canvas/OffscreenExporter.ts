@@ -102,8 +102,17 @@ export class OffscreenExporter {
       ctx.scale(resConfig.scale, resConfig.scale);
 
       const tg = options.textGroup;
-      const w = tg.width * tg.scale;
-      const h = tg.height * tg.scale;
+      let maxWidth = 0;
+      let totalHeight = 0;
+      for (const seg of tg.segments) {
+        const m = TextRenderer.measureSegment(ctx, seg);
+        maxWidth = Math.max(maxWidth, m.width);
+        totalHeight += m.height + 10;
+      }
+      const realW = Math.max(120, maxWidth);
+      const realH = Math.max(50, totalHeight);
+      const w = realW * tg.scale;
+      const h = realH * tg.scale;
       const centerX = tg.x + w / 2;
       const centerY = tg.y + h / 2;
 

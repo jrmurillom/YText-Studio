@@ -48,6 +48,7 @@ export interface CompositeTextGroup {
   height: number;
   rotation: number; // Grados
   scale: number; // Factor de escala (1.0 = 100%)
+  placement?: 'TOP_LEFT' | 'CENTER_LEFT' | 'BOTTOM_LEFT' | 'TOP_RIGHT' | 'CENTER_RIGHT' | 'TOP_CENTER';
 }
 
 export interface ProposalCard {

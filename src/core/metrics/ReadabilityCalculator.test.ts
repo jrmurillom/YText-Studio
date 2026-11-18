@@ -98,4 +98,36 @@ describe('ReadabilityCalculator (TRI)', () => {
     expect(report.projectedMobileFontSize).toBe(8);
     expect(report.score).toBeLessThanOrEqual(50);
   });
+
+  it('penaliza con 25 puntos cuando el texto carece de borde, sombra y badge simultáneamente', () => {
+    const group: CompositeTextGroup = {
+      id: 'g4',
+      x: 100,
+      y: 100,
+      width: 400,
+      height: 120,
+      scale: 1,
+      rotation: 0,
+      segments: [
+        {
+          id: 's1',
+          text: 'TEXTO PLANO',
+          role: 'power_primary',
+          fontFamily: 'Montserrat',
+          fontSize: 80,
+          colorHex: '#FFFFFF',
+          strokeColorHex: '#000000',
+          strokeWidth: 0,
+          shadowColorHex: '#000000',
+          shadowDepth: 0,
+          slant: 0,
+          hasBadge: false,
+        },
+      ],
+    };
+
+    const report = ReadabilityCalculator.calculate(group);
+    expect(report.score).toBe(75);
+    expect(report.level).toBe('acceptable');
+  });
 });

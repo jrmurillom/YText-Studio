@@ -30,6 +30,9 @@ export class CanvasEngine {
 
     // Precargar fuentes vectoriales en segundo plano
     FontLoader.loadAll().then(() => {
+      if (this.textGroup) {
+        this.autoCalculateDimensions();
+      }
       this.render();
     });
   }
@@ -265,6 +268,15 @@ export class CanvasEngine {
 
     this.textGroup.width = Math.max(120, maxWidth);
     this.textGroup.height = Math.max(50, totalHeight);
+
+    const scaledW = this.textGroup.width * this.textGroup.scale;
+    const scaledH = this.textGroup.height * this.textGroup.scale;
+    if (this.textGroup.x + scaledW > CanvasEngine.MASTER_WIDTH - 16) {
+      this.textGroup.x = Math.max(16, Math.round(CanvasEngine.MASTER_WIDTH - scaledW - 16));
+    }
+    if (this.textGroup.y + scaledH > CanvasEngine.MASTER_HEIGHT - 16) {
+      this.textGroup.y = Math.max(16, Math.round(CanvasEngine.MASTER_HEIGHT - scaledH - 16));
+    }
   }
 
   render(): void {

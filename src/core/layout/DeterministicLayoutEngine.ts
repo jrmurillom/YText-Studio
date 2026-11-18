@@ -1,4 +1,6 @@
 import { Point2D } from '@/core/canvas/Transform2D';
+import { TextRenderer } from '@/core/canvas/TextRenderer';
+import { TextSegment } from '@/types';
 import { YOUTUBE_SAFE_ZONE_CONFIG } from '@/core/safezones/YouTubeSafeZone';
 
 export type PlacementZone =
@@ -15,6 +17,59 @@ export class DeterministicLayoutEngine {
 
   static readonly PADDING_X = 64; // 5% de 1280
   static readonly PADDING_Y = 48; // 6.6% de 720
+
+  private static measureCanvas: HTMLCanvasElement | null = null;
+
+  private static getMeasureContext(): CanvasRenderingContext2D | null {
+    if (typeof document === 'undefined') return null;
+    if (!this.measureCanvas) {
+      this.measureCanvas = document.createElement('canvas');
+    }
+    return this.measureCanvas.getContext('2d');
+  }
+
+  /**
+   * Mide las dimensiones reales (o estimación proporcional en entornos sin DOM) de un grupo de segmentos
+   */
+  static measureGroupDimensions(segments: TextSegment[]): { width: number; height: number } {
+    if (!segments || segments.length === 0) {
+      return { width: 120, height: 50 };
+    }
+
+    const ctx = this.getMeasureContext();
+    let maxWidth = 0;
+    let totalHeight = 0;
+
+    for (const seg of segments) {
+      const shadowOffsetX = Math.round(seg.shadowDepth * 0.75);
+      const pad = seg.hasBadge ? 28 : seg.strokeWidth + shadowOffsetX;
+
+      let segWidth = 0;
+      let segHeight = 0;
+
+      if (ctx) {
+        const m = TextRenderer.measureSegment(ctx, seg);
+        if (m.width - pad > 0 || seg.text.trim().length === 0) {
+          segWidth = m.width;
+          segHeight = m.height;
+        }
+      }
+
+      if (segWidth === 0 && seg.text.trim().length > 0) {
+        const charWidth = seg.fontSize * 0.58;
+        segWidth = seg.text.length * charWidth + pad;
+        segHeight = seg.fontSize * 1.05 + seg.shadowDepth;
+      }
+
+      maxWidth = Math.max(maxWidth, segWidth);
+      totalHeight += segHeight + 10;
+    }
+
+    return {
+      width: Math.min(1152, Math.max(120, Math.round(maxWidth))),
+      height: Math.max(50, Math.round(totalHeight)),
+    };
+  }
 
   /**
    * Calcula matemáticamente la posición {x, y} exacta en el canvas master de 1280x720

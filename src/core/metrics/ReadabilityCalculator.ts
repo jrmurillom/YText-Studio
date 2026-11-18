@@ -50,8 +50,18 @@ export class ReadabilityCalculator {
       penaltySize = Math.round(10 * (18 - projectedMobileFontSize));
     }
 
-    // 5. Cálculo del score continuo (0 - 100)
-    const rawScore = 100 - (penaltyWords + penaltySize);
+    // 5. Penalización por falta de protección de contraste (sin borde, sin sombra y sin badge)
+    let penaltyContrast = 0;
+    if (
+      (primarySegment.strokeWidth || 0) < 2 &&
+      (primarySegment.shadowDepth || 0) < 2 &&
+      !primarySegment.hasBadge
+    ) {
+      penaltyContrast = 25;
+    }
+
+    // 6. Cálculo del score continuo (0 - 100)
+    const rawScore = 100 - (penaltyWords + penaltySize + penaltyContrast);
     const score = Math.max(10, Math.min(100, rawScore));
 
     let level: 'optimal' | 'acceptable' | 'critical' = 'optimal';

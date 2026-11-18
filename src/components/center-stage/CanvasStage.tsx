@@ -16,6 +16,7 @@ interface CanvasStageProps {
   onSelectActiveElement?: (elem: ActiveCanvasElement) => void;
   safeZonesVisible: boolean;
   ruleOfThirdsVisible?: boolean;
+  isModalOpen?: boolean;
   onRegisterCanvasExporter?: (exporter: () => string) => void;
 }
 
@@ -31,6 +32,7 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
   onSelectActiveElement,
   safeZonesVisible,
   ruleOfThirdsVisible = false,
+  isModalOpen = false,
   onRegisterCanvasExporter,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -40,6 +42,11 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
   const [activeCursor, setActiveCursor] = useState('default');
   const [zoomLevel, setZoomLevel] = useState(1.0);
 
+  const activeCursorRef = useRef('default');
+  const hasCollisionRef = useRef(false);
+  const telemetryRafRef = useRef<number | null>(null);
+  const pendingTelemetryRef = useRef<{ x: number; y: number; scale: number; rotation: number } | null>(null);
+
   // Telemetría local desacoplada del render loop de React
   const [telemetry, setTelemetry] = useState<{ x: number; y: number; scale: number; rotation: number }>({
     x: textGroup?.x || 0,
@@ -47,6 +54,21 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
     scale: textGroup?.scale || 1,
     rotation: textGroup?.rotation || 0,
   });
+
+  const scheduleTelemetryUpdate = useCallback(
+    (next: { x: number; y: number; scale: number; rotation: number }) => {
+      pendingTelemetryRef.current = next;
+      if (telemetryRafRef.current === null) {
+        telemetryRafRef.current = requestAnimationFrame(() => {
+          telemetryRafRef.current = null;
+          if (pendingTelemetryRef.current) {
+            setTelemetry(pendingTelemetryRef.current);
+          }
+        });
+      }
+    },
+    []
+  );
 
   // Estado de interacción matemática continua
   const interactionRef = useRef<{
@@ -91,15 +113,6 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
         onRegisterCanvasExporterRef.current(() => engine.exportCleanDataUrl());
       }
 
-      if (baseImageUrl) {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.src = baseImageUrl;
-        img.onload = () => {
-          engine.setBaseImage(img);
-        };
-      }
-
       if (textGroup) {
         engine.setTextGroup(textGroup);
       }
@@ -108,14 +121,19 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
       engine.setActiveElement(activeElement);
     }
     return () => {
+      if (telemetryRafRef.current !== null) {
+        cancelAnimationFrame(telemetryRafRef.current);
+        telemetryRafRef.current = null;
+      }
       engineRef.current?.destroy();
       engineRef.current = null;
     };
   }, []);
 
-  // Cargar imagen de fondo
+  // Cargar imagen de fondo (único punto de carga en montaje y cambio de URL)
   useEffect(() => {
-    if (!engineRef.current || !baseImageUrl) return;
+    if (!engineRef.current) return;
+    if (!baseImageUrl) return;
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.src = baseImageUrl;
@@ -143,6 +161,7 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
         width: textGroup.width * textGroup.scale,
         height: textGroup.height * textGroup.scale,
       });
+      hasCollisionRef.current = collision;
       setHasCollision(collision);
     }
   }, [textGroup, activeElement]);
@@ -174,7 +193,11 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
   // Listener para eliminar asset seleccionado con tecla Delete/Backspace
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+      if (isModalOpen) return;
+      if (
+        e.target instanceof HTMLElement &&
+        ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(e.target.tagName)
+      ) {
         return;
       }
       if ((e.key === 'Delete' || e.key === 'Backspace') && activeElement?.type === 'asset') {
@@ -186,7 +209,7 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeElement, graphicAssets, onUpdateGraphicAssets, onSelectActiveElement, textGroup]);
+  }, [isModalOpen, activeElement, graphicAssets, onUpdateGraphicAssets, onSelectActiveElement, textGroup]);
 
   // Conversión de coordenadas de pantalla a espacio Canvas Master (1280x720)
   const getCanvasCoordinates = useCallback((e: React.MouseEvent): Point2D => {
@@ -318,14 +341,15 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
     const { mode, startPoint, startAngle, targetType, initialGroup, initialAsset, centerPoint, initialBox } =
       interactionRef.current;
 
-    // Si está inactivo, actualizar cursor según tirador real
+    // Si está inactivo, actualizar cursor según tirador real solo cuando cambie
     if (mode === 'IDLE' && engineRef.current) {
       const box = engineRef.current.getActiveBoundingBox();
-      if (box) {
-        const hoveredHandle = Transform2D.hitTest(point, box, 18);
-        setActiveCursor(Transform2D.getCursor(hoveredHandle));
-      } else {
-        setActiveCursor('default');
+      const nextCursor = box
+        ? Transform2D.getCursor(Transform2D.hitTest(point, box, 18))
+        : 'default';
+      if (nextCursor !== activeCursorRef.current) {
+        activeCursorRef.current = nextCursor;
+        setActiveCursor(nextCursor);
       }
       return;
     }
@@ -370,7 +394,7 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
       interactionRef.current.currentGroup = updated;
       engineRef.current?.updateTextGroupSilent(updated);
 
-      setTelemetry({
+      scheduleTelemetryUpdate({
         x: updated.x,
         y: updated.y,
         scale: updated.scale,
@@ -383,7 +407,10 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
         width: updated.width * updated.scale,
         height: updated.height * updated.scale,
       });
-      setHasCollision(collision);
+      if (collision !== hasCollisionRef.current) {
+        hasCollisionRef.current = collision;
+        setHasCollision(collision);
+      }
     }
 
     // INTERACCIÓN SOBRE ASSET GRÁFICO
@@ -426,7 +453,7 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
       interactionRef.current.currentAsset = updated;
       engineRef.current?.updateGraphicAssetSilent(updated);
 
-      setTelemetry({
+      scheduleTelemetryUpdate({
         x: updated.x,
         y: updated.y,
         scale: updated.scale,
@@ -437,12 +464,17 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
 
   // MOUSE UP: Comitear estado a React una sola vez al terminar el gesto
   const handleMouseUp = () => {
+    if (telemetryRafRef.current !== null) {
+      cancelAnimationFrame(telemetryRafRef.current);
+      telemetryRafRef.current = null;
+    }
+
     const { mode, targetType, currentGroup, currentAsset, assetId } = interactionRef.current;
 
     if (mode !== 'IDLE') {
       if (targetType === 'text' && currentGroup) {
         let finalGroup = { ...currentGroup };
-        if (mode === 'DRAGGING') {
+        if (mode === 'DRAGGING' || mode === 'SCALING') {
           const boxSize = {
             width: finalGroup.width * finalGroup.scale,
             height: finalGroup.height * finalGroup.scale,

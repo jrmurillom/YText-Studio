@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { DeterministicLayoutEngine } from './DeterministicLayoutEngine';
 import { YOUTUBE_SAFE_ZONE_CONFIG } from '@/core/safezones/YouTubeSafeZone';
+import { TextSegment } from '@/types';
 
 describe('DeterministicLayoutEngine', () => {
   const groupW = 400;
@@ -34,5 +35,34 @@ describe('DeterministicLayoutEngine', () => {
     expect(pos.x).toBe(DeterministicLayoutEngine.PADDING_X);
     expect(pos.y + groupH).toBeLessThanOrEqual(720 - DeterministicLayoutEngine.PADDING_Y);
     expect(pos.x + groupW).toBeLessThan(ts.x);
+  });
+
+  it('mide dimensiones dinámicas en textos largos y evita desborde en TOP_RIGHT y CENTER_RIGHT', () => {
+    const longSegments: TextSegment[] = [
+      {
+        id: 's1',
+        text: 'EL SECRETO OCULTO',
+        role: 'power_primary',
+        fontFamily: 'Anton',
+        fontSize: 80,
+        colorHex: '#FFFFFF',
+        strokeColorHex: '#000000',
+        strokeWidth: 14,
+        shadowColorHex: '#000000',
+        shadowDepth: 6,
+        slant: 0,
+      },
+    ];
+
+    const dims = DeterministicLayoutEngine.measureGroupDimensions(longSegments);
+    expect(dims.width).toBeGreaterThan(480);
+
+    const topRightPos = DeterministicLayoutEngine.calculateCoordinates('TOP_RIGHT', dims.width, dims.height);
+    expect(topRightPos.x).toBeGreaterThanOrEqual(DeterministicLayoutEngine.PADDING_X);
+    expect(topRightPos.x + dims.width).toBeLessThanOrEqual(1280 - DeterministicLayoutEngine.PADDING_X);
+
+    const centerRightPos = DeterministicLayoutEngine.calculateCoordinates('CENTER_RIGHT', dims.width, dims.height);
+    expect(centerRightPos.x).toBeGreaterThanOrEqual(DeterministicLayoutEngine.PADDING_X);
+    expect(centerRightPos.x + dims.width).toBeLessThanOrEqual(1280 - DeterministicLayoutEngine.PADDING_X);
   });
 });

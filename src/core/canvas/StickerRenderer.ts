@@ -55,34 +55,50 @@ export class StickerRenderer {
     const halfW = width / 2;
     const halfH = height / 2;
 
-    // 1. Proyección de Sombra Dura 3D (a 45° con steps, consistente con la tipografía)
+    // 1. Proyección de Sombra Dura 3D (a 45° con steps, silueta pre-renderizada 1 sola vez)
     if (options.hasShadow && shadowDepth > 0) {
-      ctx.save();
-      const steps = Math.min(shadowDepth, 6);
-      for (let s = 1; s <= steps; s++) {
-        const offset = (shadowDepth * s) / steps;
-        ctx.save();
-        ctx.translate(offset, offset);
-        this.drawSilhouette(ctx, img, width, height, shadowColor, halfW, halfH);
-        ctx.restore();
+      const shadowSilhouette = this.prepareSilhouette(img, width, height, shadowColor);
+      if (shadowSilhouette) {
+        const steps = Math.min(shadowDepth, 6);
+        for (let s = 1; s <= steps; s++) {
+          const offset = (shadowDepth * s) / steps;
+          ctx.drawImage(
+            shadowSilhouette,
+            0,
+            0,
+            width,
+            height,
+            -halfW + offset,
+            -halfH + offset,
+            width,
+            height
+          );
+        }
       }
-      ctx.restore();
     }
 
-    // 2. Borde Blanco de Sticker (Radial multi-sampling para generar silueta expandida sólida)
+    // 2. Borde Blanco de Sticker (Radial multi-sampling con silueta pre-renderizada 1 sola vez)
     if (options.hasStickerBorder && borderWidth > 0) {
-      ctx.save();
-      const angles = 16;
-      for (let i = 0; i < angles; i++) {
-        const rad = (i * 2 * Math.PI) / angles;
-        const ox = Math.cos(rad) * borderWidth;
-        const oy = Math.sin(rad) * borderWidth;
-        ctx.save();
-        ctx.translate(ox, oy);
-        this.drawSilhouette(ctx, img, width, height, borderColor, halfW, halfH);
-        ctx.restore();
+      const borderSilhouette = this.prepareSilhouette(img, width, height, borderColor);
+      if (borderSilhouette) {
+        const angles = 16;
+        for (let i = 0; i < angles; i++) {
+          const rad = (i * 2 * Math.PI) / angles;
+          const ox = Math.cos(rad) * borderWidth;
+          const oy = Math.sin(rad) * borderWidth;
+          ctx.drawImage(
+            borderSilhouette,
+            0,
+            0,
+            width,
+            height,
+            -halfW + ox,
+            -halfH + oy,
+            width,
+            height
+          );
+        }
       }
-      ctx.restore();
     }
 
     // 3. Renderizado de la imagen original en su plano frontal
@@ -92,24 +108,21 @@ export class StickerRenderer {
   }
 
   /**
-   * Pinta la silueta rellena de un color plano aprovechando source-in compositing
+   * Pre-genera una silueta rellena de color plano una sola vez en el scratchCanvas
    */
-  private static drawSilhouette(
-    targetCtx: CanvasRenderingContext2D,
+  private static prepareSilhouette(
     img: HTMLImageElement | HTMLCanvasElement,
     width: number,
     height: number,
-    colorHex: string,
-    halfW: number,
-    halfH: number
-  ): void {
-    if (typeof document === 'undefined') return;
+    colorHex: string
+  ): HTMLCanvasElement | null {
+    if (typeof document === 'undefined') return null;
 
     const scratch = this.getScratchCanvas(width, height);
     const sCtx = scratch.getContext('2d');
-    if (!sCtx) return;
+    if (!sCtx) return null;
 
-    sCtx.clearRect(0, 0, width, height);
+    sCtx.clearRect(0, 0, scratch.width, scratch.height);
     sCtx.drawImage(img, 0, 0, width, height);
 
     sCtx.globalCompositeOperation = 'source-in';
@@ -117,6 +130,6 @@ export class StickerRenderer {
     sCtx.fillRect(0, 0, width, height);
     sCtx.globalCompositeOperation = 'source-over';
 
-    targetCtx.drawImage(scratch, 0, 0, width, height, -halfW, -halfH, width, height);
+    return scratch;
   }
 }

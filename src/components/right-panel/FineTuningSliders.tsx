@@ -2,18 +2,26 @@ import React from 'react';
 
 interface FineTuningSlidersProps {
   strokeWidth: number;
+  strokeColorHex?: string;
   onStrokeChange: (val: number) => void;
+  onStrokeColorChange?: (color: string) => void;
   shadowDepth: number;
+  shadowColorHex?: string;
   onShadowChange: (val: number) => void;
+  onShadowColorChange?: (color: string) => void;
   slant: number;
   onSlantChange: (val: number) => void;
 }
 
 export const FineTuningSliders: React.FC<FineTuningSlidersProps> = ({
   strokeWidth,
+  strokeColorHex = '#000000',
   onStrokeChange,
+  onStrokeColorChange,
   shadowDepth,
+  shadowColorHex = '#000000',
   onShadowChange,
+  onShadowColorChange,
   slant,
   onSlantChange,
 }) => {
@@ -25,9 +33,20 @@ export const FineTuningSliders: React.FC<FineTuningSlidersProps> = ({
 
       {/* Stroke */}
       <div>
-        <div className="flex justify-between text-slate-600 mb-0.5">
+        <div className="flex items-center justify-between text-slate-600 mb-0.5">
           <span className="font-medium text-[11px]">Stroke</span>
-          <span className="font-mono text-slate-800 font-bold">{strokeWidth}px</span>
+          <div className="flex items-center gap-1.5">
+            {onStrokeColorChange && (
+              <input
+                type="color"
+                value={strokeColorHex}
+                onChange={(e) => onStrokeColorChange(e.target.value)}
+                className="w-4 h-4 rounded border border-slate-300 p-0 cursor-pointer shrink-0"
+                title="Stroke Color"
+              />
+            )}
+            <span className="font-mono text-slate-800 font-bold">{strokeWidth}px</span>
+          </div>
         </div>
         <input
           type="range"
@@ -41,9 +60,20 @@ export const FineTuningSliders: React.FC<FineTuningSlidersProps> = ({
 
       {/* 3D Shadow */}
       <div>
-        <div className="flex justify-between text-slate-600 mb-0.5">
+        <div className="flex items-center justify-between text-slate-600 mb-0.5">
           <span className="font-medium text-[11px]">3D Shadow</span>
-          <span className="font-mono text-slate-800 font-bold">{shadowDepth}px</span>
+          <div className="flex items-center gap-1.5">
+            {onShadowColorChange && (
+              <input
+                type="color"
+                value={shadowColorHex}
+                onChange={(e) => onShadowColorChange(e.target.value)}
+                className="w-4 h-4 rounded border border-slate-300 p-0 cursor-pointer shrink-0"
+                title="3D Shadow Color"
+              />
+            )}
+            <span className="font-mono text-slate-800 font-bold">{shadowDepth}px</span>
+          </div>
         </div>
         <input
           type="range"

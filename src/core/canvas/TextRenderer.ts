@@ -27,6 +27,13 @@ export class TextRenderer {
     const textWidth = metrics.width;
     const textHeight = segment.fontSize * 1.05;
 
+    if (typeof segment.slant === 'number' && segment.slant !== 0) {
+      const skew = Math.tan((-segment.slant * Math.PI) / 180);
+      ctx.translate(x, y + textHeight / 2);
+      ctx.transform(1, 0, skew, 1, 0, 0);
+      ctx.translate(-x, -(y + textHeight / 2));
+    }
+
     // 0. Si tiene Badge contenedor (pill con esquinas redondeadas)
     if (segment.hasBadge) {
       const padX = 14;

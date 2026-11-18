@@ -48,11 +48,11 @@ IMPORTANT: Return strictly a raw JSON object matching the requested schema. No c
       {
         endpoint: customEndpoint,
         model,
-        temperature: 0.2,
+        temperature: 0.65,
         intent: effectiveIntent,
         rawTextEnviado: request.rawText,
         promptCompleto: prompt,
-        imageSizeKB: Math.round(request.imageBase64WebP.length / 1024),
+        imageSizeKB: Math.round((request.imageBase64WebP.length * 0.75) / 1024),
       },
       null,
       2
@@ -66,12 +66,12 @@ IMPORTANT: Return strictly a raw JSON object matching the requested schema. No c
         endpoint: customEndpoint,
         intent: effectiveIntent,
         rawText: request.rawText,
-        temperature: 0.2,
+        temperature: 0.65,
       }
     );
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 20000); // Timeout estricto de 20s para evitar cuelgues indefinidos
+    const timeoutId = setTimeout(() => controller.abort(), 180000); // Timeout ampliado de 3 minutos (180s) para vision multimodal
 
     let res: Response;
     try {
@@ -89,7 +89,7 @@ IMPORTANT: Return strictly a raw JSON object matching the requested schema. No c
     } catch (fetchErr: unknown) {
       const isAbort = fetchErr instanceof Error && fetchErr.name === 'AbortError';
       if (isAbort) {
-        throw new Error('Tiempo de espera agotado (Timeout 20s): El proveedor OpenRouter no respondió a tiempo.');
+        throw new Error(`Timeout exceeded (3 min): Provider ${model} did not respond in time.`);
       }
       throw fetchErr;
     } finally {

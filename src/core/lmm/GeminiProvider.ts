@@ -48,11 +48,11 @@ export class GeminiProvider implements LMMAdapter {
       {
         provider: 'Google Gemini',
         model,
-        temperature: 0.2,
+        temperature: 0.65,
         intent: effectiveIntent,
         rawTextEnviado: request.rawText,
         promptCompleto: prompt,
-        imageSizeKB: Math.round(request.imageBase64WebP.length / 1024),
+        imageSizeKB: Math.round((request.imageBase64WebP.length * 0.75) / 1024),
       },
       null,
       2
@@ -65,13 +65,13 @@ export class GeminiProvider implements LMMAdapter {
       {
         intent: effectiveIntent,
         rawText: request.rawText,
-        temperature: 0.2,
-        imageWebPSizeKB: Math.round(request.imageBase64WebP.length / 1024),
+        temperature: 0.65,
+        imageWebPSizeKB: Math.round((request.imageBase64WebP.length * 0.75) / 1024),
       }
     );
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 20000); // Timeout estricto de 20s
+    const timeoutId = setTimeout(() => controller.abort(), 180000); // Timeout ampliado de 3 minutos (180s) para vision multimodal
 
     let res: Response;
     try {
@@ -84,7 +84,7 @@ export class GeminiProvider implements LMMAdapter {
     } catch (fetchErr: unknown) {
       const isAbort = fetchErr instanceof Error && fetchErr.name === 'AbortError';
       if (isAbort) {
-        throw new Error('Tiempo de espera agotado (Timeout 20s): Google Gemini no respondió a tiempo.');
+        throw new Error('Timeout exceeded (3 min): Google Gemini did not respond in time.');
       }
       throw fetchErr;
     } finally {

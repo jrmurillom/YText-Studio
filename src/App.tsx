@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { StudioShell } from '@/components/layout/StudioShell';
 import { IngestionPanel } from '@/components/left-panel/IngestionPanel';
@@ -19,6 +19,7 @@ import {
 } from '@/types';
 import { ImagePreprocessor } from '@/core/image/ImagePreprocessor';
 import { VisionAnalysisPipeline } from '@/core/lmm/VisionAnalysisPipeline';
+import { useHistory } from '@/hooks/useHistory';
 
 export function App() {
   // 1. Estado de Configuración LMM
@@ -76,25 +77,84 @@ export function App() {
   const [lmmTelemetry, setLmmTelemetry] = useState<LMMTelemetry | null>(null);
   const [, setIsOfflineFallback] = useState(false);
 
-  // 5. Estado del Grupo de Texto Activo en Canvas (Inicia null: Canvas 100% limpio)
-  const [textGroup, setTextGroup] = useState<CompositeTextGroup | null>(null);
+  // 5 & 6. Historial Unificado (Undo/Redo) para TextGroup y Capas de Assets Gráficos
+  const {
+    state: canvasState,
+    set: setCanvasState,
+    undo,
+    redo,
+    reset: resetCanvasHistory,
+    canUndo,
+    canRedo,
+  } = useHistory<{
+    textGroup: CompositeTextGroup | null;
+    graphicAssets: GraphicAssetElement[];
+  }>({
+    textGroup: null,
+    graphicAssets: [],
+  });
 
-  // 6. Estado de Capas de Assets Gráficos (Stickers, Logos, Badges) y Selección Activa
-  const [graphicAssets, setGraphicAssets] = useState<GraphicAssetElement[]>([]);
+  const { textGroup, graphicAssets } = canvasState;
   const [activeElement, setActiveElement] = useState<ActiveCanvasElement>({ type: 'text' });
   const cleanCanvasExporterRef = useRef<(() => string) | null>(null);
+  const analysisSessionRef = useRef(0);
+  const isAnyModalOpen = isSettingsOpen || isSimulatorOpen || isExportOpen;
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isAnyModalOpen) return;
+      if (
+        e.target instanceof HTMLElement &&
+        ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)
+      ) {
+        return;
+      }
+
+      const isMod = e.ctrlKey || e.metaKey;
+      if (!isMod) return;
+
+      const key = e.key.toLowerCase();
+      if (key === 'z' && !e.shiftKey) {
+        if (canUndo) {
+          e.preventDefault();
+          undo();
+        }
+      } else if (key === 'y' || (key === 'z' && e.shiftKey)) {
+        if (canRedo) {
+          e.preventDefault();
+          redo();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isAnyModalOpen, canUndo, canRedo, undo, redo]);
 
   const handleRegisterCanvasExporter = useCallback((exporter: () => string) => {
     cleanCanvasExporterRef.current = exporter;
   }, []);
 
+  const handleUpdateGraphicAssets = (assets: GraphicAssetElement[]) => {
+    setCanvasState((prev) => ({
+      ...prev,
+      graphicAssets: assets,
+    }));
+  };
+
   const handleAddGraphicAsset = (asset: GraphicAssetElement) => {
-    setGraphicAssets((prev) => [...prev, asset]);
+    setCanvasState((prev) => ({
+      ...prev,
+      graphicAssets: [...prev.graphicAssets, asset],
+    }));
     setActiveElement({ type: 'asset', id: asset.id });
   };
 
   const handleRemoveGraphicAsset = (id: string) => {
-    setGraphicAssets((prev) => prev.filter((a) => a.id !== id));
+    setCanvasState((prev) => ({
+      ...prev,
+      graphicAssets: prev.graphicAssets.filter((a) => a.id !== id),
+    }));
     if (activeElement?.type === 'asset' && activeElement.id === id) {
       setActiveElement(textGroup ? { type: 'text' } : null);
     }
@@ -102,13 +162,14 @@ export function App() {
 
   // Manejo de carga de imagen
   const handleImageSelected = (file: File) => {
+    analysisSessionRef.current += 1;
+    setIsAnalyzing(false);
     // Limpieza de estado previo para evitar confusión de contexto entre imágenes
     setProposals([]);
     setSelectedProposalId(null);
     setLmmTelemetry(null);
     setAnalysisError(undefined);
-    setTextGroup(null); // Canvas permanece 100% limpio con solo la imagen de fondo
-    setGraphicAssets([]);
+    resetCanvasHistory({ textGroup: null, graphicAssets: [] });
     setActiveElement({ type: 'text' });
     VisionAnalysisPipeline.clearCache();
 
@@ -133,6 +194,7 @@ export function App() {
   // Pipeline Real de Visión One-Shot
   const handleAnalyze = async () => {
     if (!baseImage.dataUrl) return;
+    const sessionId = ++analysisSessionRef.current;
     setIsAnalyzing(true);
     setLmmTelemetry(null); // Reset inmediato de logs previos
     setAnalysisError(undefined);
@@ -140,6 +202,7 @@ export function App() {
     try {
       // 1. Compresión instantánea en cliente a WebP 640px (<50KB)
       const compressed = await ImagePreprocessor.compressForLMM(baseImage.dataUrl);
+      if (sessionId !== analysisSessionRef.current) return;
 
       // 2. Ejecutar análisis semántico con el LMM (o fallback local)
       const result = await VisionAnalysisPipeline.execute(
@@ -150,6 +213,7 @@ export function App() {
         customIntentText,
         true // bypassCache: fuerza llamada fresca al modelo al hacer clic explícito
       );
+      if (sessionId !== analysisSessionRef.current) return;
 
       setProposals(result.proposals);
       setIsOfflineFallback(result.isOfflineFallback);
@@ -159,30 +223,51 @@ export function App() {
       if (result.proposals.length > 0) {
         const first = result.proposals[0];
         setSelectedProposalId(first.id);
-        setTextGroup(first.previewGroup);
+        setCanvasState((prev) => ({ ...prev, textGroup: first.previewGroup }));
       }
     } catch (err) {
+      if (sessionId !== analysisSessionRef.current) return;
       console.error('Error during cover analysis:', err);
+      setProposals([]);
+      setIsOfflineFallback(false);
       setAnalysisError(err instanceof Error ? err.message : String(err));
     } finally {
-      setIsAnalyzing(false);
+      if (sessionId === analysisSessionRef.current) {
+        setIsAnalyzing(false);
+      }
     }
   };
 
   const handleSelectProposal = (proposal: ProposalCard) => {
     setSelectedProposalId(proposal.id);
-    setTextGroup(proposal.previewGroup);
+    setCanvasState((prev) => ({ ...prev, textGroup: proposal.previewGroup }));
   };
 
   const handleUpdateTextGroup = (updated: CompositeTextGroup) => {
-    setTextGroup(updated);
+    setCanvasState((prev) => ({ ...prev, textGroup: updated }));
+    if (selectedProposalId) {
+      setProposals((prev) =>
+        prev.map((p) =>
+          p.id === selectedProposalId
+            ? {
+                ...p,
+                previewGroup: updated,
+                fontFamily: updated.segments[0]?.fontFamily || p.fontFamily,
+                copySummary: updated.segments.map((s) => s.text).join(' • '),
+              }
+            : p
+        )
+      );
+    }
   };
 
   const handleExport = () => {
     setIsExportOpen(true);
   };
 
-  const hasApiKey = Boolean(lmmConfig.apiKey && lmmConfig.apiKey.trim().length > 0);
+  const hasApiKey =
+    lmmConfig.provider === 'ollama' ||
+    Boolean(lmmConfig.apiKey && lmmConfig.apiKey.trim().length > 0);
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-slate-50 font-sans">
@@ -197,6 +282,10 @@ export function App() {
         lmmProviderName={lmmConfig.provider}
         lmmModelName={lmmConfig.model}
         hasApiKey={hasApiKey}
+        canUndo={canUndo}
+        canRedo={canRedo}
+        onUndo={undo}
+        onRedo={redo}
       />
 
       <StudioShell
@@ -233,11 +322,12 @@ export function App() {
             textGroup={textGroup}
             onUpdateTextGroup={handleUpdateTextGroup}
             graphicAssets={graphicAssets}
-            onUpdateGraphicAssets={setGraphicAssets}
+            onUpdateGraphicAssets={handleUpdateGraphicAssets}
             activeElement={activeElement}
             onSelectActiveElement={setActiveElement}
             safeZonesVisible={safeZonesVisible}
             ruleOfThirdsVisible={ruleOfThirdsVisible}
+            isModalOpen={isAnyModalOpen}
             onRegisterCanvasExporter={handleRegisterCanvasExporter}
           />
         }
@@ -246,7 +336,7 @@ export function App() {
             textGroup={textGroup}
             onUpdateTextGroup={handleUpdateTextGroup}
             graphicAssets={graphicAssets}
-            onUpdateGraphicAssets={setGraphicAssets}
+            onUpdateGraphicAssets={handleUpdateGraphicAssets}
             activeElement={activeElement}
             onSelectActiveElement={setActiveElement}
           />
@@ -266,7 +356,13 @@ export function App() {
       <FeedSimulatorModal
         isOpen={isSimulatorOpen}
         onClose={() => setIsSimulatorOpen(false)}
-        canvasDataUrl={cleanCanvasExporterRef.current ? cleanCanvasExporterRef.current() : baseImage.dataUrl}
+        canvasDataUrl={
+          isSimulatorOpen
+            ? cleanCanvasExporterRef.current
+              ? cleanCanvasExporterRef.current()
+              : baseImage.dataUrl
+            : null
+        }
         videoTitle={rawText}
       />
 
@@ -276,7 +372,13 @@ export function App() {
         bgImage={baseImage.dataUrl}
         textGroup={textGroup}
         graphicAssets={graphicAssets}
-        canvasPreviewUrl={cleanCanvasExporterRef.current ? cleanCanvasExporterRef.current() : baseImage.dataUrl}
+        canvasPreviewUrl={
+          isExportOpen
+            ? cleanCanvasExporterRef.current
+              ? cleanCanvasExporterRef.current()
+              : baseImage.dataUrl
+            : null
+        }
         videoTitle={rawText}
       />
     </div>

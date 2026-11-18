@@ -1,5 +1,5 @@
 import React from 'react';
-import { Settings, Eye, Smartphone, Download, CheckCircle2, AlertCircle, Grid3x3 } from 'lucide-react';
+import { Settings, Eye, Smartphone, Download, CheckCircle2, AlertCircle, Grid3x3, Undo2, Redo2 } from 'lucide-react';
 
 interface HeaderProps {
   onOpenSettings: () => void;
@@ -12,6 +12,10 @@ interface HeaderProps {
   lmmProviderName: string;
   lmmModelName?: string;
   hasApiKey: boolean;
+  canUndo?: boolean;
+  canRedo?: boolean;
+  onUndo?: () => void;
+  onRedo?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -25,6 +29,10 @@ export const Header: React.FC<HeaderProps> = ({
   lmmProviderName,
   lmmModelName,
   hasApiKey,
+  canUndo = false,
+  canRedo = false,
+  onUndo,
+  onRedo,
 }) => {
   const formattedProvider =
     lmmProviderName === 'gemini'
@@ -78,6 +86,27 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Action Controls */}
       <div className="flex items-center gap-2">
+        <div className="flex items-center bg-slate-100 rounded-md p-0.5 border border-slate-200">
+          <button
+            type="button"
+            onClick={onUndo}
+            disabled={!canUndo}
+            className="p-1 rounded text-slate-600 hover:bg-white hover:text-slate-900 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer transition-colors"
+            title="Undo (Ctrl+Z)"
+          >
+            <Undo2 className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={onRedo}
+            disabled={!canRedo}
+            className="p-1 rounded text-slate-600 hover:bg-white hover:text-slate-900 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer transition-colors"
+            title="Redo (Ctrl+Y)"
+          >
+            <Redo2 className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
         <button
           onClick={onOpenSettings}
           className="px-2.5 py-1.5 text-xs font-medium rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition-colors cursor-pointer"
