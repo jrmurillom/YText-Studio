@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ProposalCard, LMMTelemetry } from '@/types';
+import { useTranslation } from '@/i18n';
 import {
   Check,
   AlertCircle,
@@ -33,6 +34,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
   telemetry,
   proposalCount = 3,
 }) => {
+  const { t } = useTranslation();
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
   const [activeLogTab, setActiveLogTab] = useState<'sent' | 'received'>('received');
   const [copiedTab, setCopiedTab] = useState<'sent' | 'received' | null>(null);
@@ -51,13 +53,13 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
       {/* Header con Badge de Estado y Latencia */}
       <div className="flex items-center justify-between">
         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-          Composition Proposals
+          {t('modals.compositionProposals')}
         </label>
         {telemetry ? (
           telemetry.isOfflineFallback ? (
             <span className="text-[9px] bg-amber-50 text-amber-700 font-bold px-1.5 py-0.5 rounded border border-amber-200 flex items-center gap-1">
               <AlertCircle className="w-2.5 h-2.5" />
-              <span>Local Mode • {telemetry.latencyMs}ms</span>
+              <span>{t('modals.localModeLatency', { ms: telemetry.latencyMs })}</span>
             </span>
           ) : (
             <span className="text-[9px] bg-emerald-50 text-emerald-700 font-bold px-1.5 py-0.5 rounded border border-emerald-200 flex items-center gap-1">
@@ -68,7 +70,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
         ) : isAnyOffline ? (
           <span className="text-[9px] bg-amber-50 text-amber-700 font-bold px-1.5 py-0.5 rounded border border-amber-200 flex items-center gap-1">
             <AlertCircle className="w-2.5 h-2.5" />
-            <span>Local Offline Mode</span>
+            <span>{t('modals.localOfflineMode')}</span>
           </span>
         ) : null}
       </div>
@@ -78,11 +80,11 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
         <div className="p-2 rounded-md bg-red-50 border border-red-200 text-[10px] text-red-700 leading-tight flex flex-col gap-1">
           <div className="font-bold flex items-center gap-1 text-red-800">
             <AlertCircle className="w-3 h-3" />
-            <span>LMM Connection Error:</span>
+            <span>{t('modals.lmmErrorTitle')}</span>
           </div>
           <p className="font-mono text-[9px] break-all bg-red-100/60 p-1 rounded">{errorMessage}</p>
           <span className="text-[9px] text-red-600 italic">
-            Fallback local heuristic simulator activated as contingency.
+            {t('modals.lmmErrorFallback')}
           </span>
         </div>
       )}
@@ -94,15 +96,17 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
             <Loader2 className="w-4 h-4" />
           </div>
           <div>
-            <span className="text-xs font-bold text-slate-800 block">Designing {proposalCount} AI Proposals...</span>
+            <span className="text-xs font-bold text-slate-800 block">
+              {t('modals.designingProposals', { count: proposalCount })}
+            </span>
             <span className="text-[10px] text-slate-500">
-              Analyzing faces, negative space, and chromatic contrast in 1280x720
+              {t('modals.analyzingSubtext')}
             </span>
           </div>
         </div>
       ) : proposals.length === 0 ? (
         <div className="p-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 text-center text-slate-400 text-xs">
-          Click "Generate Proposals" to let the AI design {proposalCount} custom compositions.
+          {t('modals.emptyProposals', { count: proposalCount })}
         </div>
       ) : (
         <div className="space-y-2">
@@ -126,7 +130,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
                     </span>
                     {prop.isOfflineFallback && (
                       <span className="text-[8px] bg-amber-100 text-amber-700 px-1 py-0.2 rounded font-mono font-bold">
-                        Local
+                        {t('modals.localBadge')}
                       </span>
                     )}
                   </div>
@@ -171,13 +175,13 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
           >
             <div className="flex items-center gap-1.5">
               <Cpu className="w-3 h-3 text-slate-400" />
-              <span>AI Reasoning & Debug</span>
+              <span>{t('modals.aiReasoningDebug')}</span>
               <span className="text-[9px] font-mono text-slate-400 font-normal">
                 ({telemetry.latencyMs}ms)
               </span>
             </div>
             <div className="flex items-center gap-1 text-[9px] text-slate-400">
-              <span>{showTechnicalDetails ? 'Hide' : 'View'}</span>
+              <span>{showTechnicalDetails ? t('modals.hide') : t('modals.view')}</span>
               {showTechnicalDetails ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
             </div>
           </button>
@@ -187,7 +191,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
               <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
                 <div className="flex items-center gap-1.5 text-blue-400 font-bold">
                   <Terminal className="w-3 h-3" />
-                  <span>AI Decision Log</span>
+                  <span>{t('modals.aiDecisionLog')}</span>
                 </div>
                 <span>{telemetry.timestamp}</span>
               </div>
@@ -201,11 +205,11 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
               {/* Detected semantic metadata */}
               <div className="grid grid-cols-2 gap-1.5 text-[9px]">
                 <div className="bg-slate-800 p-1.5 rounded flex items-center justify-between">
-                  <span className="text-slate-400">Subject:</span>
+                  <span className="text-slate-400">{t('modals.subjectLabel')}</span>
                   <span className="font-bold text-white font-mono">{telemetry.subjectZone || 'N/A'}</span>
                 </div>
                 <div className="bg-slate-800 p-1.5 rounded flex items-center justify-between">
-                  <span className="text-slate-400">Free Area:</span>
+                  <span className="text-slate-400">{t('modals.freeAreaLabel')}</span>
                   <span className="font-bold text-emerald-400 font-mono">{telemetry.recommendedPlacement || 'TOP_LEFT'}</span>
                 </div>
               </div>
@@ -225,7 +229,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
                         }`}
                       >
                         <Send className="w-2.5 h-2.5" />
-                        <span>📤 Request</span>
+                        <span>{t('modals.requestTab')}</span>
                       </button>
                       <button
                         type="button"
@@ -237,7 +241,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
                         }`}
                       >
                         <Inbox className="w-2.5 h-2.5" />
-                        <span>📥 Response</span>
+                        <span>{t('modals.responseTab')}</span>
                       </button>
                     </div>
 
@@ -250,17 +254,17 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
                         )
                       }
                       className="text-[9px] text-slate-400 hover:text-slate-200 bg-slate-800/80 hover:bg-slate-700 px-1.5 py-0.5 rounded flex items-center gap-1 transition-colors cursor-pointer"
-                      title="Copy content to clipboard"
+                      title={t('modals.copyTitle')}
                     >
                       {copiedTab === activeLogTab ? (
                         <>
                           <Check className="w-2.5 h-2.5 text-emerald-400" />
-                          <span className="text-emerald-400 font-bold">Copied!</span>
+                          <span className="text-emerald-400 font-bold">{t('modals.copied')}</span>
                         </>
                       ) : (
                         <>
                           <Copy className="w-2.5 h-2.5" />
-                          <span>Copy</span>
+                          <span>{t('modals.copy')}</span>
                         </>
                       )}
                     </button>
@@ -269,13 +273,13 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
                   {activeLogTab === 'sent' ? (
                     <div className="flex flex-col gap-1 mt-1.5">
                       <pre className="p-2 bg-black/75 rounded border border-slate-700/80 text-[9px] text-blue-300 font-mono overflow-x-auto max-h-48 leading-tight select-all whitespace-pre-wrap break-all">
-                        {telemetry.rawPayloadSent || 'No record of sent payload.'}
+                        {telemetry.rawPayloadSent || t('modals.noSentPayload')}
                       </pre>
                     </div>
                   ) : (
                     <div className="flex flex-col gap-1 mt-1.5">
                       <pre className="p-2 bg-black/75 rounded border border-slate-700/80 text-[9px] text-emerald-400 font-mono overflow-x-auto max-h-48 leading-tight select-all whitespace-pre-wrap break-all">
-                        {telemetry.rawResponseText || 'No record of response received.'}
+                        {telemetry.rawResponseText || t('modals.noReceivedResponse')}
                       </pre>
                     </div>
                   )}

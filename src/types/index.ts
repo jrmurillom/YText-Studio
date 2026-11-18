@@ -6,6 +6,8 @@ export type IntentType = 'hype' | 'horror' | 'mystery' | 'tech' | 'alert' | 'aut
 
 export type LMMProviderType = 'gemini' | 'openrouter' | 'openai' | 'ollama';
 
+export type SupportedLocale = 'en' | 'es';
+
 export interface LMMConfig {
   provider: LMMProviderType;
   apiKey: string;

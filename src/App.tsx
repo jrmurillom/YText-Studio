@@ -20,9 +20,10 @@ import {
 import { ImagePreprocessor } from '@/core/image/ImagePreprocessor';
 import { VisionAnalysisPipeline } from '@/core/lmm/VisionAnalysisPipeline';
 import { useHistory } from '@/hooks/useHistory';
+import { I18nProvider } from '@/i18n';
 
 export function App() {
-  // 1. Estado de Configuración LMM
+  // 1. Estado de Configuración LMM (Estrictamente IA: proveedor, credenciales, modelo)
   const [lmmConfig, setLmmConfig] = useState<LMMConfig>(() => {
     const saved = localStorage.getItem('ytext_lmm_config');
     if (saved) {
@@ -270,7 +271,8 @@ export function App() {
     Boolean(lmmConfig.apiKey && lmmConfig.apiKey.trim().length > 0);
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-slate-50 font-sans">
+    <I18nProvider>
+      <div className="flex flex-col h-screen w-screen overflow-hidden bg-slate-50 font-sans">
       <Header
         onOpenSettings={() => setIsSettingsOpen(true)}
         onToggleSafeZones={() => setSafeZonesVisible(!safeZonesVisible)}
@@ -282,13 +284,13 @@ export function App() {
         lmmProviderName={lmmConfig.provider}
         lmmModelName={lmmConfig.model}
         hasApiKey={hasApiKey}
+      />
+
+      <StudioShell
         canUndo={canUndo}
         canRedo={canRedo}
         onUndo={undo}
         onRedo={redo}
-      />
-
-      <StudioShell
         leftPanel={
           <IngestionPanel
             baseImage={baseImage}
@@ -382,5 +384,6 @@ export function App() {
         videoTitle={rawText}
       />
     </div>
+    </I18nProvider>
   );
 }

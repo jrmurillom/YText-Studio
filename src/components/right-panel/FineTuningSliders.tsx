@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '@/i18n';
 
 interface FineTuningSlidersProps {
   strokeWidth: number;
@@ -27,15 +28,17 @@ export const FineTuningSliders: React.FC<FineTuningSlidersProps> = ({
   onShadowColorChange,
   slant,
   onSlantChange,
-  title = 'Fine-Tuning Controls',
+  title,
   applyToAll = false,
   onToggleApplyToAll,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-2.5 pt-2 border-t border-slate-100 text-xs">
       <div className="flex items-center justify-between">
         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-          {title}
+          {title || t('inspector.fineTuningDefaultTitle')}
         </label>
         {onToggleApplyToAll && (
           <label className="flex items-center gap-1 cursor-pointer text-[10px] text-slate-500 hover:text-slate-800">
@@ -45,7 +48,7 @@ export const FineTuningSliders: React.FC<FineTuningSlidersProps> = ({
               onChange={(e) => onToggleApplyToAll(e.target.checked)}
               className="accent-blue-600 rounded cursor-pointer"
             />
-            <span>Apply to all lines</span>
+            <span>{t('inspector.applyToAllLines')}</span>
           </label>
         )}
       </div>
@@ -53,7 +56,7 @@ export const FineTuningSliders: React.FC<FineTuningSlidersProps> = ({
       {/* Stroke */}
       <div>
         <div className="flex items-center justify-between text-slate-600 mb-0.5">
-          <span className="font-medium text-[11px]">Stroke</span>
+          <span className="font-medium text-[11px]">{t('inspector.stroke')}</span>
           <div className="flex items-center gap-1.5">
             {onStrokeColorChange && (
               <input
@@ -61,7 +64,7 @@ export const FineTuningSliders: React.FC<FineTuningSlidersProps> = ({
                 value={strokeColorHex}
                 onChange={(e) => onStrokeColorChange(e.target.value)}
                 className="w-4 h-4 rounded border border-slate-300 p-0 cursor-pointer shrink-0"
-                title="Stroke Color"
+                title={t('inspector.strokeColorTitle')}
               />
             )}
             <span className="font-mono text-slate-800 font-bold">{strokeWidth}px</span>
@@ -80,7 +83,7 @@ export const FineTuningSliders: React.FC<FineTuningSlidersProps> = ({
       {/* 3D Shadow */}
       <div>
         <div className="flex items-center justify-between text-slate-600 mb-0.5">
-          <span className="font-medium text-[11px]">3D Shadow</span>
+          <span className="font-medium text-[11px]">{t('inspector.shadow3d')}</span>
           <div className="flex items-center gap-1.5">
             {onShadowColorChange && (
               <input
@@ -88,7 +91,7 @@ export const FineTuningSliders: React.FC<FineTuningSlidersProps> = ({
                 value={shadowColorHex}
                 onChange={(e) => onShadowColorChange(e.target.value)}
                 className="w-4 h-4 rounded border border-slate-300 p-0 cursor-pointer shrink-0"
-                title="3D Shadow Color"
+                title={t('inspector.shadowColorTitle')}
               />
             )}
             <span className="font-mono text-slate-800 font-bold">{shadowDepth}px</span>
@@ -107,7 +110,7 @@ export const FineTuningSliders: React.FC<FineTuningSlidersProps> = ({
       {/* Slant */}
       <div>
         <div className="flex justify-between text-slate-600 mb-0.5">
-          <span className="font-medium text-[11px]">Slant</span>
+          <span className="font-medium text-[11px]">{t('inspector.slant')}</span>
           <span className="font-mono text-slate-800 font-bold">{slant}°</span>
         </div>
         <input

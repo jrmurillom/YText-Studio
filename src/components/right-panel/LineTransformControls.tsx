@@ -1,5 +1,6 @@
 import React from 'react';
 import { MoveHorizontal, MoveVertical, RotateCw, RotateCcw } from 'lucide-react';
+import { useTranslation } from '@/i18n';
 
 interface LineTransformControlsProps {
   offsetX: number;
@@ -20,23 +21,24 @@ export const LineTransformControls: React.FC<LineTransformControlsProps> = ({
   onChangeRotation,
   onReset,
 }) => {
+  const { t } = useTranslation();
   const isModified = offsetX !== 0 || offsetY !== 0 || rotation !== 0;
 
   return (
     <div className="space-y-2 pt-2 border-t border-slate-200/80 text-xs">
       <div className="flex items-center justify-between">
         <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-          Micro-Layout & Posicionamiento
+          {t('inspector.microLayoutTitle')}
         </span>
         {isModified && (
           <button
             type="button"
             onClick={onReset}
             className="text-[10px] text-blue-600 hover:text-blue-800 font-bold flex items-center gap-1 cursor-pointer transition-colors"
-            title="Reset position and rotation to zero"
+            title={t('inspector.resetTitle')}
           >
             <RotateCcw className="w-2.5 h-2.5" />
-            <span>Reset</span>
+            <span>{t('inspector.reset')}</span>
           </button>
         )}
       </div>
@@ -47,7 +49,7 @@ export const LineTransformControls: React.FC<LineTransformControlsProps> = ({
           <div className="flex items-center justify-between text-slate-600 mb-0.5">
             <span className="font-medium text-[11px] flex items-center gap-1">
               <MoveHorizontal className="w-3 h-3 text-slate-400" />
-              <span>Offset X (Horizontal)</span>
+              <span>{t('inspector.offsetX')}</span>
             </span>
             <span className="font-mono text-slate-800 font-bold text-[11px]">
               {offsetX > 0 ? `+${offsetX}` : offsetX}px
@@ -68,7 +70,7 @@ export const LineTransformControls: React.FC<LineTransformControlsProps> = ({
           <div className="flex items-center justify-between text-slate-600 mb-0.5">
             <span className="font-medium text-[11px] flex items-center gap-1">
               <MoveVertical className="w-3 h-3 text-slate-400" />
-              <span>Offset Y (Interlineado)</span>
+              <span>{t('inspector.offsetY')}</span>
             </span>
             <span className="font-mono text-slate-800 font-bold text-[11px]">
               {offsetY > 0 ? `+${offsetY}` : offsetY}px
@@ -89,7 +91,7 @@ export const LineTransformControls: React.FC<LineTransformControlsProps> = ({
           <div className="flex items-center justify-between text-slate-600 mb-0.5">
             <span className="font-medium text-[11px] flex items-center gap-1">
               <RotateCw className="w-3 h-3 text-slate-400" />
-              <span>Rotación de Línea</span>
+              <span>{t('inspector.lineRotation')}</span>
             </span>
             <span className="font-mono text-slate-800 font-bold text-[11px]">
               {rotation > 0 ? `+${rotation}` : rotation}°

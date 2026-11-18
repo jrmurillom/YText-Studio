@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '@/i18n';
 
 interface FontFamilySelectorProps {
   currentFont: string;
@@ -24,11 +25,13 @@ export const FontFamilySelector: React.FC<FontFamilySelectorProps> = ({
   currentFont,
   onSelectFont,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-          Font Family
+          {t('inspector.fontFamily')}
         </label>
         <span className="text-[9px] text-blue-600 font-mono font-bold">
           {currentFont || 'Montserrat'}

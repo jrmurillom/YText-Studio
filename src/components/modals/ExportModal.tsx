@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Download, Image as ImageIcon, Sparkles, Loader2, Check } from 'lucide-react';
 import { CompositeTextGroup, GraphicAssetElement } from '@/types';
 import { OffscreenExporter, ExportResolution, ExportFormat } from '@/core/canvas/OffscreenExporter';
+import { useTranslation } from '@/i18n';
 
 interface ExportModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
   canvasPreviewUrl,
   videoTitle,
 }) => {
+  const { t } = useTranslation();
   const [resolution, setResolution] = useState<ExportResolution>('720p');
   const [format, setFormat] = useState<ExportFormat>('png');
   const [isExporting, setIsExporting] = useState(false);
@@ -54,7 +56,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
       }, 3000);
     } catch (err) {
       console.error('Error during export:', err);
-      alert('An error occurred while generating the image. Please try again.');
+      alert(t('modals.exportError'));
     } finally {
       setIsExporting(false);
     }
@@ -75,7 +77,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
           <div className="flex items-center gap-2">
             <Download className="w-4 h-4 text-blue-600" />
             <span className="font-bold text-sm text-slate-900">
-              Export Thumbnail
+              {t('modals.exportModalTitle')}
             </span>
           </div>
 
@@ -100,7 +102,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             ) : (
               <div className="text-slate-500 text-xs flex items-center gap-2">
                 <ImageIcon className="w-5 h-5 opacity-40" />
-                <span>No image in canvas</span>
+                <span>{t('modals.noImageInCanvas')}</span>
               </div>
             )}
             <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/70 backdrop-blur-xs text-[10px] font-mono text-white/90">
@@ -111,7 +113,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
           {/* Resolution Selector */}
           <div>
             <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
-              Resolution
+              {t('modals.resolutionLabel')}
             </label>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -128,7 +130,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                   {resolution === '720p' && <Check className="w-3.5 h-3.5 text-blue-600" />}
                 </div>
                 <span className="text-[11px] text-slate-500 block leading-tight">
-                  Standard YouTube HD
+                  {t('modals.standardHd')}
                 </span>
               </button>
 
@@ -149,7 +151,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                   {resolution === '1080p' && <Check className="w-3.5 h-3.5 text-blue-600" />}
                 </div>
                 <span className="text-[11px] text-slate-500 block leading-tight">
-                  1.5× Retina/4K Scaling
+                  {t('modals.retinaScaling')}
                 </span>
               </button>
             </div>
@@ -158,7 +160,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
           {/* Format Selector */}
           <div>
             <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
-              Format
+              {t('modals.formatLabel')}
             </label>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -175,7 +177,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                   {format === 'png' && <Check className="w-3.5 h-3.5 text-blue-600" />}
                 </div>
                 <span className="text-[11px] text-slate-500 block leading-tight">
-                  Lossless Quality
+                  {t('modals.losslessQuality')}
                 </span>
               </button>
 
@@ -193,7 +195,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                   {format === 'jpeg' && <Check className="w-3.5 h-3.5 text-blue-600" />}
                 </div>
                 <span className="text-[11px] text-slate-500 block leading-tight">
-                  Smaller File
+                  {t('modals.smallerFile')}
                 </span>
               </button>
             </div>
@@ -201,7 +203,9 @@ export const ExportModal: React.FC<ExportModalProps> = ({
 
           {/* Metadata */}
           <div className="bg-slate-50 rounded-lg p-3 border border-slate-200 text-xs text-slate-600 flex items-center justify-between">
-            <span className="font-medium">Estimated size: <strong className="text-slate-900">{getEstimatedSize()}</strong></span>
+            <span className="font-medium">
+              {t('modals.estimatedSize')} <strong className="text-slate-900">{getEstimatedSize()}</strong>
+            </span>
             <span className="text-[11px] text-slate-400 font-mono">16:9 HD</span>
           </div>
         </div>
@@ -213,7 +217,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             onClick={onClose}
             className="px-3.5 py-1.5 text-xs font-semibold rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 cursor-pointer transition-colors"
           >
-            Cancel
+            {t('modals.cancel')}
           </button>
 
           <button
@@ -229,17 +233,21 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             {isExporting ? (
               <>
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Rasterizing High Resolution...</span>
+                <span>{t('modals.rasterizing')}</span>
               </>
             ) : downloadSuccess ? (
               <>
                 <Check className="w-4 h-4" />
-                <span>Downloaded Successfully!</span>
+                <span>{t('modals.downloadedSuccess')}</span>
               </>
             ) : (
               <>
                 <Download className="w-4 h-4" />
-                <span>Download {resolution === '720p' ? '1280×720' : '1920×1080'}</span>
+                <span>
+                  {t('modals.downloadBtn', {
+                    dims: resolution === '720p' ? '1280×720' : '1920×1080',
+                  })}
+                </span>
               </>
             )}
           </button>

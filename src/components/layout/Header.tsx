@@ -1,6 +1,8 @@
 import React from 'react';
-import { Settings, Eye, Smartphone, Download, CheckCircle2, AlertCircle, Grid3x3, Undo2, Redo2 } from 'lucide-react';
+import { Settings, Scan, Smartphone, Download, CheckCircle2, AlertCircle, Grid3x3 } from 'lucide-react';
 import { BrandLogo } from '../common/BrandLogo';
+import { LanguageMenu } from './LanguageMenu';
+import { useTranslation } from '@/i18n';
 
 interface HeaderProps {
   onOpenSettings: () => void;
@@ -13,10 +15,6 @@ interface HeaderProps {
   lmmProviderName: string;
   lmmModelName?: string;
   hasApiKey: boolean;
-  canUndo?: boolean;
-  canRedo?: boolean;
-  onUndo?: () => void;
-  onRedo?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -30,11 +28,9 @@ export const Header: React.FC<HeaderProps> = ({
   lmmProviderName,
   lmmModelName,
   hasApiKey,
-  canUndo = false,
-  canRedo = false,
-  onUndo,
-  onRedo,
 }) => {
+  const { t, locale, setLocale } = useTranslation();
+
   const formattedProvider =
     lmmProviderName === 'gemini'
       ? 'Gemini'
@@ -59,7 +55,7 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               onClick={onOpenSettings}
               className="text-[11px] bg-emerald-50 text-emerald-800 font-semibold px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1 cursor-pointer hover:bg-emerald-100 transition-colors"
-              title={`API Key active for ${formattedProvider}. Click to adjust model or prompt settings.`}
+              title={t('common.apiActiveTitle', { provider: formattedProvider })}
             >
               <CheckCircle2 className="w-3 h-3 text-emerald-600" />
               <span>{formattedProvider}{shortModel ? ` (${shortModel})` : ''}</span>
@@ -69,92 +65,80 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               onClick={onOpenSettings}
               className="text-[11px] bg-amber-50 text-amber-800 font-semibold px-2 py-0.5 rounded-full border border-amber-200 flex items-center gap-1 cursor-pointer hover:bg-amber-100 transition-colors"
-              title="No API Key configured. Using local offline heuristics. Click to connect an API."
+              title={t('common.offlineTitle')}
             >
               <AlertCircle className="w-3 h-3 text-amber-600" />
-              <span>Local Offline Mode</span>
+              <span>{t('common.offlineMode')}</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Action Controls */}
-      <div className="flex items-center gap-2">
-        <div className="flex items-center bg-slate-100 rounded-md p-0.5 border border-slate-200">
-          <button
-            type="button"
-            onClick={onUndo}
-            disabled={!canUndo}
-            className="p-1 rounded text-slate-600 hover:bg-white hover:text-slate-900 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer transition-colors"
-            title="Undo (Ctrl+Z)"
-          >
-            <Undo2 className="w-3.5 h-3.5" />
-          </button>
-          <button
-            type="button"
-            onClick={onRedo}
-            disabled={!canRedo}
-            className="p-1 rounded text-slate-600 hover:bg-white hover:text-slate-900 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer transition-colors"
-            title="Redo (Ctrl+Y)"
-          >
-            <Redo2 className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
+      {/* Center: Canvas Viewport Tools */}
+      <div className="flex items-center gap-1.5 bg-slate-100/80 p-0.5 rounded-lg border border-slate-200">
         <button
-          onClick={onOpenSettings}
-          className="px-2.5 py-1.5 text-xs font-medium rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition-colors cursor-pointer"
-          title="Configure AI APIs, System Prompt & Visual Contracts"
-        >
-          <Settings className="w-3.5 h-3.5 text-slate-500" />
-          <span>AI Settings</span>
-        </button>
-
-        <button
+          type="button"
           onClick={onToggleSafeZones}
-          className={`px-2.5 py-1.5 text-xs font-medium rounded-md border flex items-center gap-1.5 transition-colors cursor-pointer ${
+          className={`px-2.5 py-1 text-xs font-medium rounded-md border flex items-center gap-1.5 transition-colors cursor-pointer ${
             safeZonesEnabled
-              ? 'border-blue-500 bg-blue-50 text-blue-700'
-              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+              ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-xs'
+              : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-white'
           }`}
-          title="Safe Zones: highlights the bottom-right timestamp (14:25) and top overlays"
+          title={t('common.safeZonesTitle')}
         >
-          <Eye className="w-3.5 h-3.5" />
-          <span>Safe Zones</span>
+          <Scan className="w-3.5 h-3.5" />
+          <span>{t('common.safeZones')}</span>
         </button>
 
         <button
+          type="button"
           onClick={onToggleRuleOfThirds}
-          className={`px-2.5 py-1.5 text-xs font-medium rounded-md border flex items-center gap-1.5 transition-colors cursor-pointer ${
+          className={`px-2.5 py-1 text-xs font-medium rounded-md border flex items-center gap-1.5 transition-colors cursor-pointer ${
             ruleOfThirdsEnabled
-              ? 'border-blue-500 bg-blue-50 text-blue-700'
-              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+              ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-xs'
+              : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-white'
           }`}
-          title="Grid: Rule of Thirds guides for visual balance"
+          title={t('common.gridTitle')}
         >
           <Grid3x3 className="w-3.5 h-3.5" />
-          <span>Grid</span>
+          <span>{t('common.grid')}</span>
         </button>
 
         <button
+          type="button"
           onClick={onOpenSimulator}
-          className="px-2.5 py-1.5 text-xs font-medium rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition-colors cursor-pointer"
-          title="Live preview across YouTube Mobile, Desktop Home, and Sidebar feeds"
+          className="px-2.5 py-1 text-xs font-medium rounded-md border border-transparent text-slate-600 hover:text-slate-900 hover:bg-white flex items-center gap-1.5 transition-colors cursor-pointer"
+          title={t('common.feedPreviewTitle')}
         >
           <Smartphone className="w-3.5 h-3.5 text-slate-500" />
-          <span>Feed Preview</span>
+          <span>{t('common.feedPreview')}</span>
         </button>
+      </div>
 
-        <div className="h-4 w-px bg-slate-200 mx-1"></div>
-
+      {/* Right: [Exportar] -> [Engrane (Ajustes IA)] -> [i18n] */}
+      <div className="flex items-center gap-2">
         <button
+          type="button"
           onClick={onExport}
           className="px-3.5 py-1.5 text-xs font-semibold rounded-md bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
-          title="Export thumbnail in 1280x720 (HD) or 1920x1080 (Full HD) Lossless PNG/JPEG"
+          title={t('common.exportTitle')}
         >
           <Download className="w-3.5 h-3.5" />
-          <span>Export</span>
+          <span>{t('common.export')}</span>
         </button>
+
+        <div className="h-4 w-px bg-slate-200"></div>
+
+        <button
+          type="button"
+          onClick={onOpenSettings}
+          className="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-colors border border-slate-200/80 cursor-pointer"
+          title={t('common.aiSettingsTitle')}
+        >
+          <Settings className="w-4 h-4 text-slate-600" />
+        </button>
+
+        <LanguageMenu locale={locale} onSelectLocale={setLocale} />
       </div>
     </header>
   );

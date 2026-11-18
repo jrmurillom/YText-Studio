@@ -1,6 +1,7 @@
 import React from 'react';
 import { GraphicAssetElement } from '@/types';
 import { Trash2, ArrowUp, ArrowDown, Sparkles, Layers, Sliders } from 'lucide-react';
+import { useTranslation } from '@/i18n';
 
 interface AssetInspectorProps {
   asset: GraphicAssetElement;
@@ -17,6 +18,8 @@ export const AssetInspector: React.FC<AssetInspectorProps> = ({
   onBringToFront,
   onSendToBack,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-4">
       {/* Header del Asset */}
@@ -27,7 +30,7 @@ export const AssetInspector: React.FC<AssetInspectorProps> = ({
           </div>
           <div className="min-w-0">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-              Graphic Element
+              {t('inspector.graphicElement')}
             </span>
             <span className="text-xs font-bold text-slate-800 truncate block">
               {asset.name}
@@ -39,7 +42,7 @@ export const AssetInspector: React.FC<AssetInspectorProps> = ({
           type="button"
           onClick={() => onDeleteAsset(asset.id)}
           className="p-1.5 rounded-md text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer"
-          title="Delete Element (Del / Backspace)"
+          title={t('inspector.deleteElementTitle')}
         >
           <Trash2 className="w-4 h-4" />
         </button>
@@ -50,7 +53,7 @@ export const AssetInspector: React.FC<AssetInspectorProps> = ({
         <div className="flex items-center justify-between mb-1">
           <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
             <Sliders className="w-3 h-3 text-blue-600" />
-            <span>Scale</span>
+            <span>{t('inspector.assetScale')}</span>
           </label>
           <div className="flex items-center gap-1">
             <input
@@ -85,7 +88,7 @@ export const AssetInspector: React.FC<AssetInspectorProps> = ({
       <div>
         <div className="flex items-center justify-between mb-1">
           <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-            Rotation
+            {t('inspector.assetRotation')}
           </label>
           <div className="flex items-center gap-1">
             <input
@@ -120,7 +123,7 @@ export const AssetInspector: React.FC<AssetInspectorProps> = ({
       <div>
         <div className="flex items-center justify-between mb-1">
           <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-            Opacity
+            {t('inspector.assetOpacity')}
           </label>
           <span className="font-mono text-[11px] font-bold text-slate-700">
             {Math.round(asset.opacity * 100)}%
@@ -141,13 +144,13 @@ export const AssetInspector: React.FC<AssetInspectorProps> = ({
       <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
         <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
           <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-          <span>YouTube Visual Effects</span>
+          <span>{t('inspector.youtubeEffects')}</span>
         </span>
 
         {/* Toggle Sticker White Outline */}
         <div>
           <label className="flex items-center justify-between cursor-pointer">
-            <span className="text-xs font-semibold text-slate-800">Sticker Outline</span>
+            <span className="text-xs font-semibold text-slate-800">{t('inspector.stickerOutline')}</span>
             <input
               type="checkbox"
               checked={asset.hasStickerBorder}
@@ -158,7 +161,7 @@ export const AssetInspector: React.FC<AssetInspectorProps> = ({
           {asset.hasStickerBorder && (
             <div className="mt-2 pl-2 border-l-2 border-blue-400 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-slate-500">Border Width</span>
+                <span className="text-[10px] text-slate-500">{t('inspector.borderWidth')}</span>
                 <span className="text-[10px] font-mono font-bold text-slate-700">{asset.borderWidth}px</span>
               </div>
               <input
@@ -177,7 +180,7 @@ export const AssetInspector: React.FC<AssetInspectorProps> = ({
         {/* Toggle 3D Hard Shadow */}
         <div>
           <label className="flex items-center justify-between cursor-pointer">
-            <span className="text-xs font-semibold text-slate-800">3D Drop Shadow</span>
+            <span className="text-xs font-semibold text-slate-800">{t('inspector.dropShadow3d')}</span>
             <input
               type="checkbox"
               checked={asset.hasShadow}
@@ -188,7 +191,7 @@ export const AssetInspector: React.FC<AssetInspectorProps> = ({
           {asset.hasShadow && (
             <div className="mt-2 pl-2 border-l-2 border-blue-400 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-slate-500">Shadow Depth</span>
+                <span className="text-[10px] text-slate-500">{t('inspector.shadowDepth')}</span>
                 <span className="text-[10px] font-mono font-bold text-slate-700">{asset.shadowDepth}px</span>
               </div>
               <input
@@ -209,7 +212,7 @@ export const AssetInspector: React.FC<AssetInspectorProps> = ({
       <div className="pt-2 border-t border-slate-200">
         <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5 flex items-center gap-1">
           <Layers className="w-3 h-3 text-blue-600" />
-          <span>Layer Position</span>
+          <span>{t('inspector.layerPosition')}</span>
         </label>
         <div className="grid grid-cols-2 gap-1.5">
           <button
@@ -218,7 +221,7 @@ export const AssetInspector: React.FC<AssetInspectorProps> = ({
             className="py-1.5 px-2 text-xs font-medium rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center justify-center gap-1 transition-colors cursor-pointer"
           >
             <ArrowUp className="w-3.5 h-3.5 text-blue-600" />
-            <span>Bring to Front</span>
+            <span>{t('inspector.bringToFront')}</span>
           </button>
           <button
             type="button"
@@ -226,7 +229,7 @@ export const AssetInspector: React.FC<AssetInspectorProps> = ({
             className="py-1.5 px-2 text-xs font-medium rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center justify-center gap-1 transition-colors cursor-pointer"
           >
             <ArrowDown className="w-3.5 h-3.5 text-slate-500" />
-            <span>Send to Back</span>
+            <span>{t('inspector.sendToBack')}</span>
           </button>
         </div>
       </div>
