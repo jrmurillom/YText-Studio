@@ -786,29 +786,19 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-slate-700">{t('inspector.contrastProtection')}</span>
                         <span className="font-mono font-bold text-[11px] text-slate-700">
-                          {(() => {
-                            const pSeg = textGroup.segments[0];
-                            const hasStroke = (pSeg?.strokeWidth || 0) >= 2;
-                            const hasShadow = (pSeg?.shadowDepth || 0) >= 2;
-                            const hasBadge = !!pSeg?.hasBadge;
-                            if (hasStroke || hasShadow || hasBadge) {
-                              return <span className="text-emerald-600">{t('inspector.protected')}</span>;
-                            }
-                            return <span className="text-red-600">-25 pts</span>;
-                          })()}
+                          {tri.isContrastProtected ? (
+                            <span className="text-emerald-600">{t('inspector.protected')}</span>
+                          ) : (
+                            <span className="text-red-600">
+                              {tri.unprotectedLinesCount === 1 ? '-8 pts' : '-25 pts'}
+                            </span>
+                          )}
                         </span>
                       </div>
                       <span className="text-[10px] text-slate-500 block">
-                        {(() => {
-                          const pSeg = textGroup.segments[0];
-                          const hasStroke = (pSeg?.strokeWidth || 0) >= 2;
-                          const hasShadow = (pSeg?.shadowDepth || 0) >= 2;
-                          const hasBadge = !!pSeg?.hasBadge;
-                          if (hasStroke || hasShadow || hasBadge) {
-                            return t('inspector.contrastOptimal');
-                          }
-                          return t('inspector.contrastCritical');
-                        })()}
+                        {tri.isContrastProtected
+                          ? t('inspector.contrastOptimal')
+                          : t('inspector.contrastCritical')}
                       </span>
                     </div>
                   </div>

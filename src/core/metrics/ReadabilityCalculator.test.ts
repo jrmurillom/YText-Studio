@@ -129,5 +129,76 @@ describe('ReadabilityCalculator (TRI)', () => {
     const report = ReadabilityCalculator.calculate(group);
     expect(report.score).toBe(75);
     expect(report.level).toBe('acceptable');
+    expect(report.isContrastProtected).toBe(false);
+    expect(report.unprotectedLinesCount).toBe(1);
+  });
+
+  it('evalúa reactivamente cambios en líneas secundarias o terciarias (multi-line)', () => {
+    const multiGroup: CompositeTextGroup = {
+      id: 'g5',
+      x: 100,
+      y: 100,
+      width: 400,
+      height: 240,
+      scale: 1,
+      rotation: 0,
+      segments: [
+        {
+          id: 's1',
+          text: 'NO HAY',
+          role: 'anchor_secondary',
+          fontFamily: 'Montserrat',
+          fontSize: 60,
+          colorHex: '#FFFFFF',
+          strokeColorHex: '#000000',
+          strokeWidth: 8,
+          shadowColorHex: '#000000',
+          shadowDepth: 4,
+          slant: 0,
+          hasBadge: true,
+        },
+        {
+          id: 's2',
+          text: 'NADIE',
+          role: 'power_primary',
+          fontFamily: 'Montserrat',
+          fontSize: 80,
+          colorHex: '#FFFFFF',
+          strokeColorHex: '#000000',
+          strokeWidth: 8,
+          shadowColorHex: '#000000',
+          shadowDepth: 4,
+          slant: 0,
+          hasBadge: false,
+        },
+        {
+          id: 's3',
+          text: 'DETRÁS',
+          role: 'power_primary',
+          fontFamily: 'Montserrat',
+          fontSize: 76,
+          colorHex: '#FFFF00',
+          strokeColorHex: '#000000',
+          strokeWidth: 0,
+          shadowColorHex: '#000000',
+          shadowDepth: 0,
+          slant: 0,
+          hasBadge: false, // Línea 3 desprotegida inicialmente
+        },
+      ],
+    };
+
+    // Con Línea 3 desprotegida
+    const initialReport = ReadabilityCalculator.calculate(multiGroup);
+    expect(initialReport.isContrastProtected).toBe(false);
+    expect(initialReport.unprotectedLinesCount).toBe(1);
+    expect(initialReport.score).toBeLessThan(100);
+
+    // Activando badge en Línea 3
+    multiGroup.segments[2].hasBadge = true;
+    const protectedReport = ReadabilityCalculator.calculate(multiGroup);
+    expect(protectedReport.isContrastProtected).toBe(true);
+    expect(protectedReport.unprotectedLinesCount).toBe(0);
+    expect(protectedReport.score).toBeGreaterThan(initialReport.score);
   });
 });

@@ -6,11 +6,14 @@ export interface ReadabilityReport {
   wordCount: number;
   projectedMobileFontSize: number;
   label: string;
+  isContrastProtected: boolean;
+  unprotectedLinesCount: number;
 }
 
 export class ReadabilityCalculator {
   /**
    * Calcula el Thumbnail Readability Index (TRI) según la fórmula de STANDARDS.md
+   * Evalúa de forma reactiva y holística todas las líneas del grupo compuesto.
    */
   static calculate(group: CompositeTextGroup | null): ReadabilityReport {
     if (!group || group.segments.length === 0) {
@@ -20,11 +23,16 @@ export class ReadabilityCalculator {
         wordCount: 0,
         projectedMobileFontSize: 24,
         label: 'No text',
+        isContrastProtected: true,
+        unprotectedLinesCount: 0,
       };
     }
 
-    // 1. Contar palabras totales de todos los segmentos
-    const fullText = group.segments.map((s) => s.text.trim()).join(' ');
+    // 1. Contar palabras totales de todos los segmentos con texto
+    const nonEmptySegments = group.segments.filter((s) => s.text.trim().length > 0);
+    const targetSegments = nonEmptySegments.length > 0 ? nonEmptySegments : group.segments;
+
+    const fullText = targetSegments.map((s) => s.text.trim()).join(' ');
     const words = fullText.split(/\s+/).filter((w) => w.length > 0);
     const wordCount = words.length;
 
@@ -36,11 +44,19 @@ export class ReadabilityCalculator {
       penaltyWords = 15 * (wordCount - 3);
     }
 
-    // 3. Tamaño de fuente proyectado en feed móvil de 320x180 px
-    // Escala del master canvas (1280) a móvil (320) = factor 0.25
-    const primarySegment = group.segments.find((s) => s.role === 'power_primary') || group.segments[0];
-    const baseFontSize = primarySegment.fontSize * group.scale;
-    const projectedMobileFontSize = Math.round(baseFontSize * (320 / 1280));
+    // 3. Tamaño de fuente proyectado en feed móvil de 320x180 px (factor 0.25)
+    // Se calcula el tamaño ponderado de todas las líneas activas, considerando el rol power_primary
+    const totalWeight = targetSegments.reduce(
+      (acc, s) => acc + (s.role === 'power_primary' ? 1.5 : 1) * Math.max(1, s.text.trim().length),
+      0
+    );
+    const weightedSizeSum = targetSegments.reduce((acc, s) => {
+      const sProj = s.fontSize * group.scale * (320 / 1280);
+      const w = (s.role === 'power_primary' ? 1.5 : 1) * Math.max(1, s.text.trim().length);
+      return acc + sProj * w;
+    }, 0);
+
+    const projectedMobileFontSize = Math.round(weightedSizeSum / (totalWeight || 1));
 
     // 4. Penalización por tamaño de fuente proyectado en móvil
     let penaltySize = 0;
@@ -50,14 +66,24 @@ export class ReadabilityCalculator {
       penaltySize = Math.round(10 * (18 - projectedMobileFontSize));
     }
 
+    // Penalización adicional si alguna línea visible individual cae en rango crítico (<10px)
+    const minLineProjectedSize = Math.min(
+      ...targetSegments.map((s) => Math.round(s.fontSize * group.scale * (320 / 1280)))
+    );
+    if (minLineProjectedSize < 10 && penaltySize < 30) {
+      penaltySize = 30;
+    }
+
     // 5. Penalización por falta de protección de contraste (sin borde, sin sombra y sin badge)
+    const unprotectedSegments = targetSegments.filter(
+      (s) => (s.strokeWidth || 0) < 2 && (s.shadowDepth || 0) < 2 && !s.hasBadge
+    );
+    const unprotectedLinesCount = unprotectedSegments.length;
+    const isContrastProtected = unprotectedLinesCount === 0;
+
     let penaltyContrast = 0;
-    if (
-      (primarySegment.strokeWidth || 0) < 2 &&
-      (primarySegment.shadowDepth || 0) < 2 &&
-      !primarySegment.hasBadge
-    ) {
-      penaltyContrast = 25;
+    if (unprotectedLinesCount > 0) {
+      penaltyContrast = Math.round(25 * (unprotectedLinesCount / targetSegments.length));
     }
 
     // 6. Cálculo del score continuo (0 - 100)
@@ -81,6 +107,8 @@ export class ReadabilityCalculator {
       wordCount,
       projectedMobileFontSize,
       label,
+      isContrastProtected,
+      unprotectedLinesCount,
     };
   }
 }
