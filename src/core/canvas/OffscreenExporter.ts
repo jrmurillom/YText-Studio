@@ -1,5 +1,6 @@
-import { CompositeTextGroup } from '@/types';
+import { CompositeTextGroup, GraphicAssetElement } from '@/types';
 import { TextRenderer } from './TextRenderer';
+import { StickerRenderer } from './StickerRenderer';
 
 export type ExportResolution = '720p' | '1080p';
 export type ExportFormat = 'png' | 'jpeg';
@@ -7,6 +8,7 @@ export type ExportFormat = 'png' | 'jpeg';
 export interface ExportOptions {
   bgImage: HTMLImageElement | string | null;
   textGroup: CompositeTextGroup | null;
+  graphicAssets?: GraphicAssetElement[];
   resolution?: ExportResolution;
   format?: ExportFormat;
   filenamePrefix?: string;
@@ -83,6 +85,16 @@ export class OffscreenExporter {
       ctx.fillRect(0, 0, resConfig.width, resConfig.height);
     }
 
+    // 2.1. Assets con zIndex < 0 (debajo del texto)
+    if (options.graphicAssets && options.graphicAssets.length > 0) {
+      const bgAssets = options.graphicAssets
+        .filter((a) => a.zIndex < 0)
+        .sort((a, b) => a.zIndex - b.zIndex);
+      for (const asset of bgAssets) {
+        await this.drawAsset(ctx, asset, resConfig.scale);
+      }
+    }
+
     // 3. Renderizado Vectorial de TextGroup con escalado proporcional
     if (options.textGroup) {
       ctx.save();
@@ -109,7 +121,56 @@ export class OffscreenExporter {
       ctx.restore();
     }
 
+    // 3.1. Assets con zIndex >= 0 (delante del texto)
+    if (options.graphicAssets && options.graphicAssets.length > 0) {
+      const fgAssets = options.graphicAssets
+        .filter((a) => a.zIndex >= 0)
+        .sort((a, b) => a.zIndex - b.zIndex);
+      for (const asset of fgAssets) {
+        await this.drawAsset(ctx, asset, resConfig.scale);
+      }
+    }
+
     return { canvas, width: resConfig.width, height: resConfig.height };
+  }
+
+  private static async drawAsset(
+    ctx: CanvasRenderingContext2D,
+    asset: GraphicAssetElement,
+    globalScale: number
+  ): Promise<void> {
+    const img = await new Promise<HTMLImageElement>((resolve) => {
+      const el = new Image();
+      el.crossOrigin = 'anonymous';
+      el.onload = () => resolve(el);
+      el.onerror = () => resolve(el);
+      el.src = asset.dataUrl;
+    });
+
+    if (!img.width || !img.height) return;
+
+    ctx.save();
+    ctx.scale(globalScale, globalScale);
+
+    const w = asset.width * asset.scale;
+    const h = asset.height * asset.scale;
+    const centerX = asset.x + w / 2;
+    const centerY = asset.y + h / 2;
+
+    ctx.translate(centerX, centerY);
+    ctx.rotate((asset.rotation * Math.PI) / 180);
+
+    StickerRenderer.renderAsset(ctx, img, w, h, {
+      hasStickerBorder: asset.hasStickerBorder,
+      borderWidth: asset.borderWidth,
+      borderColorHex: asset.borderColorHex,
+      hasShadow: asset.hasShadow,
+      shadowDepth: asset.shadowDepth,
+      shadowColorHex: asset.shadowColorHex,
+      opacity: asset.opacity,
+    });
+
+    ctx.restore();
   }
 
   /**

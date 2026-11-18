@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Download, Image as ImageIcon, Sparkles, Loader2, Check } from 'lucide-react';
-import { CompositeTextGroup } from '@/types';
+import { CompositeTextGroup, GraphicAssetElement } from '@/types';
 import { OffscreenExporter, ExportResolution, ExportFormat } from '@/core/canvas/OffscreenExporter';
 
 interface ExportModalProps {
@@ -8,6 +8,7 @@ interface ExportModalProps {
   onClose: () => void;
   bgImage: HTMLImageElement | string | null;
   textGroup: CompositeTextGroup | null;
+  graphicAssets?: GraphicAssetElement[];
   canvasPreviewUrl: string | null;
   videoTitle?: string;
 }
@@ -17,6 +18,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
   onClose,
   bgImage,
   textGroup,
+  graphicAssets = [],
   canvasPreviewUrl,
   videoTitle,
 }) => {
@@ -40,6 +42,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
       await OffscreenExporter.download({
         bgImage,
         textGroup,
+        graphicAssets,
         resolution,
         format,
         filenamePrefix: sanitizedTitle || 'ytext-cover',

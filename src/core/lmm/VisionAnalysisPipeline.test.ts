@@ -42,4 +42,34 @@ describe('VisionAnalysisPipeline (Dirección de Arte 100% Autónoma)', () => {
     expect(result.telemetry.reasoning).toContain('mystery');
     expect(result.telemetry.isOfflineFallback).toBe(true);
   });
+
+  it('jamas contamina el texto de la miniatura con las palabras de customIntentText cuando intent es other', async () => {
+    const dummyWebP = 'data:image/webp;base64,UklGRkAAAABXRUJQVlA4IDQAAADwAQCdASoIAAUAAUA8JaQAA3AA/v30NAAA';
+    const customDirective = 'Cyberpunk retro synthwave dark comedy';
+
+    const result = await VisionAnalysisPipeline.execute(
+      dummyWebP,
+      'SOBREVIVÍ 100 DÍAS',
+      'other',
+      { ...dummyConfig, proposalCount: 5 },
+      customDirective,
+      true
+    );
+
+    expect(result.proposals).toHaveLength(5);
+
+    for (const prop of result.proposals) {
+      const upperSummary = prop.copySummary.toUpperCase();
+      expect(upperSummary).not.toContain('CYBERPUNK');
+      expect(upperSummary).not.toContain('SYNTHWAVE');
+      expect(upperSummary).not.toContain('COMEDY');
+
+      for (const seg of prop.previewGroup.segments) {
+        const upperText = seg.text.toUpperCase();
+        expect(upperText).not.toContain('CYBERPUNK');
+        expect(upperText).not.toContain('SYNTHWAVE');
+        expect(upperText).not.toContain('COMEDY');
+      }
+    }
+  });
 });

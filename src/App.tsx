@@ -14,6 +14,8 @@ import {
   BaseImageState,
   LMMConfig,
   LMMTelemetry,
+  GraphicAssetElement,
+  ActiveCanvasElement,
 } from '@/types';
 import { ImagePreprocessor } from '@/core/image/ImagePreprocessor';
 import { VisionAnalysisPipeline } from '@/core/lmm/VisionAnalysisPipeline';
@@ -25,10 +27,15 @@ export function App() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        return {
-          ...parsed,
+        const cleaned: LMMConfig = {
+          provider: parsed.provider || 'gemini',
+          apiKey: parsed.apiKey || '',
+          model: parsed.model || 'gemini-2.0-flash',
           proposalCount: parsed.proposalCount || 3,
+          customEndpoint: parsed.customEndpoint,
         };
+        localStorage.setItem('ytext_lmm_config', JSON.stringify(cleaned));
+        return cleaned;
       } catch {
         // fallback
       }
@@ -71,11 +78,27 @@ export function App() {
 
   // 5. Estado del Grupo de Texto Activo en Canvas (Inicia null: Canvas 100% limpio)
   const [textGroup, setTextGroup] = useState<CompositeTextGroup | null>(null);
+
+  // 6. Estado de Capas de Assets Gráficos (Stickers, Logos, Badges) y Selección Activa
+  const [graphicAssets, setGraphicAssets] = useState<GraphicAssetElement[]>([]);
+  const [activeElement, setActiveElement] = useState<ActiveCanvasElement>({ type: 'text' });
   const cleanCanvasExporterRef = useRef<(() => string) | null>(null);
 
   const handleRegisterCanvasExporter = useCallback((exporter: () => string) => {
     cleanCanvasExporterRef.current = exporter;
   }, []);
+
+  const handleAddGraphicAsset = (asset: GraphicAssetElement) => {
+    setGraphicAssets((prev) => [...prev, asset]);
+    setActiveElement({ type: 'asset', id: asset.id });
+  };
+
+  const handleRemoveGraphicAsset = (id: string) => {
+    setGraphicAssets((prev) => prev.filter((a) => a.id !== id));
+    if (activeElement?.type === 'asset' && activeElement.id === id) {
+      setActiveElement(textGroup ? { type: 'text' } : null);
+    }
+  };
 
   // Manejo de carga de imagen
   const handleImageSelected = (file: File) => {
@@ -85,6 +108,8 @@ export function App() {
     setLmmTelemetry(null);
     setAnalysisError(undefined);
     setTextGroup(null); // Canvas permanece 100% limpio con solo la imagen de fondo
+    setGraphicAssets([]);
+    setActiveElement({ type: 'text' });
     VisionAnalysisPipeline.clearCache();
 
     const reader = new FileReader();
@@ -187,6 +212,7 @@ export function App() {
             onCustomIntentTextChange={setCustomIntentText}
             onAnalyze={handleAnalyze}
             isAnalyzing={isAnalyzing}
+            proposalCount={lmmConfig.proposalCount || 3}
             proposals={proposals}
             selectedProposalId={selectedProposalId}
             onSelectProposal={handleSelectProposal}
@@ -194,6 +220,11 @@ export function App() {
             onOpenSettings={() => setIsSettingsOpen(true)}
             errorMessage={analysisError}
             telemetry={lmmTelemetry}
+            graphicAssets={graphicAssets}
+            onAddGraphicAsset={handleAddGraphicAsset}
+            onRemoveGraphicAsset={handleRemoveGraphicAsset}
+            activeElement={activeElement}
+            onSelectActiveElement={setActiveElement}
           />
         }
         centerStage={
@@ -201,6 +232,10 @@ export function App() {
             baseImageUrl={baseImage.dataUrl}
             textGroup={textGroup}
             onUpdateTextGroup={handleUpdateTextGroup}
+            graphicAssets={graphicAssets}
+            onUpdateGraphicAssets={setGraphicAssets}
+            activeElement={activeElement}
+            onSelectActiveElement={setActiveElement}
             safeZonesVisible={safeZonesVisible}
             ruleOfThirdsVisible={ruleOfThirdsVisible}
             onRegisterCanvasExporter={handleRegisterCanvasExporter}
@@ -210,6 +245,10 @@ export function App() {
           <InspectorPanel
             textGroup={textGroup}
             onUpdateTextGroup={handleUpdateTextGroup}
+            graphicAssets={graphicAssets}
+            onUpdateGraphicAssets={setGraphicAssets}
+            activeElement={activeElement}
+            onSelectActiveElement={setActiveElement}
           />
         }
       />
@@ -236,6 +275,7 @@ export function App() {
         onClose={() => setIsExportOpen(false)}
         bgImage={baseImage.dataUrl}
         textGroup={textGroup}
+        graphicAssets={graphicAssets}
         canvasPreviewUrl={cleanCanvasExporterRef.current ? cleanCanvasExporterRef.current() : baseImage.dataUrl}
         videoTitle={rawText}
       />

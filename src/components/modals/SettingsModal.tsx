@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LMMConfig, LMMProviderType } from '@/types';
 import { DEFAULT_LMM_SYSTEM_PROMPT } from '@/core/lmm/types';
-import { X, Key, Cpu, ShieldCheck, Code2, RotateCcw, FileJson } from 'lucide-react';
+import { X, Key, Cpu, ShieldCheck, Code2, FileJson } from 'lucide-react';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -24,7 +24,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [model, setModel] = useState(config.model);
   const [proposalCount, setProposalCount] = useState<number>(config.proposalCount || 3);
   const [customEndpoint, setCustomEndpoint] = useState(config.customEndpoint || '');
-  const [customPrompt, setCustomPrompt] = useState(config.customPrompt || DEFAULT_LMM_SYSTEM_PROMPT);
+
+  useEffect(() => {
+    if (isOpen) {
+      setProvider(config.provider);
+      setApiKey(config.apiKey);
+      setModel(config.model);
+      setProposalCount(config.proposalCount || 3);
+      setCustomEndpoint(config.customEndpoint || '');
+    }
+  }, [isOpen, config]);
 
   if (!isOpen) return null;
 
@@ -35,13 +44,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       model,
       proposalCount,
       customEndpoint: provider === 'ollama' ? customEndpoint : undefined,
-      customPrompt: customPrompt.trim() !== DEFAULT_LMM_SYSTEM_PROMPT.trim() ? customPrompt : undefined,
     });
     onClose();
-  };
-
-  const handleResetPrompt = () => {
-    setCustomPrompt(DEFAULT_LMM_SYSTEM_PROMPT);
   };
 
   return (
@@ -193,29 +197,25 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         {/* Tab 2: System Prompt & JSON Contracts */}
         {activeTab === 'prompt_contracts' && (
           <div className="p-5 space-y-4 text-xs overflow-y-auto">
-            {/* Prompt Editor */}
+            {/* Canonical System Prompt Viewer (SSOT) */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                  Injected LMM System Prompt (Customizable)
+                  Canonical LMM System Prompt (SSOT: src/core/lmm/types.ts)
                 </label>
-                <button
-                  onClick={handleResetPrompt}
-                  className="text-[10px] text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 cursor-pointer"
-                >
-                  <RotateCcw className="w-3 h-3" />
-                  <span>Restore Default</span>
-                </button>
+                <span className="text-[10px] text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  Active & Synced
+                </span>
               </div>
 
               <textarea
-                value={customPrompt}
-                onChange={(e) => setCustomPrompt(e.target.value)}
+                readOnly
+                value={DEFAULT_LMM_SYSTEM_PROMPT}
                 rows={9}
-                className="w-full text-[11px] p-2.5 font-mono rounded-md border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:border-blue-500 leading-relaxed"
+                className="w-full text-[11px] p-2.5 font-mono rounded-md border border-slate-200 bg-slate-50 text-slate-700 focus:outline-none leading-relaxed select-all"
               />
               <span className="text-[10px] text-slate-400 block mt-1">
-                Required runtime interpolated variables: <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;RAW_TEXT&#125;</code>, <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;INTENT&#125;</code>, and <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;PROPOSAL_COUNT&#125;</code>.
+                Runtime interpolated variables: <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;RAW_TEXT&#125;</code>, <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;INTENT&#125;</code>, and <code className="bg-slate-100 px-1 py-0.5 rounded text-blue-600">&#123;PROPOSAL_COUNT&#125;</code>.
               </span>
             </div>
 

@@ -11,7 +11,6 @@ export interface LMMConfig {
   apiKey: string;
   model: string;
   customEndpoint?: string;
-  customPrompt?: string; // Prompt del sistema personalizable por el usuario
   proposalCount?: number; // Cantidad de propuestas deseadas (3, 4 o 5)
 }
 
@@ -86,3 +85,30 @@ export interface YouTubeSafeZoneConfig {
   paddingX: number;
   paddingY: number;
 }
+
+export interface GraphicAssetElement {
+  id: string;
+  type: 'graphic_asset';
+  name: string;
+  dataUrl: string;
+  x: number; // Coordenada X superior izquierda en master 1280x720
+  y: number; // Coordenada Y
+  width: number; // Ancho base en px
+  height: number; // Alto base en px
+  rotation: number; // Ángulo de rotación (-180° a 180°)
+  scale: number; // Factor de escala (0.1 a 3.0)
+  opacity: number; // Opacidad (0.0 a 1.0)
+  hasStickerBorder: boolean; // Efecto de borde blanco/color recortado
+  borderWidth: number; // Grosor del borde en px (ej. 6)
+  borderColorHex: string; // Color del borde (default: #FFFFFF)
+  hasShadow: boolean; // Sombra dura 3D a 45°
+  shadowDepth: number; // Profundidad de sombra en px (ej. 6)
+  shadowColorHex: string; // Color de sombra (default: #000000)
+  zIndex: number; // Orden de profundidad en la pila
+}
+
+export type ActiveCanvasElement =
+  | { type: 'text' }
+  | { type: 'asset'; id: string }
+  | null;
+

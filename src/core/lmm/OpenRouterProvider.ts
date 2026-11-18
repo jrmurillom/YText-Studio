@@ -14,15 +14,14 @@ export class OpenRouterProvider implements LMMAdapter {
   ): Promise<LMMExecutionResult> {
     const effectiveIntent =
       request.intent === 'other' && request.customIntentText
-        ? `Personalizado: ${request.customIntentText}`
-        : request.intent;
+        ? `Custom mood & style direction (visual mood only, DO NOT use as literal thumbnail words): ${request.customIntentText.trim()}`
+        : `Tone & energy preset: ${request.intent} (visual mood only, DO NOT write "${request.intent}" or its translations in thumbnail text)`;
 
     const count = request.proposalCount || 3;
-    const basePrompt = request.customPrompt || DEFAULT_LMM_SYSTEM_PROMPT;
-    const prompt = `${basePrompt
-      .replace('{RAW_TEXT}', request.rawText)
-      .replace('{INTENT}', effectiveIntent)
-      .replace(/{PROPOSAL_COUNT}/g, String(count))}
+    const prompt = `${DEFAULT_LMM_SYSTEM_PROMPT
+      .replace(/\{RAW_TEXT\}/g, () => request.rawText.trim())
+      .replace(/\{INTENT\}/g, () => effectiveIntent)
+      .replace(/\{PROPOSAL_COUNT\}/g, () => String(count))}
 
 IMPORTANT: Return strictly a raw JSON object matching the requested schema. No code fences, no conversational prose.`;
 
@@ -32,7 +31,7 @@ IMPORTANT: Return strictly a raw JSON object matching the requested schema. No c
 
     const payload = {
       model,
-      temperature: 0.2, // Temperatura determinista para máxima disciplina y consistencia
+      temperature: 0.65, // Punto dulce creativo con JSON restringido para garantizar variedad de propuestas
       response_format: { type: 'json_object' },
       messages: [
         {

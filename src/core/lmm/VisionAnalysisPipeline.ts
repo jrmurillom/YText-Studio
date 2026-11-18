@@ -53,7 +53,6 @@ export class VisionAnalysisPipeline {
         rawText,
         intent,
         customIntentText,
-        customPrompt: config.customPrompt,
         proposalCount: config.proposalCount || 3,
       };
 
@@ -104,7 +103,7 @@ export class VisionAnalysisPipeline {
   private static runLocalHeuristic(
     rawText: string,
     intent: IntentType,
-    customIntentText?: string,
+    _customIntentText?: string,
     proposalCount = 3
   ): LMMVisionResponse {
     const cleanRaw = rawText.trim() || 'TITLE';
@@ -157,13 +156,12 @@ export class VisionAnalysisPipeline {
       copyC = ['EXPERT OPINION', 'VALIDATED'];
       copyD = ['RANKED:', 'TOP TIER'];
       copyE = ['THE WINNER', 'UNDISPUTED'];
-    } else if (intent === 'other' && customIntentText) {
-      const hook = customIntentText.slice(0, 14).toUpperCase();
-      copyA = [hook, l2];
-      copyB = ['HOW IT HAPPENED?', cleanRaw.toUpperCase()];
-      copyC = ['SPECIAL:', hook];
-      copyD = ['HIGHLIGHT:', cleanRaw.toUpperCase()];
-      copyE = ['INSIDER:', hook];
+    } else if (intent === 'other') {
+      copyA = [l1, l2];
+      copyB = ['HOW IT HAPPENED?', l2];
+      copyC = ['THE TRUTH:', l2];
+      copyD = ['REVEALED:', l1];
+      copyE = ['UNFILTERED:', l2];
     }
 
     const prop1: LMMProposalSpecification = {

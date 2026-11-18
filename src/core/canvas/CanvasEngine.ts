@@ -1,13 +1,17 @@
-import { CompositeTextGroup } from '@/types';
+import { CompositeTextGroup, GraphicAssetElement, ActiveCanvasElement } from '@/types';
 import { TextRenderer } from './TextRenderer';
 import { Transform2D, BoundingBox2D } from './Transform2D';
 import { FontLoader } from './FontLoader';
+import { StickerRenderer } from './StickerRenderer';
 
 export class CanvasEngine {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private bgImage: HTMLImageElement | null = null;
   private textGroup: CompositeTextGroup | null = null;
+  private graphicAssets: GraphicAssetElement[] = [];
+  private imageCache: Map<string, HTMLImageElement> = new Map();
+  private activeElement: ActiveCanvasElement = { type: 'text' };
   private isSelected = true;
   private animFrameId: number | null = null;
 
@@ -51,6 +55,48 @@ export class CanvasEngine {
     this.render();
   }
 
+  setGraphicAssets(assets: GraphicAssetElement[]): void {
+    this.graphicAssets = [...assets];
+    for (const asset of assets) {
+      this.getImage(asset.dataUrl);
+    }
+    this.render();
+  }
+
+  updateGraphicAssetSilent(asset: GraphicAssetElement): void {
+    const idx = this.graphicAssets.findIndex((a) => a.id === asset.id);
+    if (idx !== -1) {
+      this.graphicAssets[idx] = asset;
+      this.render();
+    }
+  }
+
+  addGraphicAsset(asset: GraphicAssetElement): void {
+    this.graphicAssets.push(asset);
+    this.getImage(asset.dataUrl);
+    this.activeElement = { type: 'asset', id: asset.id };
+    this.isSelected = true;
+    this.render();
+  }
+
+  removeGraphicAsset(id: string): void {
+    this.graphicAssets = this.graphicAssets.filter((a) => a.id !== id);
+    if (this.activeElement?.type === 'asset' && this.activeElement.id === id) {
+      this.activeElement = this.textGroup ? { type: 'text' } : null;
+    }
+    this.render();
+  }
+
+  setActiveElement(element: ActiveCanvasElement): void {
+    this.activeElement = element;
+    this.isSelected = Boolean(element);
+    this.render();
+  }
+
+  getActiveElement(): ActiveCanvasElement {
+    return this.activeElement;
+  }
+
   setSelected(selected: boolean): void {
     this.isSelected = selected;
     this.render();
@@ -60,7 +106,11 @@ export class CanvasEngine {
     return this.textGroup;
   }
 
-  getBoundingBox(): BoundingBox2D | null {
+  getGraphicAssets(): GraphicAssetElement[] {
+    return this.graphicAssets;
+  }
+
+  getTextBoundingBox(): BoundingBox2D | null {
     if (!this.textGroup) return null;
     return {
       x: this.textGroup.x,
@@ -69,6 +119,46 @@ export class CanvasEngine {
       height: this.textGroup.height * this.textGroup.scale,
       rotation: this.textGroup.rotation,
     };
+  }
+
+  getAssetBoundingBox(assetId: string): BoundingBox2D | null {
+    const asset = this.graphicAssets.find((a) => a.id === assetId);
+    if (!asset) return null;
+    return {
+      x: asset.x,
+      y: asset.y,
+      width: asset.width * asset.scale,
+      height: asset.height * asset.scale,
+      rotation: asset.rotation,
+    };
+  }
+
+  getActiveBoundingBox(): BoundingBox2D | null {
+    if (this.activeElement?.type === 'text') {
+      return this.getTextBoundingBox();
+    }
+    if (this.activeElement?.type === 'asset') {
+      return this.getAssetBoundingBox(this.activeElement.id);
+    }
+    return null;
+  }
+
+  getBoundingBox(): BoundingBox2D | null {
+    return this.getActiveBoundingBox();
+  }
+
+  private getImage(dataUrl: string): HTMLImageElement | null {
+    if (this.imageCache.has(dataUrl)) {
+      return this.imageCache.get(dataUrl)!;
+    }
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = dataUrl;
+    img.onload = () => {
+      this.render();
+    };
+    this.imageCache.set(dataUrl, img);
+    return img.complete ? img : null;
   }
 
   /**
@@ -84,6 +174,7 @@ export class CanvasEngine {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
+    // 1. Fondo
     if (this.bgImage) {
       ctx.drawImage(this.bgImage, 0, 0, CanvasEngine.MASTER_WIDTH, CanvasEngine.MASTER_HEIGHT);
     } else {
@@ -91,6 +182,15 @@ export class CanvasEngine {
       ctx.fillRect(0, 0, CanvasEngine.MASTER_WIDTH, CanvasEngine.MASTER_HEIGHT);
     }
 
+    // 2. Assets con zIndex < 0 (debajo del texto)
+    const backgroundAssets = this.graphicAssets
+      .filter((a) => a.zIndex < 0)
+      .sort((a, b) => a.zIndex - b.zIndex);
+    for (const asset of backgroundAssets) {
+      this.drawAssetToContext(ctx, asset);
+    }
+
+    // 3. Texto
     if (this.textGroup) {
       const w = this.textGroup.width * this.textGroup.scale;
       const h = this.textGroup.height * this.textGroup.scale;
@@ -111,7 +211,41 @@ export class CanvasEngine {
       ctx.restore();
     }
 
+    // 4. Assets con zIndex >= 0 (encima del texto)
+    const foregroundAssets = this.graphicAssets
+      .filter((a) => a.zIndex >= 0)
+      .sort((a, b) => a.zIndex - b.zIndex);
+    for (const asset of foregroundAssets) {
+      this.drawAssetToContext(ctx, asset);
+    }
+
     return offscreen.toDataURL('image/png');
+  }
+
+  private drawAssetToContext(ctx: CanvasRenderingContext2D, asset: GraphicAssetElement): void {
+    const img = this.getImage(asset.dataUrl);
+    if (!img) return;
+
+    const w = asset.width * asset.scale;
+    const h = asset.height * asset.scale;
+    const centerX = asset.x + w / 2;
+    const centerY = asset.y + h / 2;
+
+    ctx.save();
+    ctx.translate(centerX, centerY);
+    ctx.rotate((asset.rotation * Math.PI) / 180);
+
+    StickerRenderer.renderAsset(ctx, img, w, h, {
+      hasStickerBorder: asset.hasStickerBorder,
+      borderWidth: asset.borderWidth,
+      borderColorHex: asset.borderColorHex,
+      hasShadow: asset.hasShadow,
+      shadowDepth: asset.shadowDepth,
+      shadowColorHex: asset.shadowColorHex,
+      opacity: asset.opacity,
+    });
+
+    ctx.restore();
   }
 
   /**
@@ -149,7 +283,15 @@ export class CanvasEngine {
         ctx.fillRect(0, 0, CanvasEngine.MASTER_WIDTH, CanvasEngine.MASTER_HEIGHT);
       }
 
-      // 2. Dibujar Layer Vectorial de Textos (PIVOTE EN EL CENTRO)
+      // 2. Dibujar Assets con zIndex < 0 (detrás del texto)
+      const backgroundAssets = this.graphicAssets
+        .filter((a) => a.zIndex < 0)
+        .sort((a, b) => a.zIndex - b.zIndex);
+      for (const asset of backgroundAssets) {
+        this.drawAssetToContext(ctx, asset);
+      }
+
+      // 3. Dibujar Layer Vectorial de Textos (PIVOTE EN EL CENTRO)
       if (this.textGroup) {
         const w = this.textGroup.width * this.textGroup.scale;
         const h = this.textGroup.height * this.textGroup.scale;
@@ -169,10 +311,33 @@ export class CanvasEngine {
         }
 
         ctx.restore();
+      }
 
-        // 3. Dibujar Bounding Box y Tiradores de Transformación
-        if (this.isSelected) {
-          this.drawSelectionOverlay(ctx, centerX, centerY, w, h);
+      // 4. Dibujar Assets con zIndex >= 0 (delante del texto)
+      const foregroundAssets = this.graphicAssets
+        .filter((a) => a.zIndex >= 0)
+        .sort((a, b) => a.zIndex - b.zIndex);
+      for (const asset of foregroundAssets) {
+        this.drawAssetToContext(ctx, asset);
+      }
+
+      // 5. Dibujar Bounding Box y Tiradores sobre el elemento activo
+      if (this.isSelected && this.activeElement) {
+        if (this.activeElement.type === 'text' && this.textGroup) {
+          const w = this.textGroup.width * this.textGroup.scale;
+          const h = this.textGroup.height * this.textGroup.scale;
+          const centerX = this.textGroup.x + w / 2;
+          const centerY = this.textGroup.y + h / 2;
+          this.drawSelectionOverlay(ctx, centerX, centerY, w, h, this.textGroup.rotation);
+        } else if (this.activeElement.type === 'asset') {
+          const asset = this.graphicAssets.find((a) => a.id === (this.activeElement as { id: string }).id);
+          if (asset) {
+            const w = asset.width * asset.scale;
+            const h = asset.height * asset.scale;
+            const centerX = asset.x + w / 2;
+            const centerY = asset.y + h / 2;
+            this.drawSelectionOverlay(ctx, centerX, centerY, w, h, asset.rotation);
+          }
         }
       }
     });
@@ -183,11 +348,12 @@ export class CanvasEngine {
     centerX: number,
     centerY: number,
     w: number,
-    h: number
+    h: number,
+    rotation: number
   ): void {
     ctx.save();
     ctx.translate(centerX, centerY);
-    ctx.rotate(((this.textGroup?.rotation || 0) * Math.PI) / 180);
+    ctx.rotate((rotation * Math.PI) / 180);
 
     const halfW = w / 2;
     const halfH = h / 2;
@@ -267,3 +433,4 @@ export class CanvasEngine {
     }
   }
 }
+

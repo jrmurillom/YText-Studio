@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { TelemetryBar } from './TelemetryBar';
-import { CompositeTextGroup } from '@/types';
+import { CompositeTextGroup, GraphicAssetElement, ActiveCanvasElement } from '@/types';
 import { CanvasEngine } from '@/core/canvas/CanvasEngine';
-import { Transform2D, HandleType, Point2D } from '@/core/canvas/Transform2D';
+import { Transform2D, HandleType, Point2D, BoundingBox2D } from '@/core/canvas/Transform2D';
 import { YouTubeSafeZoneGuard } from '@/core/safezones/YouTubeSafeZone';
 import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 
@@ -10,6 +10,10 @@ interface CanvasStageProps {
   baseImageUrl: string | null;
   textGroup: CompositeTextGroup | null;
   onUpdateTextGroup: (group: CompositeTextGroup) => void;
+  graphicAssets?: GraphicAssetElement[];
+  onUpdateGraphicAssets?: (assets: GraphicAssetElement[]) => void;
+  activeElement?: ActiveCanvasElement;
+  onSelectActiveElement?: (elem: ActiveCanvasElement) => void;
   safeZonesVisible: boolean;
   ruleOfThirdsVisible?: boolean;
   onRegisterCanvasExporter?: (exporter: () => string) => void;
@@ -21,6 +25,10 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
   baseImageUrl,
   textGroup,
   onUpdateTextGroup,
+  graphicAssets = [],
+  onUpdateGraphicAssets,
+  activeElement = { type: 'text' },
+  onSelectActiveElement,
   safeZonesVisible,
   ruleOfThirdsVisible = false,
   onRegisterCanvasExporter,
@@ -44,18 +52,27 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
   const interactionRef = useRef<{
     mode: InteractionMode;
     handle: HandleType;
+    targetType: 'text' | 'asset';
+    assetId?: string;
     startPoint: Point2D;
     startAngle: number;
+    initialBox: BoundingBox2D | null;
     initialGroup: CompositeTextGroup | null;
     currentGroup: CompositeTextGroup | null;
+    initialAsset: GraphicAssetElement | null;
+    currentAsset: GraphicAssetElement | null;
     centerPoint: Point2D;
   }>({
     mode: 'IDLE',
     handle: 'NONE',
+    targetType: 'text',
     startPoint: { x: 0, y: 0 },
     startAngle: 0,
+    initialBox: null,
     initialGroup: null,
     currentGroup: null,
+    initialAsset: null,
+    currentAsset: null,
     centerPoint: { x: 0, y: 0 },
   });
 
@@ -74,7 +91,6 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
         onRegisterCanvasExporterRef.current(() => engine.exportCleanDataUrl());
       }
 
-      // Si ya hay una imagen base montada, restaurarla inmediatamente
       if (baseImageUrl) {
         const img = new Image();
         img.crossOrigin = 'anonymous';
@@ -87,12 +103,15 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
       if (textGroup) {
         engine.setTextGroup(textGroup);
       }
+
+      engine.setGraphicAssets(graphicAssets);
+      engine.setActiveElement(activeElement);
     }
     return () => {
       engineRef.current?.destroy();
       engineRef.current = null;
     };
-  }, []); // Montaje único, desacoplado de props dinámicas
+  }, []);
 
   // Cargar imagen de fondo
   useEffect(() => {
@@ -110,7 +129,7 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
     if (!engineRef.current) return;
     engineRef.current.setTextGroup(textGroup);
 
-    if (textGroup) {
+    if (activeElement?.type === 'text' && textGroup) {
       setTelemetry({
         x: textGroup.x,
         y: textGroup.y,
@@ -126,7 +145,48 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
       });
       setHasCollision(collision);
     }
-  }, [textGroup]);
+  }, [textGroup, activeElement]);
+
+  // Sincronizar graphicAssets con CanvasEngine
+  useEffect(() => {
+    if (!engineRef.current) return;
+    engineRef.current.setGraphicAssets(graphicAssets);
+
+    if (activeElement?.type === 'asset') {
+      const currentAsset = graphicAssets.find((a) => a.id === activeElement.id);
+      if (currentAsset) {
+        setTelemetry({
+          x: currentAsset.x,
+          y: currentAsset.y,
+          scale: currentAsset.scale,
+          rotation: currentAsset.rotation,
+        });
+      }
+    }
+  }, [graphicAssets, activeElement]);
+
+  // Sincronizar activeElement con CanvasEngine
+  useEffect(() => {
+    if (!engineRef.current) return;
+    engineRef.current.setActiveElement(activeElement);
+  }, [activeElement]);
+
+  // Listener para eliminar asset seleccionado con tecla Delete/Backspace
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+      if ((e.key === 'Delete' || e.key === 'Backspace') && activeElement?.type === 'asset') {
+        e.preventDefault();
+        const updated = graphicAssets.filter((a) => a.id !== activeElement.id);
+        onUpdateGraphicAssets?.(updated);
+        onSelectActiveElement?.(textGroup ? { type: 'text' } : null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeElement, graphicAssets, onUpdateGraphicAssets, onSelectActiveElement, textGroup]);
 
   // Conversión de coordenadas de pantalla a espacio Canvas Master (1280x720)
   const getCanvasCoordinates = useCallback((e: React.MouseEvent): Point2D => {
@@ -143,18 +203,55 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
 
   // MOUSE DOWN: Iniciar arrastre, escalado o rotación
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (!textGroup || !canvasRef.current || !engineRef.current) return;
+    if (!canvasRef.current || !engineRef.current) return;
     const point = getCanvasCoordinates(e);
 
-    // Obtener el BoundingBox real medido por CanvasEngine
-    const box = engineRef.current.getBoundingBox();
-    if (!box) return;
+    // 1. Probar tiradores del elemento actualmente activo
+    const activeBox = engineRef.current.getActiveBoundingBox();
+    let handle: HandleType = 'NONE';
+    if (activeBox) {
+      handle = Transform2D.hitTest(point, activeBox, 20);
+    }
 
-    const handle = Transform2D.hitTest(point, box, 20);
+    let targetType: 'text' | 'asset' = activeElement?.type === 'asset' ? 'asset' : 'text';
+    let targetAssetId: string | undefined = activeElement?.type === 'asset' ? activeElement.id : undefined;
 
+    // 2. Si no se clickeó un tirador del elemento activo, hacer hit test sobre otros elementos
     if (handle === 'NONE') {
-      engineRef.current.setSelected(false);
-      return;
+      let hitFound = false;
+
+      // Hit-test sobre assets gráficos (de mayor zIndex a menor)
+      const sortedAssets = [...graphicAssets].sort((a, b) => b.zIndex - a.zIndex);
+      for (const asset of sortedAssets) {
+        const aBox = engineRef.current.getAssetBoundingBox(asset.id);
+        if (aBox && Transform2D.hitTest(point, aBox, 0) === 'BODY') {
+          targetType = 'asset';
+          targetAssetId = asset.id;
+          handle = 'BODY';
+          hitFound = true;
+          onSelectActiveElement?.({ type: 'asset', id: asset.id });
+          break;
+        }
+      }
+
+      // Si no fue un asset, probar sobre texto
+      if (!hitFound && textGroup) {
+        const tBox = engineRef.current.getTextBoundingBox();
+        if (tBox && Transform2D.hitTest(point, tBox, 0) === 'BODY') {
+          targetType = 'text';
+          targetAssetId = undefined;
+          handle = 'BODY';
+          hitFound = true;
+          onSelectActiveElement?.({ type: 'text' });
+        }
+      }
+
+      // Si se hizo clic en el fondo vacío
+      if (!hitFound) {
+        engineRef.current.setSelected(false);
+        onSelectActiveElement?.(null);
+        return;
+      }
     }
 
     engineRef.current.setSelected(true);
@@ -168,155 +265,209 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
       mode = 'SCALING';
     }
 
-    const centerX = box.x + box.width / 2;
-    const centerY = box.y + box.height / 2;
-    const startAngle = Math.atan2(point.y - centerY, point.x - centerX);
+    if (targetType === 'text' && textGroup) {
+      const box = engineRef.current.getTextBoundingBox();
+      if (!box) return;
+      const centerX = box.x + box.width / 2;
+      const centerY = box.y + box.height / 2;
+      const startAngle = Math.atan2(point.y - centerY, point.x - centerX);
+      const baseW = box.width / textGroup.scale;
+      const baseH = box.height / textGroup.scale;
 
-    // Ancho y alto base desenrollados de la escala activa
-    const baseW = box.width / textGroup.scale;
-    const baseH = box.height / textGroup.scale;
+      interactionRef.current = {
+        mode,
+        handle,
+        targetType: 'text',
+        startPoint: point,
+        startAngle,
+        initialBox: box,
+        initialGroup: { ...textGroup, width: baseW, height: baseH },
+        currentGroup: { ...textGroup, width: baseW, height: baseH },
+        initialAsset: null,
+        currentAsset: null,
+        centerPoint: { x: centerX, y: centerY },
+      };
+    } else if (targetType === 'asset' && targetAssetId) {
+      const asset = graphicAssets.find((a) => a.id === targetAssetId);
+      const box = engineRef.current.getAssetBoundingBox(targetAssetId);
+      if (!asset || !box) return;
+      const centerX = box.x + box.width / 2;
+      const centerY = box.y + box.height / 2;
+      const startAngle = Math.atan2(point.y - centerY, point.x - centerX);
 
-    interactionRef.current = {
-      mode,
-      handle,
-      startPoint: point,
-      startAngle,
-      initialGroup: {
-        ...textGroup,
-        width: baseW,
-        height: baseH,
-      },
-      currentGroup: {
-        ...textGroup,
-        width: baseW,
-        height: baseH,
-      },
-      centerPoint: { x: centerX, y: centerY },
-    };
+      interactionRef.current = {
+        mode,
+        handle,
+        targetType: 'asset',
+        assetId: targetAssetId,
+        startPoint: point,
+        startAngle,
+        initialBox: box,
+        initialGroup: null,
+        currentGroup: null,
+        initialAsset: { ...asset },
+        currentAsset: { ...asset },
+        centerPoint: { x: centerX, y: centerY },
+      };
+    }
   };
 
   // MOUSE MOVE: Actualizar posición a 60-120 FPS sin disparar re-renders de React
   const handleMouseMove = (e: React.MouseEvent) => {
     const point = getCanvasCoordinates(e);
-    const { mode, startPoint, startAngle, initialGroup, centerPoint } = interactionRef.current;
+    const { mode, startPoint, startAngle, targetType, initialGroup, initialAsset, centerPoint, initialBox } =
+      interactionRef.current;
 
     // Si está inactivo, actualizar cursor según tirador real
-    if (mode === 'IDLE' && textGroup && engineRef.current) {
-      const box = engineRef.current.getBoundingBox();
+    if (mode === 'IDLE' && engineRef.current) {
+      const box = engineRef.current.getActiveBoundingBox();
       if (box) {
         const hoveredHandle = Transform2D.hitTest(point, box, 18);
         setActiveCursor(Transform2D.getCursor(hoveredHandle));
+      } else {
+        setActiveCursor('default');
       }
       return;
     }
 
-    if (!initialGroup) return;
+    // INTERACCIÓN SOBRE TEXTO
+    if (targetType === 'text' && initialGroup) {
+      let updated: CompositeTextGroup = { ...initialGroup };
 
-    let updated: CompositeTextGroup = { ...initialGroup };
-
-    // 1. MODO ARRASTRE
-    if (mode === 'DRAGGING') {
-      const dx = point.x - startPoint.x;
-      const dy = point.y - startPoint.y;
-
-      updated = {
-        ...initialGroup,
-        x: Math.round(initialGroup.x + dx),
-        y: Math.round(initialGroup.y + dy),
-      };
-    }
-
-    // 2. MODO ROTACIÓN
-    else if (mode === 'ROTATING') {
-      const currentAngle = Math.atan2(point.y - centerPoint.y, point.x - centerPoint.x);
-      const deltaRad = currentAngle - startAngle;
-      let newDeg = Math.round(initialGroup.rotation + (deltaRad * 180) / Math.PI);
-
-      while (newDeg > 180) newDeg -= 360;
-      while (newDeg < -180) newDeg += 360;
-
-      if (Math.abs(newDeg) <= 1.8) newDeg = 0;
-      else if (Math.abs(newDeg - -5) <= 1.5) newDeg = -5;
-      else if (Math.abs(newDeg - 5) <= 1.5) newDeg = 5;
-
-      updated = {
-        ...initialGroup,
-        rotation: newDeg,
-      };
-    }
-
-    // 3. MODO ESCALADO (con compensación de pivote central para evitar saltos)
-    else if (mode === 'SCALING') {
-      const initialDist = Math.hypot(startPoint.x - centerPoint.x, startPoint.y - centerPoint.y);
-      const currentDist = Math.hypot(point.x - centerPoint.x, point.y - centerPoint.y);
-
-      if (initialDist > 0) {
-        const factor = currentDist / initialDist;
-        const newScale = Math.max(0.3, Math.min(3.5, initialGroup.scale * factor));
-
-        const newW = initialGroup.width * newScale;
-        const newH = initialGroup.height * newScale;
-
+      if (mode === 'DRAGGING') {
+        const dx = point.x - startPoint.x;
+        const dy = point.y - startPoint.y;
         updated = {
           ...initialGroup,
-          x: Math.round(centerPoint.x - newW / 2),
-          y: Math.round(centerPoint.y - newH / 2),
-          scale: Number(newScale.toFixed(2)),
+          x: Math.round(initialGroup.x + dx),
+          y: Math.round(initialGroup.y + dy),
         };
+      } else if (mode === 'ROTATING') {
+        const currentAngle = Math.atan2(point.y - centerPoint.y, point.x - centerPoint.x);
+        const deltaRad = currentAngle - startAngle;
+        let newDeg = Math.round(initialGroup.rotation + (deltaRad * 180) / Math.PI);
+        while (newDeg > 180) newDeg -= 360;
+        while (newDeg < -180) newDeg += 360;
+        if (Math.abs(newDeg) <= 1.8) newDeg = 0;
+        updated = { ...initialGroup, rotation: newDeg };
+      } else if (mode === 'SCALING') {
+        const initialDist = Math.hypot(startPoint.x - centerPoint.x, startPoint.y - centerPoint.y);
+        const currentDist = Math.hypot(point.x - centerPoint.x, point.y - centerPoint.y);
+        if (initialDist > 10) {
+          const ratio = currentDist / initialDist;
+          const newScale = Math.max(0.2, Math.min(3.0, Number((initialGroup.scale * ratio).toFixed(3))));
+          const newW = initialGroup.width * newScale;
+          const newH = initialGroup.height * newScale;
+          updated = {
+            ...initialGroup,
+            scale: newScale,
+            x: Math.round(centerPoint.x - newW / 2),
+            y: Math.round(centerPoint.y - newH / 2),
+          };
+        }
       }
+
+      interactionRef.current.currentGroup = updated;
+      engineRef.current?.updateTextGroupSilent(updated);
+
+      setTelemetry({
+        x: updated.x,
+        y: updated.y,
+        scale: updated.scale,
+        rotation: updated.rotation,
+      });
+
+      const collision = YouTubeSafeZoneGuard.checkCollision({
+        x: updated.x,
+        y: updated.y,
+        width: updated.width * updated.scale,
+        height: updated.height * updated.scale,
+      });
+      setHasCollision(collision);
     }
 
-    // Actualizar en el Canvas nativo directamente (CERO lag en React)
-    interactionRef.current.currentGroup = updated;
-    engineRef.current?.updateTextGroupSilent(updated);
+    // INTERACCIÓN SOBRE ASSET GRÁFICO
+    else if (targetType === 'asset' && initialAsset && initialBox) {
+      let updated: GraphicAssetElement = { ...initialAsset };
 
-    // Actualizar telemetría visual ligera
-    setTelemetry({
-      x: updated.x,
-      y: updated.y,
-      scale: updated.scale,
-      rotation: updated.rotation,
-    });
+      if (mode === 'DRAGGING') {
+        const dx = point.x - startPoint.x;
+        const dy = point.y - startPoint.y;
+        updated = {
+          ...initialAsset,
+          x: Math.round(initialAsset.x + dx),
+          y: Math.round(initialAsset.y + dy),
+        };
+      } else if (mode === 'ROTATING') {
+        const currentAngle = Math.atan2(point.y - centerPoint.y, point.x - centerPoint.x);
+        const deltaRad = currentAngle - startAngle;
+        let newDeg = Math.round(initialAsset.rotation + (deltaRad * 180) / Math.PI);
+        while (newDeg > 180) newDeg -= 360;
+        while (newDeg < -180) newDeg += 360;
+        if (Math.abs(newDeg) <= 1.8) newDeg = 0;
+        updated = { ...initialAsset, rotation: newDeg };
+      } else if (mode === 'SCALING') {
+        const initialDist = Math.hypot(startPoint.x - centerPoint.x, startPoint.y - centerPoint.y);
+        const currentDist = Math.hypot(point.x - centerPoint.x, point.y - centerPoint.y);
+        if (initialDist > 10) {
+          const ratio = currentDist / initialDist;
+          const newScale = Math.max(0.1, Math.min(3.0, Number((initialAsset.scale * ratio).toFixed(3))));
+          const newW = initialAsset.width * newScale;
+          const newH = initialAsset.height * newScale;
+          updated = {
+            ...initialAsset,
+            scale: newScale,
+            x: Math.round(centerPoint.x - newW / 2),
+            y: Math.round(centerPoint.y - newH / 2),
+          };
+        }
+      }
 
-    const collision = YouTubeSafeZoneGuard.checkCollision({
-      x: updated.x,
-      y: updated.y,
-      width: updated.width * updated.scale,
-      height: updated.height * updated.scale,
-    });
-    setHasCollision(collision);
+      interactionRef.current.currentAsset = updated;
+      engineRef.current?.updateGraphicAssetSilent(updated);
+
+      setTelemetry({
+        x: updated.x,
+        y: updated.y,
+        scale: updated.scale,
+        rotation: updated.rotation,
+      });
+    }
   };
 
   // MOUSE UP: Comitear estado a React una sola vez al terminar el gesto
   const handleMouseUp = () => {
-    const { mode, currentGroup } = interactionRef.current;
+    const { mode, targetType, currentGroup, currentAsset, assetId } = interactionRef.current;
 
-    if (mode !== 'IDLE' && currentGroup) {
-      let finalGroup = { ...currentGroup };
-
-      // Si fue arrastre, verificar y aplicar snap-back de YouTube Safe Zone
-      if (mode === 'DRAGGING') {
-        const boxSize = {
-          width: finalGroup.width * finalGroup.scale,
-          height: finalGroup.height * finalGroup.scale,
-        };
-        const safePos = YouTubeSafeZoneGuard.applySnapBack(
-          { x: finalGroup.x, y: finalGroup.y },
-          boxSize
-        );
-
-        finalGroup.x = safePos.x;
-        finalGroup.y = safePos.y;
+    if (mode !== 'IDLE') {
+      if (targetType === 'text' && currentGroup) {
+        let finalGroup = { ...currentGroup };
+        if (mode === 'DRAGGING') {
+          const boxSize = {
+            width: finalGroup.width * finalGroup.scale,
+            height: finalGroup.height * finalGroup.scale,
+          };
+          const safePos = YouTubeSafeZoneGuard.applySnapBack(
+            { x: finalGroup.x, y: finalGroup.y },
+            boxSize
+          );
+          finalGroup.x = safePos.x;
+          finalGroup.y = safePos.y;
+        }
+        onUpdateTextGroup(finalGroup);
+      } else if (targetType === 'asset' && currentAsset && assetId) {
+        const updated = graphicAssets.map((a) => (a.id === assetId ? currentAsset : a));
+        onUpdateGraphicAssets?.(updated);
       }
-
-      // Comitear a React solo al soltar el ratón
-      onUpdateTextGroup(finalGroup);
     }
 
     interactionRef.current.mode = 'IDLE';
     interactionRef.current.handle = 'NONE';
     interactionRef.current.currentGroup = null;
+    interactionRef.current.currentAsset = null;
   };
+
+  const showTelemetry = Boolean((activeElement?.type === 'text' && textGroup) || activeElement?.type === 'asset');
 
   return (
     <div
@@ -349,8 +500,8 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
             <div className="border-r border-b border-blue-400/40 border-dashed"></div>
             <div className="border-r border-b border-blue-400/40 border-dashed"></div>
             <div className="border-b border-blue-400/40 border-dashed"></div>
-            <div className="border-r border-blue-400/40 border-dashed"></div>
-            <div className="border-r border-blue-400/40 border-dashed"></div>
+            <div className="border-r border-b border-blue-400/40 border-dashed"></div>
+            <div className="border-r border-b border-blue-400/40 border-dashed"></div>
             <div></div>
           </div>
         )}
@@ -358,8 +509,10 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
         {/* Overlay de YouTube Safe Zone (Timestamp 14:25) */}
         {safeZonesVisible && (
           <div
-            className={`absolute right-4 bottom-4 w-18 h-7 bg-black/90 text-white rounded text-xs font-mono font-bold flex items-center justify-center border pointer-events-none transition-all ${
-              hasCollision ? 'ring-2 ring-red-500 border-red-500 scale-105' : 'border-white/20'
+            className={`absolute right-4 bottom-4 w-18 h-7 bg-black/90 text-white rounded text-xs font-mono font-bold flex items-center justify-center border pointer-events-none transition-all z-10 ${
+              hasCollision && activeElement?.type === 'text'
+                ? 'ring-2 ring-red-500 border-red-500 scale-105 animate-pulse'
+                : 'border-white/20'
             }`}
           >
             14:25
@@ -367,8 +520,8 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
         )}
       </div>
 
-      {/* Barra Flotante de Zoom */}
-      <div className="absolute right-4 bottom-4 z-20 flex items-center gap-1 bg-white/95 backdrop-blur-xs border border-slate-200/90 rounded-lg p-1 shadow-md text-xs select-none">
+      {/* Controles de Zoom Flotantes */}
+      <div className="absolute bottom-4 right-4 flex items-center gap-1 bg-white/90 backdrop-blur-xs border border-slate-200 shadow-md rounded-lg p-1 z-20 text-xs">
         <button
           type="button"
           onClick={() => setZoomLevel((prev) => Math.max(0.5, Number((prev - 0.1).toFixed(1))))}
@@ -406,13 +559,13 @@ export const CanvasStage: React.FC<CanvasStageProps> = ({
         </button>
       </div>
 
-      {textGroup && (
+      {showTelemetry && (
         <TelemetryBar
           x={telemetry.x}
           y={telemetry.y}
           scale={telemetry.scale}
           rotation={telemetry.rotation}
-          hasCollision={hasCollision}
+          hasCollision={hasCollision && activeElement?.type === 'text'}
         />
       )}
     </div>

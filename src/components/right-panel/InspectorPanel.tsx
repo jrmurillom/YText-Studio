@@ -1,28 +1,79 @@
 import React from 'react';
 import { FontFamilySelector } from './FontFamilySelector';
 import { FineTuningSliders } from './FineTuningSliders';
-import { CompositeTextGroup, TextSegment } from '@/types';
+import { AssetInspector } from './AssetInspector';
+import { CompositeTextGroup, TextSegment, GraphicAssetElement, ActiveCanvasElement } from '@/types';
 import { Smartphone, Shield, Sliders, Plus, Trash2, Sparkles, ChevronUp, ChevronDown } from 'lucide-react';
 import { ReadabilityCalculator } from '@/core/metrics/ReadabilityCalculator';
 
 interface InspectorPanelProps {
   textGroup: CompositeTextGroup | null;
   onUpdateTextGroup: (group: CompositeTextGroup) => void;
+  graphicAssets?: GraphicAssetElement[];
+  onUpdateGraphicAssets?: (assets: GraphicAssetElement[]) => void;
+  activeElement?: ActiveCanvasElement;
+  onSelectActiveElement?: (elem: ActiveCanvasElement) => void;
 }
 
 export const InspectorPanel: React.FC<InspectorPanelProps> = ({
   textGroup,
   onUpdateTextGroup,
+  graphicAssets = [],
+  onUpdateGraphicAssets,
+  activeElement = { type: 'text' },
+  onSelectActiveElement,
 }) => {
+  // 1. Si el elemento activo es un Asset Gráfico
+  if (activeElement?.type === 'asset') {
+    const selectedAsset = graphicAssets.find((a) => a.id === activeElement.id);
+    if (selectedAsset) {
+      const handleUpdateAsset = (updated: GraphicAssetElement) => {
+        const next = graphicAssets.map((a) => (a.id === updated.id ? updated : a));
+        onUpdateGraphicAssets?.(next);
+      };
+
+      const handleDeleteAsset = (id: string) => {
+        const next = graphicAssets.filter((a) => a.id !== id);
+        onUpdateGraphicAssets?.(next);
+        onSelectActiveElement?.(textGroup ? { type: 'text' } : null);
+      };
+
+      const handleBringToFront = (id: string) => {
+        const maxZ = graphicAssets.reduce((max, a) => Math.max(max, a.zIndex), 0);
+        const next = graphicAssets.map((a) => (a.id === id ? { ...a, zIndex: maxZ + 1 } : a));
+        onUpdateGraphicAssets?.(next);
+      };
+
+      const handleSendToBack = (id: string) => {
+        const minZ = graphicAssets.reduce((min, a) => Math.min(min, a.zIndex), 0);
+        const next = graphicAssets.map((a) => (a.id === id ? { ...a, zIndex: minZ - 1 } : a));
+        onUpdateGraphicAssets?.(next);
+      };
+
+      return (
+        <div className="p-4 space-y-5 text-xs text-slate-800">
+          <AssetInspector
+            asset={selectedAsset}
+            onUpdateAsset={handleUpdateAsset}
+            onDeleteAsset={handleDeleteAsset}
+            onBringToFront={handleBringToFront}
+            onSendToBack={handleSendToBack}
+          />
+        </div>
+      );
+    }
+  }
+
+  // 2. Si no hay grupo de texto y no hay asset seleccionado
   if (!textGroup) {
     return (
       <div className="p-6 flex flex-col items-center justify-center text-center h-full text-slate-400 gap-2">
         <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-1">
           <Sliders className="w-5 h-5" />
         </div>
-        <span className="text-xs font-bold text-slate-600">Typography Inspector Idle</span>
+        <span className="text-xs font-bold text-slate-600">Inspector Idle</span>
         <span className="text-[11px] leading-relaxed max-w-[200px]">
-          Upload an image and run AI analysis to generate proposals and unlock vector controls.
+          Select text or an added graphic element on canvas to fine-tune visual properties.
         </span>
       </div>
     );

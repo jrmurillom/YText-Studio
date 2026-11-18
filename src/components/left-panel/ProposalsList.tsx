@@ -21,6 +21,7 @@ interface ProposalsListProps {
   isLoading: boolean;
   errorMessage?: string;
   telemetry?: LMMTelemetry | null;
+  proposalCount?: number;
 }
 
 export const ProposalsList: React.FC<ProposalsListProps> = ({
@@ -30,6 +31,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
   isLoading,
   errorMessage,
   telemetry,
+  proposalCount = 3,
 }) => {
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
   const [activeLogTab, setActiveLogTab] = useState<'sent' | 'received'>('received');
@@ -92,7 +94,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
             <Loader2 className="w-4 h-4" />
           </div>
           <div>
-            <span className="text-xs font-bold text-slate-800 block">Designing 3 AI Proposals...</span>
+            <span className="text-xs font-bold text-slate-800 block">Designing {proposalCount} AI Proposals...</span>
             <span className="text-[10px] text-slate-500">
               Analyzing faces, negative space, and chromatic contrast in 1280x720
             </span>
@@ -100,7 +102,7 @@ export const ProposalsList: React.FC<ProposalsListProps> = ({
         </div>
       ) : proposals.length === 0 ? (
         <div className="p-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 text-center text-slate-400 text-xs">
-          Click "Analyze & Generate Proposals" to let the AI design 3 custom compositions.
+          Click "Generate Proposals" to let the AI design {proposalCount} custom compositions.
         </div>
       ) : (
         <div className="space-y-2">
