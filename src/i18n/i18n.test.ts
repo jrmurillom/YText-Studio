@@ -21,8 +21,8 @@ describe('i18n Engine (Modular Dictionaries & Typed Interpolation)', () => {
   });
 
   it('interpola múltiples parámetros dinámicos `{variable}` en ambos idiomas', () => {
-    expect(translate('en', 'inspector.titleLines', { current: 2, max: 3 })).toBe('Title Lines (2/3)');
-    expect(translate('es', 'inspector.titleLines', { current: 2, max: 3 })).toBe('Líneas de Título (2/3)');
+    expect(translate('en', 'inspector.titleLines', { current: 2, max: 3 })).toBe('Lines (2/3)');
+    expect(translate('es', 'inspector.titleLines', { current: 2, max: 3 })).toBe('Líneas (2/3)');
     expect(translate('en', 'modals.analyzingBtn', { seconds: '1.4' })).toBe('Analyzing with AI (1.4s)...');
     expect(translate('es', 'modals.analyzingBtn', { seconds: '1.4' })).toBe('Analizando con IA (1.4s)...');
   });

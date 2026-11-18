@@ -4,7 +4,7 @@ import { FineTuningSliders } from './FineTuningSliders';
 import { LineTransformControls } from './LineTransformControls';
 import { AssetInspector } from './AssetInspector';
 import { CompositeTextGroup, TextSegment, GraphicAssetElement, ActiveCanvasElement } from '@/types';
-import { Smartphone, Shield, Sliders, Plus, Trash2, Sparkles, ChevronUp, ChevronDown, Info, X } from 'lucide-react';
+import { Smartphone, Sliders, Plus, Trash2, ChevronUp, ChevronDown, Info, X } from 'lucide-react';
 import { ReadabilityCalculator } from '@/core/metrics/ReadabilityCalculator';
 import { useTranslation } from '@/i18n';
 
@@ -322,7 +322,6 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
               <span className="px-2 py-0.5 rounded bg-blue-600 text-white font-mono font-bold text-[10px]">
                 {t('inspector.lineNum', { num: safeActiveIndex + 1 })}
               </span>
-              <span className="text-[11px] font-bold text-slate-700">{t('inspector.lineProperties')}</span>
             </div>
 
             <div className="flex items-center gap-1">
@@ -364,9 +363,6 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
 
           {/* Full-width Line Text Input */}
           <div>
-            <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-              {t('inspector.lineText')}
-            </label>
             <input
               type="text"
               value={activeSegment.text}
@@ -388,20 +384,18 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
           <div className="grid grid-cols-2 gap-2 pt-1">
             {/* Color & Gradient Card */}
             <div className="bg-white p-2 rounded-lg border border-slate-200 space-y-1.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-slate-600">{t('inspector.textColor')}</span>
+              <div className="flex items-center justify-end">
                 <button
                   type="button"
                   onClick={() => handleToggleLineGradient(safeActiveIndex)}
-                  className={`px-1.5 py-0.5 rounded text-[9px] font-bold border flex items-center gap-1 cursor-pointer transition-colors ${
+                  className={`px-1.5 py-0.5 rounded text-[9px] font-bold border cursor-pointer transition-colors ${
                     activeSegment.gradientColorHex
                       ? 'bg-amber-100 border-amber-300 text-amber-800'
                       : 'bg-slate-50 border-slate-200 text-slate-500 hover:text-slate-800'
                   }`}
                   title={t('inspector.toggleGradientTitle')}
                 >
-                  <Sparkles className="w-2.5 h-2.5" />
-                  <span>{t('inspector.gradient')}</span>
+                  {t('inspector.gradient')}
                 </button>
               </div>
               <div className="flex items-center gap-1.5">
@@ -449,20 +443,18 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
 
             {/* Badge (Background Container) Card */}
             <div className="bg-white p-2 rounded-lg border border-slate-200 space-y-1.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-slate-600">{t('inspector.badgeBackground')}</span>
+              <div className="flex items-center justify-end">
                 <button
                   type="button"
                   onClick={() => handleToggleLineBadge(safeActiveIndex)}
-                  className={`px-1.5 py-0.5 rounded text-[9px] font-bold border flex items-center gap-1 cursor-pointer transition-colors ${
+                  className={`px-1.5 py-0.5 rounded text-[9px] font-bold border cursor-pointer transition-colors ${
                     activeSegment.hasBadge
                       ? 'bg-blue-100 border-blue-300 text-blue-800'
                       : 'bg-slate-50 border-slate-200 text-slate-500 hover:text-slate-800'
                   }`}
                   title={t('inspector.toggleBadgeTitle')}
                 >
-                  <Shield className="w-2.5 h-2.5" />
-                  <span>{t('inspector.badge')}</span>
+                  {t('inspector.badge')}
                 </button>
               </div>
 
@@ -537,9 +529,14 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
           {/* Contextual Typography Selector for Active Line */}
           <div className="pt-2 border-t border-slate-200/80">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                {t('inspector.lineTypography')}
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  {t('inspector.lineTypography')}
+                </span>
+                <span className="text-[9px] text-blue-600 font-mono font-bold">
+                  {activeSegment.fontFamily}
+                </span>
+              </div>
               <label className="flex items-center gap-1 cursor-pointer text-[10px] text-slate-500 hover:text-slate-800">
                 <input
                   type="checkbox"
