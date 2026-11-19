@@ -28,5 +28,14 @@
   "cardSubSecondDesc": "Punchy 1 to 3 word copy designed to capture attention in mobile feeds in under 0.3 seconds.",
   "systemPromptLabel": "AI Packaging System Prompt",
   "cancel": "Cancel",
-  "saveSettings": "Save Settings"
+  "saveSettings": "Save Settings",
+  "tabAbout": "About",
+  "aboutDesc": "AI-powered art direction for YouTube thumbnails. Upload your image and generate high-impact typography titles ready to publish in seconds.",
+  "aboutLicense": "MIT License (Open Source)",
+  "authorRole": "Lead Maintainer",
+  "emailLabel": "Email",
+  "copyBtn": "Copy",
+  "copiedBtn": "Copied!",
+  "issuesPrompt": "Found a bug or have a suggestion?",
+  "issuesLink": "Open an Issue"
 }

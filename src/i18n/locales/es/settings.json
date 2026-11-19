@@ -28,5 +28,14 @@
   "cardSubSecondDesc": "Textos directos de 1 a 3 palabras diseñados para captar la atención en feeds móviles en menos de 0.3 segundos.",
   "systemPromptLabel": "Prompt del Sistema de Empaquetado IA",
   "cancel": "Cancelar",
-  "saveSettings": "Guardar Ajustes"
+  "saveSettings": "Guardar Ajustes",
+  "tabAbout": "Acerca de",
+  "aboutDesc": "Dirección de arte con IA para miniaturas de YouTube. Sube tu imagen y genera títulos de alto impacto listos para publicar en segundos.",
+  "aboutLicense": "Licencia MIT (Código Abierto)",
+  "authorRole": "Lead Maintainer",
+  "emailLabel": "Email",
+  "copyBtn": "Copiar",
+  "copiedBtn": "¡Copiado!",
+  "issuesPrompt": "¿Encontraste un bug o tienes una sugerencia?",
+  "issuesLink": "Abrir un Issue"
 }
