@@ -21,6 +21,10 @@
 
 </div>
 
+<p align="center">
+  <img src="docs/assets/screenshots/workspace-showcase.png" alt="YText Studio Professional Workspace" width="100%" />
+</p>
+
 ---
 
 **YText Studio** is a free, open-source tool built to accelerate YouTube thumbnail creation by combining **visual multimodal AI** with an **ergonomic canvas editor designed for creators without professional software experience**.
@@ -46,6 +50,11 @@ Instead of staring at a blank canvas wondering which font to pick, where to plac
    Tailor any proposal on the fly: switch between 12 battle-tested YouTube fonts, fine-tune colors, apply vertical gradients, thick outer strokes, extruded 3D shadows, contrast background containers (*badges*) to rescue text from busy backgrounds, and add graphic stickers or arrows with die-cut white borders.
 3. **📱 Real-Time YouTube Simulator & Mobile Readability**  
    Preview exactly how your design appears on a real smartphone feed (~320×180 px), desktop browse grid, or sidebar recommendations. Includes a real-time Thumbnail Readability Index (TRI) score and automated collision alerts when text overlaps YouTube’s bottom-right video duration badge (`14:25`).
+
+<p align="center">
+  <img src="docs/assets/screenshots/feed-simulator-showcase.png" alt="YouTube Feed Simulator and Multi-Context Validation" width="100%" />
+</p>
+
 4. **⚡ Official YouTube Resolution Export**  
    Download your finalized thumbnail in exact YouTube dimensions (`1280×720` standard or `1920×1080` Full HD) in lossless PNG or clean JPG.
 

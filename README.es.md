@@ -21,6 +21,10 @@
 
 </div>
 
+<p align="center">
+  <img src="docs/assets/screenshots/workspace-showcase.png" alt="Mesa de Trabajo de YText Studio" width="100%" />
+</p>
+
 ---
 
 **YText Studio** es una aplicación gratuita y de código abierto que acelera la creación de miniaturas para YouTube combinando **Inteligencia Artificial visual** con un **editor gráfico fácil de usar sin previo conocimiento de software profesional**.
@@ -46,6 +50,11 @@ En lugar de empezar desde cero sin saber qué fuente elegir, dónde ubicar el te
    Personaliza cualquier propuesta al instante: cambia entre 12 tipografías probadas en YouTube, aplica colores, degradados, bordes gruesos, sombras 3D, cajas de fondo (*badges*) para resaltar palabras clave y añade stickers, flechas o íconos con borde recortado.
 3. **📱 Simulador de YouTube y Legibilidad Móvil**  
    Previsualiza cómo se verá tu miniatura a tamaño real en el feed de un teléfono, en la página de inicio o en videos sugeridos. Incluye puntuación de legibilidad en tiempo real y alerta automática si el reloj de duración de YouTube (`14:25`) tapa tu texto.
+
+<p align="center">
+  <img src="docs/assets/screenshots/feed-simulator-showcase.png" alt="Simulador de Feed de YouTube y Comprobación de Contraste" width="100%" />
+</p>
+
 4. **⚡ Exportación en Resolución Oficial**  
    Descarga tu portada terminada en las dimensiones exactas de YouTube (`1280×720` o `1920×1080` Full HD) en formato PNG o JPG de máxima nitidez.
 
