@@ -31,8 +31,6 @@
 
 Instead of staring at a blank canvas wondering which font to pick, where to place text, or what colors maximize contrast, the AI analyzes your image, distills your concept into high-converting hook phrases, and designs multiple complete visual proposals ready to apply and customize in a single click.
 
-> 🌍 **Bilingual & Language Mirroring:** The UI features a real-time language switcher (**English / Español**). Additionally, the AI automatically detects your input title language: enter your concept in English and it outputs English hooks; enter it in Spanish and it outputs Spanish hooks.
-
 ---
 
 ## The Problem & The Solution
@@ -50,13 +48,12 @@ Instead of staring at a blank canvas wondering which font to pick, where to plac
    Tailor any proposal on the fly: switch between 12 battle-tested YouTube fonts, fine-tune colors, apply vertical gradients, thick outer strokes, extruded 3D shadows, contrast background containers (*badges*) to rescue text from busy backgrounds, and add graphic stickers or arrows with die-cut white borders.
 3. **📱 Real-Time YouTube Simulator & Mobile Readability**  
    Preview exactly how your design appears on a real smartphone feed (~320×180 px), desktop browse grid, or sidebar recommendations. Includes a real-time Thumbnail Readability Index (TRI) score and automated collision alerts when text overlaps YouTube’s bottom-right video duration badge (`14:25`).
+4. **⚡ Official YouTube Resolution Export**  
+   Download your finalized thumbnail in exact YouTube dimensions (`1280×720` standard or `1920×1080` Full HD) in lossless PNG or clean JPG.
 
 <p align="center">
   <img src="docs/assets/screenshots/feed-simulator-showcase.png" alt="YouTube Feed Simulator and Multi-Context Validation" width="100%" />
 </p>
-
-4. **⚡ Official YouTube Resolution Export**  
-   Download your finalized thumbnail in exact YouTube dimensions (`1280×720` standard or `1920×1080` Full HD) in lossless PNG or clean JPG.
 
 ---
 

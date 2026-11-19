@@ -31,8 +31,6 @@
 
 En lugar de empezar desde cero sin saber qué fuente elegir, dónde ubicar el texto o qué colores contrastan mejor, la IA estudia tu imagen, sintetiza tu idea en palabras gancho (*hooks*) y diseña múltiples propuestas visuales listas para aplicar y personalizar en un clic.
 
-> 🌍 **Soporte Bilingüe & Language Mirroring:** La interfaz cuenta con selector de idioma en vivo (**Español / English**). Además, la IA detecta automáticamente el idioma de tu título: si escribes tu idea en español, genera ganchos y conceptos en español; si lo haces en inglés, responde en inglés.
-
 ---
 
 ## El Problema y la Solución
@@ -50,13 +48,12 @@ En lugar de empezar desde cero sin saber qué fuente elegir, dónde ubicar el te
    Personaliza cualquier propuesta al instante: cambia entre 12 tipografías probadas en YouTube, aplica colores, degradados, bordes gruesos, sombras 3D, cajas de fondo (*badges*) para resaltar palabras clave y añade stickers, flechas o íconos con borde recortado.
 3. **📱 Simulador de YouTube y Legibilidad Móvil**  
    Previsualiza cómo se verá tu miniatura a tamaño real en el feed de un teléfono, en la página de inicio o en videos sugeridos. Incluye puntuación de legibilidad en tiempo real y alerta automática si el reloj de duración de YouTube (`14:25`) tapa tu texto.
+4. **⚡ Exportación en Resolución Oficial**  
+   Descarga tu portada terminada en las dimensiones exactas de YouTube (`1280×720` o `1920×1080` Full HD) en formato PNG o JPG de máxima nitidez.
 
 <p align="center">
   <img src="docs/assets/screenshots/feed-simulator-showcase.png" alt="Simulador de Feed de YouTube y Comprobación de Contraste" width="100%" />
 </p>
-
-4. **⚡ Exportación en Resolución Oficial**  
-   Descarga tu portada terminada en las dimensiones exactas de YouTube (`1280×720` o `1920×1080` Full HD) en formato PNG o JPG de máxima nitidez.
 
 ---
 
