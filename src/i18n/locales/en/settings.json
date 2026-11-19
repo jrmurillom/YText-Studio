@@ -37,5 +37,7 @@
   "copyBtn": "Copy",
   "copiedBtn": "Copied!",
   "issuesPrompt": "Found a bug or have a suggestion?",
-  "issuesLink": "Open an Issue"
+  "issuesLink": "Open an Issue",
+  "supportTitle": "Support Open Source Development",
+  "supportDesc": "YText Studio is 100% free and ad-free. If it saves you time, consider buying a coffee to support maintenance and new features!"
 }

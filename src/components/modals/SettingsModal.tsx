@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LMMConfig, LMMProviderType } from '@/types';
 import { DEFAULT_LMM_SYSTEM_PROMPT } from '@/core/lmm/types';
-import { X, Key, ShieldCheck, Sparkles, Info, ExternalLink, Mail, Copy, Check } from 'lucide-react';
+import { X, Key, ShieldCheck, Sparkles, Info, Mail, Copy, Check, Coffee } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import { BrandLogo } from '../common/BrandLogo';
 import { APP_VERSION } from '@/config/version';
@@ -22,11 +22,32 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'connection' | 'creative_guidelines' | 'about'>('connection');
   const [copiedEmail, setCopiedEmail] = useState(false);
+  const [copiedGithub, setCopiedGithub] = useState(false);
+  const [copiedKofi, setCopiedKofi] = useState(false);
+  const [copiedIssues, setCopiedIssues] = useState(false);
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText('jrmurillom@gmail.com');
     setCopiedEmail(true);
     setTimeout(() => setCopiedEmail(false), 2000);
+  };
+
+  const handleCopyGithub = () => {
+    navigator.clipboard.writeText('https://github.com/jrmurillom');
+    setCopiedGithub(true);
+    setTimeout(() => setCopiedGithub(false), 2000);
+  };
+
+  const handleCopyKofi = () => {
+    navigator.clipboard.writeText('https://ko-fi.com/jrmurillom');
+    setCopiedKofi(true);
+    setTimeout(() => setCopiedKofi(false), 2000);
+  };
+
+  const handleCopyIssues = () => {
+    navigator.clipboard.writeText('https://github.com/jrmurillom/YText-Studio/issues');
+    setCopiedIssues(true);
+    setTimeout(() => setCopiedIssues(false), 2000);
   };
 
   // Form states
@@ -312,15 +333,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                {/* GitHub Link */}
-                <a
-                  href="https://github.com/jrmurillom"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 transition-all text-slate-800"
-                >
+                {/* GitHub with copy */}
+                <div className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-800">
                   <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4 text-slate-800" fill="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-slate-800 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
                     </svg>
                     <div>
@@ -328,13 +344,24 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       <span className="text-[10px] text-slate-500 font-mono">github.com/jrmurillom</span>
                     </div>
                   </div>
-                  <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-                </a>
+                  <button
+                    type="button"
+                    onClick={handleCopyGithub}
+                    className={`text-[10px] font-semibold px-2 py-1 rounded transition-colors cursor-pointer flex items-center gap-1 ${
+                      copiedGithub
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
+                    }`}
+                  >
+                    {copiedGithub ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                    <span>{copiedGithub ? t('settings.copiedBtn') : t('settings.copyBtn')}</span>
+                  </button>
+                </div>
 
                 {/* Email with copy */}
                 <div className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-800">
                   <div className="flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-blue-600" />
+                    <Mail className="w-4 h-4 text-blue-600 shrink-0" />
                     <div>
                       <span className="text-[11px] font-semibold text-slate-800 block">{t('settings.emailLabel')}</span>
                       <span className="text-[10px] text-slate-500 font-mono">jrmurillom@gmail.com</span>
@@ -356,18 +383,60 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
             </div>
 
-            {/* Issues Link */}
+            {/* Support / Ko-fi Card */}
+            <div className="p-3.5 rounded-lg border border-amber-200 bg-amber-50/60 flex flex-col gap-2.5 text-xs">
+              <div className="flex items-start gap-2.5">
+                <div className="w-7 h-7 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center shrink-0 text-amber-700">
+                  <Coffee className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <h5 className="font-bold text-slate-800 text-[12px]">{t('settings.supportTitle')}</h5>
+                  <p className="text-[11px] text-slate-600 mt-0.5 leading-snug">
+                    {t('settings.supportDesc')}
+                  </p>
+                </div>
+              </div>
+
+              {/* URL with Copy Button */}
+              <div className="flex items-center justify-between p-2 rounded-lg border border-amber-300/80 bg-white">
+                <div className="flex items-center gap-2 min-w-0 pr-2">
+                  <span className="text-[11px] font-mono text-slate-700 truncate select-all">
+                    https://ko-fi.com/jrmurillom
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCopyKofi}
+                  className={`text-[10px] font-semibold px-2 py-1 rounded transition-colors cursor-pointer flex items-center gap-1 shrink-0 ${
+                    copiedKofi
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  {copiedKofi ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedKofi ? t('settings.copiedBtn') : t('settings.copyBtn')}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Issues with copy */}
             <div className="p-3 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-between text-[11px]">
-              <span className="text-slate-600">{t('settings.issuesPrompt')}</span>
-              <a
-                href="https://github.com/jrmurillom/YText-Studio/issues"
-                target="_blank"
-                rel="noreferrer"
-                className="text-blue-600 font-semibold hover:underline flex items-center gap-1"
+              <div>
+                <span className="text-slate-700 font-medium block">{t('settings.issuesPrompt')}</span>
+                <span className="text-[10px] text-slate-400 font-mono">github.com/jrmurillom/YText-Studio/issues</span>
+              </div>
+              <button
+                type="button"
+                onClick={handleCopyIssues}
+                className={`text-[10px] font-semibold px-2 py-1 rounded transition-colors cursor-pointer flex items-center gap-1 shrink-0 ${
+                  copiedIssues
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
+                }`}
               >
-                <span>{t('settings.issuesLink')}</span>
-                <ExternalLink className="w-3 h-3" />
-              </a>
+                {copiedIssues ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                <span>{copiedIssues ? t('settings.copiedBtn') : t('settings.copyBtn')}</span>
+              </button>
             </div>
           </div>
         )}

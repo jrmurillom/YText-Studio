@@ -14,6 +14,7 @@
 [![Rust](https://img.shields.io/badge/Rust-Backend-black?logo=rust)](https://www.rust-lang.org/)
 [![Tests](https://img.shields.io/badge/Tests-43%20passed-brightgreen?logo=vitest)](https://vitest.dev/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-F16061?logo=ko-fi&logoColor=white)](https://ko-fi.com/jrmurillom)
 
 <br/>
 
@@ -145,6 +146,19 @@ npm run build
 # 7. Package native desktop installers (.exe / .msi / .dmg)
 npm run tauri:build
 ```
+
+---
+
+## ☕ Support the Project
+
+**YText Studio** is free, independent, and open-source software built to help creators produce higher-converting thumbnails without subscriptions or paywalls.
+
+If YText Studio has saved you hours in Photoshop, sped up your video production, or boosted your channel's click-through rates, consider supporting ongoing development:
+
+[![Support on Ko-fi](https://img.shields.io/badge/Support_on-Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/jrmurillom)
+[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor_on-GitHub-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/jrmurillom)
+
+Your support directly funds maintenance, new canvas features, safe zone updates, and local AI model improvements. Thank you! ❤️
 
 ---
 

@@ -14,6 +14,7 @@
 [![Rust](https://img.shields.io/badge/Rust-Backend-black?logo=rust)](https://www.rust-lang.org/)
 [![Tests](https://img.shields.io/badge/Tests-43%20passed-brightgreen?logo=vitest)](https://vitest.dev/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-F16061?logo=ko-fi&logoColor=white)](https://ko-fi.com/jrmurillom)
 
 <br/>
 
@@ -145,6 +146,19 @@ npm run build
 # 7. Compilar instaladores nativos de escritorio (.exe / .msi / .dmg)
 npm run tauri:build
 ```
+
+---
+
+## ☕ Apoya el Proyecto
+
+**YText Studio** es software gratuito, independiente y de código abierto creado para ayudar a creadores a diseñar miniaturas con mayor conversión sin suscripciones ni barreras de pago.
+
+Si YText Studio te ha ahorrado horas en Photoshop, aceleró la producción de tus videos o mejoró el CTR de tu canal, considera apoyar su desarrollo continuo:
+
+[![Apoyar en Ko-fi](https://img.shields.io/badge/Apoyar_en-Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/jrmurillom)
+[![Patrocinar en GitHub](https://img.shields.io/badge/Patrocinar_en-GitHub-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/jrmurillom)
+
+Tu apoyo financia directamente el mantenimiento, nuevas funciones del lienzo, actualización de zonas seguras y mejoras en modelos locales de IA. ¡Muchas gracias! ❤️
 
 ---
 

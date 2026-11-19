@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Download, Image as ImageIcon, Sparkles, Loader2, Check } from 'lucide-react';
+import { X, Download, Image as ImageIcon, Sparkles, Loader2, Check, Coffee, Copy } from 'lucide-react';
 import { CompositeTextGroup, GraphicAssetElement } from '@/types';
 import { OffscreenExporter, ExportResolution, ExportFormat } from '@/core/canvas/OffscreenExporter';
 import { useTranslation } from '@/i18n';
@@ -28,6 +28,13 @@ export const ExportModal: React.FC<ExportModalProps> = ({
   const [format, setFormat] = useState<ExportFormat>('png');
   const [isExporting, setIsExporting] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [copiedKofi, setCopiedKofi] = useState(false);
+
+  const handleCopyKofi = () => {
+    navigator.clipboard.writeText('https://ko-fi.com/jrmurillom');
+    setCopiedKofi(true);
+    setTimeout(() => setCopiedKofi(false), 2000);
+  };
 
   if (!isOpen) return null;
 
@@ -53,7 +60,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
       setDownloadSuccess(true);
       setTimeout(() => {
         setDownloadSuccess(false);
-      }, 3000);
+      }, 8000);
     } catch (err) {
       console.error('Error during export:', err);
       alert(t('modals.exportError'));
@@ -208,6 +215,30 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             </span>
             <span className="text-[11px] text-slate-400 font-mono">16:9 HD</span>
           </div>
+
+          {/* Post-Download Support Prompt */}
+          {downloadSuccess && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex flex-col sm:flex-row items-center justify-between gap-2.5 transition-all">
+              <div className="flex items-center gap-2">
+                <Coffee className="w-4 h-4 text-amber-600 shrink-0" />
+                <span className="text-xs text-slate-700 font-medium leading-tight">
+                  {t('modals.supportPrompt')}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleCopyKofi}
+                className={`text-[10px] font-semibold px-2 py-1 rounded transition-colors cursor-pointer flex items-center gap-1 shrink-0 ${
+                  copiedKofi
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                {copiedKofi ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                <span>{copiedKofi ? t('modals.supportCopiedBtn') : t('modals.supportCopyBtn')}</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
