@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LMMConfig, LMMProviderType } from '@/types';
 import { DEFAULT_LMM_SYSTEM_PROMPT } from '@/core/lmm/types';
-import { X, Key, Cpu, ShieldCheck, Sparkles, Info, ExternalLink, Mail, Copy, Check } from 'lucide-react';
+import { X, Key, ShieldCheck, Sparkles, Info, ExternalLink, Mail, Copy, Check } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import { BrandLogo } from '../common/BrandLogo';
 import { APP_VERSION } from '@/config/version';
@@ -64,11 +64,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       <div className="w-full max-w-2xl bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="h-12 border-b border-slate-200 px-4 flex items-center justify-between bg-slate-50 shrink-0">
-          <div className="flex items-center gap-2">
-            <Cpu className="w-4 h-4 text-blue-600" />
-            <span className="font-bold text-sm text-slate-900">{t('settings.modalTitle')}</span>
-          </div>
-
           <div className="flex items-center gap-1 bg-slate-200/60 p-0.5 rounded-lg text-xs">
             <button
               onClick={() => setActiveTab('connection')}

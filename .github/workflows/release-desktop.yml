@@ -44,7 +44,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: v__VERSION__
-          releaseName: 'YText Studio v__VERSION__'
+          releaseName: 'v__VERSION__'
           releaseBody: 'Desktop installer bundle for YText Studio. Check assets below for your operating system.'
           releaseDraft: false
           prerelease: false
