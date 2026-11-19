@@ -1,0 +1,45 @@
+<svg viewBox="0 0 1024 1024" width="1024" height="1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="p4-bg" x1="0" y1="0" x2="1024" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+    <linearGradient id="p4-red-card" x1="112" y1="232" x2="912" y2="792" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF1E27" />
+      <stop offset="100%" stop-color="#B91C1C" />
+    </linearGradient>
+    <linearGradient id="p4-play-badge" x1="674" y1="624" x2="866" y2="816" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF0033" />
+      <stop offset="100%" stop-color="#CC0000" />
+    </linearGradient>
+    <filter id="p4-shadow-front" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+    <filter id="p4-shadow-play" x="-20%" y="-20%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#000000" flood-opacity="0.5" />
+    </filter>
+  </defs>
+
+  <!-- Squircle Base Canvas (App Container) -->
+  <rect width="1024" height="1024" rx="224" fill="url(#p4-bg)"/>
+  <rect x="8" y="8" width="1008" height="1008" rx="216" stroke="#334155" stroke-width="14" stroke-opacity="0.5"/>
+
+  <!-- Capa 1 (Fondo): Tarjeta Roja Tilted (800x560) -->
+  <rect x="112" y="232" width="800" height="560" rx="48" fill="url(#p4-red-card)" transform="rotate(-5 512 512)" opacity="0.95" />
+
+  <!-- Capa 2 (Frente): Placa Blanca Monumental (800x560) con DropShadow -->
+  <g filter="url(#p4-shadow-front)">
+    <rect x="112" y="232" width="800" height="560" rx="48" fill="#FFFFFF" transform="rotate(2.5 512 512)" />
+
+    <!-- 'T' Monumental Ultra-Bold Display dentro de la placa frontal -->
+    <path d="M 222 332 L 802 332 L 802 447 L 597 447 L 597 732 L 427 732 L 427 447 L 222 447 Z" 
+          fill="#0F172A" 
+          transform="rotate(2.5 512 512)" />
+  </g>
+
+  <!-- Insignia Play Agrandada con relieve (Radio 96px, Diámetro 192px) -->
+  <g filter="url(#p4-shadow-play)">
+    <circle cx="770" cy="720" r="96" fill="url(#p4-play-badge)" stroke="#FFFFFF" stroke-width="18"/>
+    <path d="M 748 680 L 806 720 L 748 760 Z" fill="#FFFFFF" />
+  </g>
+</svg>

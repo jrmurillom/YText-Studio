@@ -26,43 +26,68 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   className = '',
   showStudio = true,
 }) => {
-  // Dimension definitions based on size preset
+  // Dimension definitions based on size preset (1:1 square icon)
   const sizeMap = {
-    sm: { iconWidth: 32, iconHeight: 23, textClass: 'text-sm', studioClass: 'text-xs' },
-    md: { iconWidth: 42, iconHeight: 30, textClass: 'text-lg', studioClass: 'text-xs' },
-    lg: { iconWidth: 56, iconHeight: 40, textClass: 'text-2xl', studioClass: 'text-sm' },
+    sm: { iconSize: 26, textClass: 'text-sm', studioClass: 'text-xs' },
+    md: { iconSize: 34, textClass: 'text-lg', studioClass: 'text-xs' },
+    lg: { iconSize: 44, textClass: 'text-2xl', studioClass: 'text-sm' },
   };
 
   const currentSize = sizeMap[size];
 
   return (
     <div className={`flex items-center gap-2 select-none shrink-0 ${className}`}>
-      {/* Icon: Neo-YouTube Clean Squircle Playmark */}
+      {/* Icon: Official Layered Stack Squircle Isotype */}
       <svg
-        width={currentSize.iconWidth}
-        height={currentSize.iconHeight}
-        viewBox="0 0 140 100"
+        width={currentSize.iconSize}
+        height={currentSize.iconSize}
+        viewBox="0 0 1024 1024"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="shrink-0 transition-transform hover:scale-105 duration-150"
+        className="shrink-0 transition-transform hover:scale-105 duration-150 drop-shadow-xs"
         aria-hidden="true"
       >
-        {/* YouTube-style red squircle (#FF0000) */}
-        <path
-          d="M136 28C136 12.536 123.464 0 108 0H32C16.536 0 4 12.536 4 28V72C4 87.464 16.536 100 32 100H108C123.464 100 136 87.464 136 72V28Z"
-          fill="#FF0000"
-        />
-        {/* Pure white play button with softened 2px corners */}
-        <path
-          d="M56 34.5C56 32.96 57.67 32 59 32.77L88.5 48.27C89.83 49.04 89.83 50.96 88.5 51.73L59 67.23C57.67 68 56 67.04 56 65.5V34.5Z"
-          fill="white"
-        />
+        <defs>
+          <linearGradient id="bl-bg" x1="0" y1="0" x2="1024" y2="1024" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#0F172A" />
+            <stop offset="100%" stopColor="#020617" />
+          </linearGradient>
+          <linearGradient id="bl-red" x1="112" y1="232" x2="912" y2="792" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#FF1E27" />
+            <stop offset="100%" stopColor="#B91C1C" />
+          </linearGradient>
+          <linearGradient id="bl-play" x1="674" y1="624" x2="866" y2="816" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#FF0033" />
+            <stop offset="100%" stopColor="#CC0000" />
+          </linearGradient>
+        </defs>
+
+        {/* Squircle Base */}
+        <rect width="1024" height="1024" rx="224" fill="url(#bl-bg)"/>
+        <rect x="8" y="8" width="1008" height="1008" rx="216" stroke="#334155" strokeWidth="14" strokeOpacity="0.5"/>
+
+        {/* Back Red Card */}
+        <rect x="112" y="232" width="800" height="560" rx="48" fill="url(#bl-red)" transform="rotate(-5 512 512)" opacity="0.95" />
+
+        {/* Front White Card with Bold T */}
+        <g>
+          <rect x="112" y="232" width="800" height="560" rx="48" fill="#FFFFFF" transform="rotate(2.5 512 512)" />
+          <path d="M 222 332 L 802 332 L 802 447 L 597 447 L 597 732 L 427 732 L 427 447 L 222 447 Z" 
+                fill="#0F172A" 
+                transform="rotate(2.5 512 512)" />
+        </g>
+
+        {/* Play Badge */}
+        <g>
+          <circle cx="770" cy="720" r="96" fill="url(#bl-play)" stroke="#FFFFFF" strokeWidth="18"/>
+          <path d="M 748 680 L 806 720 L 748 760 Z" fill="#FFFFFF" />
+        </g>
       </svg>
 
       {/* Typography Lockup */}
       {variant === 'full' && (
         <div className="flex items-baseline tracking-tight font-sans">
-          <span className={`font-black text-slate-900 ${currentSize.textClass}`}>
+          <span className={`font-black text-[#FF0000] tracking-tight ${currentSize.textClass}`}>
             YText
           </span>
           {showStudio && (
