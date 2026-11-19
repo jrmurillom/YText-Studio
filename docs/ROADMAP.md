@@ -1,17 +1,17 @@
 # Roadmap Maestro: YText Studio (YT Cover Typography Studio)
 
 ## Visión General del Producto
-**YText Studio** es una plataforma web especializada de grado comercial diseñada para optimizar y componer el activo visual más determinante del CTR en video digital: el **Layer Tipográfico de Portadas de YouTube**.
+**YText Studio** es una plataforma web y de escritorio especializada de grado comercial diseñada para optimizar y componer el activo visual más determinante del CTR en video digital: el **Layer Tipográfico y Gráfico de Portadas de YouTube**.
 
-A diferencia de los editores gráficos tradicionales (Photoshop, Canva), el sistema trata la imagen base como un fondo inmutable (16:9) y centra toda su capacidad en el análisis de composición visual, detección de espacio negativo por IA, dirección de arte 100% autónoma, renderizado vectorial de alto impacto con manipulación táctil directa a 60–120 FPS y validación multi-contexto de feeds.
+A diferencia de los editores gráficos tradicionales (Photoshop, Canva), el sistema trata la imagen base como un fondo inmutable (16:9) y centra toda su capacidad en el análisis de composición visual, detección de espacio negativo por IA, dirección de arte 100% autónoma, renderizado vectorial de alto impacto con manipulación táctil directa a 60–120 FPS, arquitectura multi-capa para stickers y validación multi-contexto de feeds.
 
 ---
 
 ## Filosofía Operativa del Roadmap
-Este documento es la **Fuente Única de la Verdad (Single Source of Truth - SST)** del producto y rige la secuencia maestra de construcción:
-1. **SST Viva y Fiel al Código:** Toda fase completada describe con exactitud matemática lo que existe en el repositorio, purgando cualquier patrón o preset deprecated.
-2. **Ciclo por Fase:** Cada fase se activa mediante su propio `implementation_plan.md` granular, su **Task 0 de Git** correspondiente (`git checkout -b <feature/fase-X>`) y su estrategia de verificación técnica antes de pasar a la siguiente.
-3. **Cero Deuda Técnica:** APIs nativas del navegador (`Canvas 2D`, `DOMMatrix`, `OffscreenCanvas`, `fetch`), consumo mínimo de RAM (<35MB) y desacoplamiento de costos de IA.
+Este documento es la **Fuente Única de la Verdad (Single Source of Truth - SSOT)** del producto y rige la secuencia maestra de construcción:
+1. **SSOT Viva y Fiel al Código:** Toda fase completada describe con exactitud matemática lo que existe en el repositorio, purgando cualquier patrón o preset deprecated.
+2. **Ciclo por Fase:** Cada fase se activa mediante su propio `implementation_plan.md` granular, su **Task 0 de Git** correspondiente (`git checkout -b <nombre-rama>`) y su estrategia de verificación técnica antes de pasar a la siguiente.
+3. **Cero Deuda Técnica:** APIs nativas del navegador (`Canvas 2D`, `DOMMatrix`, `OffscreenCanvas`, `fetch`), consumo mínimo de RAM (<40MB) y desacoplamiento de costos de IA.
 
 ---
 
@@ -28,134 +28,41 @@ Este documento es la **Fuente Única de la Verdad (Single Source of Truth - SST)
 | **Fase 7** | Ergonomía del Editor, Precision Controls & UX Fixes | `feature/phase-7-ergonomics-precision` | **🟢 COMPLETADA** | Build OK (100kB) • 23 Tests OK |
 | **Fase 8** | Estandarización de Vocabulario en Inglés (en-US Baseline) | `feature/phase-8-global-english-i18n` | **🟢 COMPLETADA** | Build OK (342kB) • 23 Tests OK |
 | **Fase 9** | Viewport Ergonomics (Paneles Colapsables) & UI Jargon Purge | `feature/phase-9-viewport-ergonomics-jargon-purge` | **🟢 COMPLETADA** | Build OK (345kB) • 23 Tests OK |
-| **Fase 10** | Arquitectura de Internacionalización Dinámica (i18n Engine & Multilenguaje) | `feature/phase-10-dynamic-i18n` | **⚪ PENDIENTE** | Requiere Plan + Task 0 |
+| **Fase 10** | Arquitectura de Internacionalización Dinámica (i18n Engine & Multilenguaje) | `feat/i18n-modular-architecture` | **🟢 COMPLETADA** | Build OK • 43 Tests OK |
+| **Fase 11** | Multi-Layer Canvas & Graphic Assets / Sticker Engine | `feature/phase-11-multilayer-canvas-graphic-assets` | **🟢 COMPLETADA** | Build OK • 43 Tests OK |
+| **Fase 12** | Aplicación de Escritorio Nativa (Tauri v2 Desktop) & Menús de Sistema | `feat/tauri-v2-desktop` | **🟢 COMPLETADA** | Tauri v2 Config OK • Cargo Test OK |
+| **Fase 13** | Identidad de Marca Oficial & Documentación Bilingüe Global | `docs/public-readme` | **🟢 COMPLETADA** | 0 Errores TS • Suite 43 Tests OK |
+| **Fase 14** | Workspace Presets & Publicación Directa a YouTube API v3 | `feat/youtube-api-publishing` | **⚪ PENDIENTE** | Planificación Comercial |
 
 ---
 
 ## Fases Maestras de Desarrollo
 
 ```mermaid
-flowchart LR
+flowchart TD
     Fase1["Fase 1: Cimientos & LMMs"] --> Fase2["Fase 2: Motor Canvas 2D"]
     Fase2 --> Fase3["Fase 3: Visión One-Shot & SafeZones"]
     Fase3 --> Fase4["Fase 4: Dirección Autónoma LMM"]
     Fase4 --> Fase5["Fase 5: Suite Gráfica Comercial"]
     Fase5 --> Fase6["Fase 6: Exportador & Simulador"]
-    Fase6 --> Fase7["Fase 7: Ergonomía & Controles de Precisión"]
+    Fase6 --> Fase7["Fase 7: Ergonomía & Controles"]
     Fase7 --> Fase8["Fase 8: English Baseline"]
-    Fase8 --> Fase9["Fase 9: Ergonomía & Jargon Purge"]
-    Fase9 --> Fase10["Fase 10: Motor Dinámico i18n"]
+    Fase8 --> Fase9["Fase 9: Viewport Ergonomics"]
+    Fase9 --> Fase10["Fase 10: i18n Dinámico (EN/ES)"]
+    Fase10 --> Fase11["Fase 11: Multi-Layer & Stickers"]
+    Fase11 --> Fase12["Fase 12: Tauri v2 Desktop"]
+    Fase12 --> Fase13["Fase 13: Branding & Documentación"]
+    Fase13 --> Fase14["Fase 14: Workspace Presets & YouTube API"]
 ```
 
 ---
 
-### Fase 1: Cimientos del Sistema, Conectividad LMM Universal y Workspace Base
-* **Objetivo:** Establecer la arquitectura base del proyecto, el sistema de diseño en modo claro (*Clean Studio Light*), la gestión de almacenamiento local y la capa de abstracción para proveedores de IA.
-* **Contexto y Alcance Arquitectónico:**
-  - **Stack Base:** Vite + React 19 + TypeScript + Tailwind CSS v4.
-  - **Configuración Rápida (`SettingsModal`):** Almacenamiento seguro en cliente (`localStorage`) de API Keys para Google Gemini, OpenRouter, OpenAI y Ollama.
-  - **Capa de Red Unificada (`LMMService`):** Patrón Adaptador en TypeScript con `fetch` nativo y contratos en JSON Schema.
-  - **Shell de la Aplicación:** Maquetación de 3 columnas (Ingesta, Canvas Central, Inspector).
+### Fase 1 a Fase 9 (Fundaciones y Maduración Gráfica)
+*(Véase historial de commits y especificaciones matemáticas en `STANDARDS.md` para detalles de renderizado Canvas 2D, Safe Zones de YouTube, cálculo del TRI y dirección de arte autónoma).*
 
 ---
 
-### Fase 2: Micro-Motor Gráfico Nativo (Canvas 2D Engine) y Bounding Box Interactivo
-* **Objetivo:** Renderizado vectorial directo sobre la API Canvas 2D a 60–120 FPS sin librerías de terceros (cero Fabric.js).
-* **Contexto y Alcance Arquitectónico:**
-  - **`CanvasEngine` Desacoplado:** Montaje de imagen 16:9 y loop `requestAnimationFrame` fuera del ciclo de React.
-  - **Transformación Bounding Box:** Matriz 2D (`DOMMatrix`) para arrastre, rotación sobre pivote real y escalado simétrico centrado.
-  - **Pipeline Tipográfico Base:** Corrección de *Stroke Bug* con `paintFirst: 'stroke'`, doble contorno concéntrico exterior y precarga de glifos con `document.fonts.load()`.
-
----
-
-### Fase 3: Análisis de Visión One-Shot, Detección de Espacio Negativo y Guardián de YouTube
-* **Objetivo:** Conectar el análisis visual sin incurrir en costes repetitivos de tokens y blindar la composición contra los recortes de YouTube.
-* **Contexto y Alcance Arquitectónico:**
-  - **Pipeline Visión One-Shot:** Compresión cliente a WebP 640px (<50KB) vía `OffscreenCanvas`. Análisis de `subject_zone`, `free_zones` y paleta complementaria con caché en memoria.
-  - **Layout Determinista (`DeterministicLayoutEngine`):** Mapeo de coordenadas `{x, y}` de anclaje con márgenes de seguridad.
-  - **Guardián de Safe Zones (`SafeZoneGuard`):** Detección AABB contra el badge de duración de YouTube (`14:25`) con alerta visual y snap-back protector.
-
----
-
-### Fase 4: Dirección de Arte Autónoma 100% por IA, Erradicación de Presets & Telemetría
-* **Objetivo:** Eliminar presets estáticos rígidos y transformar al LMM en un Director de Arte Autónomo con observabilidad total de red.
-* **Contexto y Alcance Arquitectónico:**
-  - **Erradicación de Presets Fijos:** Eliminación total de `TypoPresetId` y estilos hardcodeados (`mrbeast_pop`, `gaming_neon`, `docu_drama`).
-  - **Dirección de Arte Autónoma:** El LMM analiza la imagen y genera 3 propuestas dinámicas y completas (copys contextuales, fuentes, paleta de contraste, sombras, trazo y rotación).
-  - **Consola de Red LMM Transparente:** Panel de auditoría en vivo en `ProposalsList.tsx` con pestañas de `📤 Envío (Request)` y `📥 Respuesta (LMM JSON)` con portapapeles de 1 clic.
-  - **Protección de Red y UX Pulcra:** Timeout estricto de 20s con `AbortSignal` y Canvas 100% limpio al inicio (cero texto dummy).
-
----
-
-### Fase 5: Suite Gráfica Comercial de Alta Variabilidad ("Nivel Photoshop sin Photoshop")
-* **Objetivo:** Dotar al creador y a la IA de herramientas visuales cinematográficas de empaquetado comercial con control granular e independiente.
-* **Contexto y Alcance Arquitectónico:**
-  - **Ruptura del Canon Rígido de 2 Líneas:** Estructura flexible de 1 a 3 líneas con controles dinámicos de adición (`[+ Línea]`) y eliminación (`[×]`).
-  - **Controles Granulares por Línea:** Ajuste individual de tamaño (`fontSize`), color primario, toggle de gradiente cenital (`gradientColorHex`) y badge protector (`hasBadge`) por segmento.
-  - **Catálogo de 12 Tipografías Icónicas de YouTube:** `Teko`, `Permanent Marker`, `Poppins`, `Playfair Display`, `Anton`, `Bebas Neue`, `Cinzel`, `Inter`, `Rubik`, `Luckiest Guy`, `Bangers` y `Montserrat`.
-  - **Volumen Gráfico Cinematográfico:** Renderizado de gradientes cenitales verticales y sombras 3D extrudidas en ángulo oblicuo a 45° (`x + Math.round(i * 0.75), y + i`).
-  - **Composición Áurea:** Cuadrícula 3x3 de Regla de Tercios superpuesta al Canvas con toggle interactivo en el Header.
-  - **Thumbnail Readability Index (TRI):** Cálculo algorítmico en tiempo real de legibilidad en pantallas pequeñas.
-
----
-
-### Fase 6: Simulador Multi-Contexto de YouTube y Pipeline de Exportación Lossless
-* **Objetivo:** Validar el impacto de la portada en los entornos reales de consumo de YouTube y exportar con nitidez milimétrica en alta resolución.
-* **Contexto y Alcance Arquitectónico:**
-  - **Simulador de Feeds de YouTube (The Reality Check):**
-    - *Vista Móvil (App):* Miniatura simulada a ~320x180 px con timestamp real y contexto de feed móvil (donde ocurre el 70% del tráfico).
-    - *Vista Desktop (Home):* Renderizado en grid con alternancia entre Modo Oscuro y Modo Claro de YouTube.
-    - *Vista Sidebar (Up Next / Relacionados):* Miniatura a ~168x94 px para comprobación extrema de contraste en tamaños reducidos.
-  - **Pipeline de Exportación Lossless (`OffscreenExporter`):**
-    - Desacoplamiento total de la resolución de pantalla del monitor.
-    - Buffer virtual en `OffscreenCanvas` a resolución oficial 1280x720 (estándar YouTube) y 1920x1080 (Full HD).
-    - Renderizado bicúbico de la imagen fuente original en máxima calidad (`imageSmoothingQuality = 'high'`).
-    - Rasterizado vectorial directo de las capas de texto.
-    - Exportación a PNG sin pérdida (*lossless*) y JPEG de calidad 1.0.
-
----
-
-### Fase 7: Ergonomía del Editor, Precision Controls & UX Fixes
-* **Objetivo:** Pulir la experiencia de uso del creador, eliminando desbordamientos de interfaz y aportando control fino al lienzo y a las capas tipográficas.
-* **Contexto y Alcance Arquitectónico:**
-  - **Selector de Intenciones Dinámico:** Rediseño de tarjeta compacta de 2 líneas (título en negrita + descripción de apoyo) en `IntentSelector.tsx`, erradicando textos truncados con `...`.
-  - **AI Proposals en Acordeón Discreto:** Plegado por defecto de la consola de red cruda y diagnósticos técnicos en `ProposalsList.tsx`, dejando las tarjetas de propuesta limpias y accesibles.
-  - **Precisión Numérica en Inspector:** Sustitución de etiquetas pasivas por inputs numéricos editables en tiempo real (`<input type="number">`) sincronizados con el slider de tamaño.
-  - **Reordenamiento Vertical de Líneas:** Controles `[↑]` y `[↓]` para intercambiar jerarquías entre líneas y purga del botón obsoleto "Invertir".
-  - **Zoom de Espacio de Trabajo:** Barra flotante en `CanvasStage.tsx` (`[-]`, `100%`, `[+]`, `[Fit]`) con mapeo de coordenadas reactivo en `getBoundingClientRect()`.
-  - **Sincronización Reactiva en Header:** Badge de conectividad fiel que refleja el proveedor activo o el modo offline, con acceso directo a configuración.
-  - **Clarificación de Safe Zones:** Comunicación explícita del badge `14:25` de YouTube y renombramiento del simulador a `Feed Preview`.
-
----
-
-### Fase 8: Estandarización de Vocabulario en Inglés (en-US Baseline)
-* **Objetivo:** Depurar y unificar el vocabulario de la interfaz al inglés nativo de la industria audiovisual de YouTube, erradicando el Spanglish para sentar la base canónica de términos.
-* **Contexto y Alcance Arquitectónico:**
-  - Unificación de terminología en Header, paneles de ingesta e inspección, selector de intenciones, diagnósticos y modales de exportación y previsualización.
-  - Base de redacción pulida lista para ser extraída al catálogo de traducciones.
-
----
-
-### Fase 9: Viewport Ergonomics (Paneles Colapsables), UI Jargon Purge & Proposal Depth Control (Completada)
-* **Objetivo:** Maximizar el espacio de trabajo en el lienzo para resoluciones reducidas, purgar la jerga de programación y redundancias visuales, blindar la inmutabilidad del título del video e incorporar control de volumen de propuestas (3 a 5).
-* **Contexto y Alcance Arquitectónico:**
-  - **Paneles Colapsables (`StudioShell.tsx`):** Colapso independiente de paneles izquierdo (`w-68` a `w-0`) y derecho (`w-72` a `w-0`) con animación CSS fluida (`transition-all duration-200`) y pestañas flotantes minimalistas (`[◀ Tools]`, `[Inspector ▶]`) para reabrir con un clic, liberando hasta 560px de área de trabajo.
-  - **Purga de Jerga Técnica y Redundancias:**
-    - `Configure LMM` -> `AI Settings`, `YT Safe Zones` -> `Safe Zones`, `3x3 Grid` -> `Grid`, `Export Cover` -> `Export`.
-    - `Base Image 16:9 (Immutable)` -> `Background Image (16:9)`, `Locked 1280x720` -> `1280 × 720`.
-    - Purgado total del badge residual `AI Vision Master` y de `AI Reasoning & Debug`.
-    - `Outline Stroke` -> `Stroke`, `3D Hard Shadow (45°)` -> `3D Shadow`, `Slant Angle` -> `Slant`.
-    - `Timestamp Collision Alert` -> `Covered by Duration Badge`.
-    - Simplificación concisa de los modales de Exportación y Simulador de Feed.
-  - **Inmutabilidad Absoluta del Título del Video (`rawText`):**
-    - Desacoplamiento total entre el título original del creador (`Video Title`) y los textos autónomos de las propuestas o ediciones del lienzo, garantizando coherencia para exportación y feed simulator.
-  - **Control Dinámico de Propuestas IA (3 a 5 Opciones):**
-    - Selector configurable en `SettingsModal` (`[3 | 4 | 5 Options]`) persistido en `localStorage`.
-    - Soporte multi-proveedor (Gemini, OpenRouter, Heurística Local) con interpolación de `{PROPOSAL_COUNT}` y libertad tipográfica sin restricciones artificiales.
-
----
-
-### Fase 10: Arquitectura de Internacionalización Dinámica (i18n Engine & Multilenguaje)
+### Fase 10: Arquitectura de Internacionalización Dinámica (i18n Engine & Multilenguaje) (Completada)
 * **Objetivo:** Desacoplar al 100% todos los textos de la interfaz mediante un motor de internacionalización ligero con tipado estricto, diccionarios externos y selector en vivo.
 * **Contexto y Alcance Arquitectónico:**
   - **Motor Ligero Tipado (`I18nProvider` & `useTranslation`):** Contexto nativo de React (<1.5 KB, cero dependencias pesadas de terceros) con validación estricta de llaves en TypeScript (`keyof typeof en`).
@@ -168,22 +75,37 @@ flowchart LR
 
 ---
 
-### Fase 11: Multi-Layer Canvas & Graphic Assets / Sticker Engine (Logos, Icons, Badges & Cutouts) (Completada)
-* **Objetivo:** Evolucionar la composición visual permitiendo importar, manipular e integrar elementos gráficos complementarios (logos, iconos, flechas, emojis y stickers PNG con transparencia) junto a las capas tipográficas en el lienzo de 1280x720.
+### Fase 11: Multi-Layer Canvas & Graphic Assets / Sticker Engine (Completada)
+* **Objetivo:** Permitir importar, manipular e integrar elementos gráficos complementarios (logos, iconos, flechas, stickers PNG con canal alfa) junto a las capas tipográficas en el lienzo de 1280x720.
 * **Contexto y Alcance Arquitectónico:**
-  - **Arquitectura de Capas Multielemento (`CanvasLayer`):**
-    - Desacoplar el modelo de datos de "Texto único" a un árbol de capas ordenables (`z-index`) que admita tipos `text`, `image_asset` y `vector_shape`.
-    - Soporte unificado de transformaciones afines en `Transform2D`: escala independiente, posición $(x, y)$, rotación angular (-180° a +180°) y opacidad.
-  - **Pipeline de Ingesta de Assets Gráficos:**
-    - Carga local de imágenes con canal alfa (PNG, WebP, SVG) mediante drag & drop o selector de archivos.
-    - Decodificación y optimización automática en memoria mediante `createImageBitmap` / OffscreenCanvas para evitar bloqueos en el hilo principal.
-  - **Efectos Gráficos para Stickers de YouTube:**
-    - *Sticker Stroke / Outer Glow:* Generación de siluetas con borde blanco o de color alrededor de recortes con canal alfa mediante operaciones de composición de Canvas (`destination-over` / `filter`).
-    - *3D Drop Shadow:* Proyección de sombra dura direccional consistente con la tipografía.
-  - **Librería de Assets Curados para YouTube:**
-    - Catálogo integrado de recursos vectoriales de alto CTR: flechas de intriga, círculos de énfasis, badges de verificación, signos de exclamación y emojis de alto contraste.
-  - **Manipulación Directa e Inspector de Elemento:**
-    - Controles interactivos en el lienzo para arrastrar, redimensionar y rotar el elemento activo.
-    - Panel lateral contextual en el Inspector según el tipo de capa seleccionada (ajustes tipográficos para texto vs. ajustes de filtro, escala y borde para imágenes).
+  - **Arquitectura de Capas Multielemento (`CanvasLayer` & `GraphicAssetElement`):** Soporte de capas tipográficas y de imágenes ordenables por `zIndex` con transformación afín independiente.
+  - **Efectos de Sticker para YouTube (`StickerRenderer`):**
+    - Generación de siluetas de recorte con borde blanco/color (`destination-over`) cacheada en `scratchCanvas`.
+    - Sombra 3D dura a 45° idéntica a la iluminación del texto.
+  - **Manipulación Directa:** Drag & drop, escalado y rotación interactiva con Bounding Box.
 
+---
 
+### Fase 12: Aplicación de Escritorio Nativa (Tauri v2 Desktop) (Completada)
+* **Objetivo:** Empaquetar YText Studio como una aplicación de escritorio nativa multiplataforma (Windows, macOS, Linux) con huella mínima de memoria (<40MB) y rendimiento gráfico ultra-rápido.
+* **Contexto y Alcance Arquitectónico:**
+  - **Configuración Tauri v2 (`src-tauri/`):** Integración con Rust y Tauri v2, iconografía de alta resolución (`app-icon.png`, `.ico`, `.icns`).
+  - **Menús Nativos & Aceleración por Hardware:** Menú contextual nativo de escritorio, soporte para pantalla completa y shortcuts de sistema.
+  - **CI/CD de Release Automatizado (`.github/workflows/release-desktop.yml`):** Generación automática de ejecutables de producción (MSI, DMG, AppImage) en cada tag de versión.
+
+---
+
+### Fase 13: Identidad de Marca Oficial & Documentación Bilingüe Global (Completada)
+* **Objetivo:** Consolidar la identidad visual del producto y su presentación pública en GitHub con documentación técnica accesible para creadores y desarrolladores.
+* **Contexto y Alcance Arquitectónico:**
+  - **Branding Oficial:** Diseño de playmark de squircle multicapa (`public/favicon.svg`, `BrandLogo.tsx`).
+  - **Documentación Dual Bilingüe:** `README.md` canónico en inglés y `README.es.md` en español, enlazados mediante switches de idioma nativos.
+  - **Métricas de Consumo de IA:** Guías claras de costo y consumo de tokens (~1,800 tokens / ~$0.0004 USD por solicitud de visión WebP) y compatibilidad con Gemini, OpenRouter, OpenAI y Ollama.
+
+---
+
+### Fase 14: Workspace Presets & Publicación Directa a YouTube API v3 (Próxima Fase)
+* **Objetivo:** Permitir guardar plantillas de estudio por canal y sincronizar directamente la miniatura final con videos existentes de YouTube Studio.
+* **Contexto y Alcance Arquitectónico:**
+  - **Preset Vault:** Guardar configuraciones completas de marca (fuentes, paletas, stickers recurrentes) en local y exportables en JSON.
+  - **YouTube Data API v3 Adapter:** Conexión OAuth opcional para reemplazar o subir la miniatura generada directamente a un video de YouTube sin salir de la aplicación.

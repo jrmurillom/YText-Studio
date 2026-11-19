@@ -31,3 +31,7 @@ dist-ssr
 # Tauri build artifacts
 src-tauri/target
 
+# Internal Agent Rules & Prompts
+.agents/
+
+

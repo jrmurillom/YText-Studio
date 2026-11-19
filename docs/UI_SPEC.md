@@ -8,10 +8,11 @@
 | **Framework de UI** | **React 19** | Control declarativo para paneles laterales, formularios, modales y gestión de estado reactivo. |
 | **Estilos & Diseño** | **Tailwind CSS v4** | Compilación pura a CSS en build time, sin librerías de componentes pesadas en runtime. Modo claro *Clean Studio Light*. |
 | **Iconografía** | **Lucide React** | Iconos vectoriales limpios, consistentes y con trazo ultra-fino (1.5px). |
-| **Motor de Canvas** | **API Nativa Canvas 2D + `DOMMatrix`** | Renderizado vectorial acelerado por hardware (GPU), <35MB de RAM, 60–120 FPS limpios. Desacoplado del ciclo de reconciliación de React. Cero librerías externas pesadas (sin Fabric.js). |
-| **Conectividad LMM** | **`fetch` Nativo + Universal Adapter Pattern** | Comunicación directa con Google Gemini (Flash 2.0), OpenRouter, OpenAI y servidores locales/Ollama sin SDKs externos redundantes. |
-| **Almacenamiento** | **`localStorage` & Estado en Memoria** | Persistencia segura en cliente para claves de API y presets. Cero base de datos backend obligatoria. |
-| **Exportador Master** | **`OffscreenCanvas` Lossless Pipeline** | Rasterizado virtual en segundo plano a 1280x720 y 1920x1080 (PNG/JPEG 1.0) sin alteración de la imagen original. |
+| **Motor de Canvas** | **API Nativa Canvas 2D + `DOMMatrix`** | Renderizado vectorial acelerado por hardware (GPU), <40MB de RAM, 60–120 FPS limpios. Desacoplado del ciclo de reconciliación de React. Cero librerías externas pesadas (sin Fabric.js). |
+| **Conectividad LMM** | **`fetch` Nativo + Universal Adapter Pattern** | Comunicación directa con Google Gemini, OpenRouter, OpenAI y Ollama con soporte de 3 a 5 propuestas dinámicas. |
+| **Desktop Runtime** | **Tauri v2 (Rust + Native Webview)** | Binario nativo ultraligero (<15MB), menú de contexto de escritorio, aceleración por hardware y cero consumo inflado de Chromium. |
+| **Internacionalización** | **`I18nProvider` (Motor Ligero Nativo)** | Switch reactivo bilingüe (EN/ES) con catálogos JSON independientes y detección automática de locale. |
+| **Exportador Master** | **`OffscreenCanvas` Lossless Pipeline** | Rasterizado virtual en segundo plano a 1280×720 y 1920×1080 (PNG/JPEG 1.0) sin alteración de la imagen original. |
 
 ---
 
@@ -21,12 +22,12 @@ La interfaz está diseñada para ser una **herramienta de estudio profesional**:
 
 ### 2.1 Superficies y Fondos
 ```css
---bg-app:        #F8FAFC; /* Slate 50: Fondo principal de la aplicación */
---bg-panel:      #FFFFFF; /* Blanco puro: Paneles de herramientas e inspectores */
+--bg-app:          #F8FAFC; /* Slate 50: Fondo principal de la aplicación */
+--bg-panel:        #FFFFFF; /* Blanco puro: Paneles de herramientas e inspectores */
 --bg-canvas-stage: #F1F5F9; /* Slate 100: Área neutra donde descansa el canvas */
---bg-input:      #FFFFFF; /* Blanco: Entradas de texto y selects */
---bg-hover:      #F8FAFC; /* Slate 50: Hover sutil en botones secundarios */
---bg-active:     #EFF6FF; /* Blue 50: Estado activo o seleccionado */
+--bg-input:        #FFFFFF; /* Blanco: Entradas de texto y selects */
+--bg-hover:        #F8FAFC; /* Slate 50: Hover sutil en botones secundarios */
+--bg-active:       #EFF6FF; /* Blue 50: Estado activo o seleccionado */
 ```
 
 ### 2.2 Bordes y Separadores
@@ -49,105 +50,73 @@ La interfaz está diseñada para ser una **herramienta de estudio profesional**:
 ```css
 --accent-primary: #2563EB; /* Blue 600: Botón de exportación y acciones maestras */
 --accent-hover:   #1D4ED8; /* Blue 700: Hover del botón principal */
---status-success: #10B981; /* Emerald 500: Indicador TRI óptimo */
---status-warning: #F59E0B; /* Amber 500: Alerta de densidad de texto */
---status-danger:  #EF4444; /* Red 500: Invasión de zona de timestamp YouTube */
-```
-
-### 2.5 Bordes Redondeados y Sombras
-- **Radios:**
-  - `rounded-xs`: `3px` (Badges y chips pequeños)
-  - `rounded-md`: `6px` (Botones estándar e inputs)
-  - `rounded-lg`: `8px` (Contenedor del canvas y tarjetas de presets)
-  - `rounded-xl`: `12px` (Modales y drawers flotantes)
-- **Sombras:**
-  - `shadow-xs`: `0 1px 2px 0 rgba(0, 0, 0, 0.05)` (Tarjetas de inspector e inputs)
-  - `shadow-md`: `0 4px 6px -1px rgba(0, 0, 0, 0.08)` (Mesa de trabajo del canvas)
-  - `shadow-xl`: `0 20px 25px -5px rgba(0, 0, 0, 0.1)` (Modal de simulación y settings)
-
----
-
-## 3. Distribución Espacial de la Interfaz (3-Column Studio Workstation)
-
-```
-┌─────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 1. BARRA SUPERIOR (H: 48px)                                                                 │
-│ [Logo YText Studio]    [⚙️ API Settings]    [👁️ Safe Zones]    [📱 Simular Feed]    [Exportar]│
-├──────────────────────────┬───────────────────────────────────────────┬──────────────────────┤
-│ 2. PANEL IZQUIERDO       │ 3. CANVAS CENTRAL (Flex-1)                │ 4. PANEL DERECHO     │
-│    (W: 260px)            │    (Stage de Observación & Interacción)   │    (W: 280px)        │
-│                          │                                           │                      │
-│ • Dropzone Imagen 16:9   │     ┌───────────────────────────────┐     │ • Presets Estudiados │
-│ • Input Texto Base       │     │  [ MEJOR DISCO ] (Anchor)     │     │   [💥 Viral Pop]     │
-│ • Chips de Intención:    │     │  [ DE ROCK! ]    (3D Power)   │     │   [🎬 Docu-Drama]    │
-│   [⚡ Hype]   [👻 Horror]│     └───────────────────────────────┘     │   [⚡ Gaming Neon]   │
-│   [🕵️ Misterio] [🔬 Tech]│                                           │   [💼 Authority]     │
-│ • [⚡ Analizar & Proponer]│               (Sujeto Foto)               │                      │
-│ • Tarjetas de Propuesta: │                     📸                    │ • Editor Segmentos   │
-│   [Opción A]             │                                           │   L1: [Blanco/Badge] │
-│   [Opción B]             │    [ ⛔ Safe Zone Timestamp: 14:25 ]      │   L2: [Amarillo 3D]  │
-│   [Opción C]             │                                           │   [🔀 Invertir]      │
-│                          │                                           │                      │
-│                          │ • Telemetría: X: 48, Y: 32 • Escala: 100% │ • Sliders Ajuste Fino│
-│                          │                                           │ • TRI Score (Móvil)  │
-└──────────────────────────┴───────────────────────────────────────────┴──────────────────────┘
+--status-success: #10B981; /* Emerald 500: Indicador TRI óptimo (>=85) */
+--status-warning: #F59E0B; /* Amber 500: Advertencia de legibilidad TRI (65-84) */
+--status-danger:  #EF4444; /* Red 500: Invasión de zona de timestamp YouTube (<65) */
 ```
 
 ---
 
-## 4. Flujo Operativo Secuencial de la UI
+## 3. Distribución Espacial de la Interfaz (3-Column Workspace con Paneles Colapsables)
 
-Para evitar mutaciones reactivas no deseadas sobre el lienzo, la interfaz opera en **4 fases estrictamente delimitadas**:
+La interfaz cuenta con paneles colapsables independientes (`StudioShell.tsx`) que permiten liberar hasta 560px de área horizontal en monitores pequeños:
 
-### Fase A: Preparación de Insumos (Panel Izquierdo - Pre-Análisis)
-1. El usuario suelta la imagen base (se bloquea en el canvas 16:9 de fondo).
-2. Escribe el texto base que desea en la portada (ej. *"mejor disco de rock"*).
-3. Selecciona la **Intención / Atmósfera Emocional** (ej. `[👻 Horror]`, `[⚡ Hype]`, `[🕵️ Misterio]`, etc.).
-4. **Estado del Canvas en este punto:** Muestra la imagen base pura. El layer de títulos aún no existe porque la IA no ha estudiado la imagen.
-
-### Fase B: Disparo y Generación de Propuestas (El Puente)
-1. El usuario pulsa el botón maestro: **`[ ⚡ Analizar & Proponer Portada ]`**.
-2. El botón entra en estado de carga con spinner y el panel izquierdo muestra esqueletos (*skeletons*) de carga en la sección de propuestas.
-3. El LMM procesa la imagen comprimida (640px WebP) + texto + intención elegida.
-4. Se renderizan 3 **Tarjetas de Propuesta** (A, B, C) con copys sintetizados, cuadrantes de ubicación y paletas complementarias.
-
-### Fase C: Montaje en Canvas (Activación de la Propuesta)
-1. El usuario hace clic en una propuesta (ej. *"Propuesta A: Arriba a la izquierda"*).
-2. El sistema monta inmediatamente el `CompositeTextGroup` vectorial en el canvas sobre el espacio negativo detectado.
-
-### Fase D: Afinación Fina y Ajuste Manual (Canvas y Panel Derecho)
-1. **En el Canvas:**
-   - La caja de texto seleccionada muestra su *bounding box* con tiradores de redimensionado, rotación y arrastre a 60 FPS.
-   - Si se arrastra sobre la esquina inferior derecha, se ilumina en rojo la alerta de colisión contra el timestamp de YouTube.
-2. **En el Panel Derecho:**
-   - El usuario puede conmutar entre presets estudiados con 1 clic.
-   - Puede modificar individualmente la palabra secundaria frente a la principal.
-   - Puede ajustar grosor de contorno (*stroke*), sombra 3D o inclinación (*slant*) mediante sliders táctiles limpios.
-   - Monitorea el índice de legibilidad móvil (TRI) en tiempo real.
-
-### Fase E: Validación Multi-Contexto y Exportación (Barra Superior)
-1. El usuario pulsa **"📱 Simular Feed"** para abrir el drawer que muestra cómo se visualiza la miniatura a escala real en la aplicación móvil de YouTube (~320px de ancho) y en la barra lateral.
-2. Pulsa **"Exportar 1280x720"** para generar la descarga del archivo PNG sin pérdida (*lossless*).
+```
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1. BARRA SUPERIOR (H: 48px)                                                                            │
+│ [Logo YText Studio]  [AI Provider: Gemini ⚡]  [↺ Undo / Redo ↻]  [EN/ES]  [Grid]  [SafeZones]  [Preview] [Export]│
+├──────────────────────────┬─────────────────────────────────────────────────┬───────────────────────────┤
+│ 2. HERRAMIENTAS (W: 268px│ 3. CANVAS CENTRAL (Flex-1)                      │ 4. INSPECTOR (W: 288px)   │
+│    Colapsable [◀]        │    (Stage de Observación & Interacción)         │    Colapsable [▶]         │
+│                          │                                                 │                           │
+│ • Dropzone Fondo 16:9    │     ┌─────────────────────────────────────┐     │ • Tabs: [Text] [Stickers] │
+│ • Video Title (Inmutable)│     │  [ POWER WORD ] (Line 1)            │     │                           │
+│ • Intent Chips (2 líneas)│     │  [ SECONDARY ]  (Line 2)            │     │ • Líneas Tipográficas:    │
+│   [Hype] [Horror] [Tech] │     └─────────────────────────────────────┘     │   L1: [Fuente, Color, Sz] │
+│   [Mystery] [Alert] [Cust│                                                 │   L2: [Gradient, Stroke]  │
+│ • Proposals Count (3..5) │                 (Imagen Fondo 16:9)             │   [+ Add Line] [↑] [↓] [×]│
+│ • [⚡ Generate Proposals]│                          📸                     │                           │
+│ • Proposal Cards (Accorde│                                                 │ • Precisión Numérica      │
+│   [Option A] [Option B]  │     [ ⛔ Timestamp Badge: 14:25 ]               │ • Sombra 3D & Slant       │
+│ • Raw LMM Telemetry Log  │ • Barra Zoom: [-] [100%] [+] [Fit]              │ • TRI Score Móvil en vivo │
+└──────────────────────────┴─────────────────────────────────────────────────┴───────────────────────────┘
+```
 
 ---
 
-## 5. Especificación de Componentes Clave
+## 4. Flujo Operativo y Componentes Clave
 
-### 5.1 `SettingsModal` (Configuración Rápida de APIs)
-- **Activador:** Icono de engranaje (⚙️) en la barra superior.
-- **Campos:**
-  - Selector de Proveedor: `[ Google Gemini | OpenRouter | OpenAI Directo | Local / Ollama ]`.
-  - Campo de clave de API con máscara de seguridad (tipo `password`) y botón de revelar.
-  - Selector de modelo específico con valores recomendados por defecto (`gemini-2.0-flash`, `claude-3.5-sonnet`, `gpt-4o`, `llama3.2-vision`).
-  - Almacenamiento instantáneo en `localStorage.setItem('ytext_config', ...)` al hacer clic en "Guardar y Cerrar".
+### 4.1 IngestionPanel (Panel Izquierdo)
+1. **Fondo Inmutable:** Ingesta de imagen 16:9 con bloqueo de proporción.
+2. **Título del Video (`rawText`):** Persiste inalterado y sirve como contexto semántico para la IA y los simuladores.
+3. **Selector de Intención Dinámico (`IntentSelector`):** Tarjetas compactas de 2 líneas (título en negrita + descripción de apoyo) y soporte de texto libre para intenciones personalizadas (`other`).
+4. **Control de Propuestas:** Selector configurable (`3`, `4` o `5` opciones) interpolado en el prompt del sistema.
+5. **Telemetría Transparente:** Acordeón colapsable con payload de envío y respuesta cruda del modelo con botón de copia de 1 clic.
 
-### 5.2 `CanvasViewport` (Mesa de Trabajo Acelerada)
-- Elemento `<canvas>` nativo con proporción 16:9 forzada vía CSS (`aspect-ratio: 16 / 9`).
-- Eventos de ratón desacoplados: `mousedown`, `mousemove`, `mouseup` operan directamente en memoria vectorial sin provocar renders en el árbol de React.
-- Overlay SVG transparente para dibujar la caja de selección y los tiradores de escala/rotación.
+### 4.2 CanvasStage & Viewport (Lienzo Central)
+1. **Loop Fuera de React:** Bounding box interactivo calculado mediante `DOMMatrix` con pivote real para arrastre, escala y rotación sin disparar re-renders.
+2. **Controles de Zoom:** Barra flotante en la esquina inferior (`[-]`, `100%`, `[+]`, `[Fit]`) con mapeo de coordenadas reactivo.
+3. **Guardián de Safe Zones:** Overlay geométrico con caja de exclusión de duración `14:25` y advertencia en tiempo real.
+4. **Regla de Tercios:** Cuadrícula 3×3 superpuesta con toggle directo.
 
-### 5.3 `FeedSimulatorModal` (Prueba de Fuego en Móvil)
-- Renderiza 3 vistas de escala fija:
-  1. **Mobile Feed:** `320 x 180 px` con duración `14:25` y título de video de 2 líneas simulado.
-  2. **Desktop Grid:** `360 x 202 px` en layout de 3 columnas de YouTube con modo oscuro/claro conmutable.
-  3. **Sidebar Up Next:** `168 x 94 px` para validación extrema de contraste en tamaños mínimos.
+### 4.3 InspectorPanel (Panel Derecho Master-Detail)
+1. **Selector de Capa Activa:** Pestañas `[Text Layer]` y `[Graphic Assets / Stickers]`.
+2. **Editor de Texto Jerárquico:**
+   - Adición y eliminación de líneas (1 a 3 segmentos).
+   - Reordenamiento vertical con `[↑]` y `[↓]`.
+   - Selector tipográfico con las 12 fuentes display curadas.
+   - Sliders táctiles sincronizados con inputs numéricos editables en tiempo real (`fontSize`, `strokeWidth`, `shadowDepth`, `slant`).
+   - Toggle de gradiente cenital vertical y badge de contenedor por línea.
+3. **Sticker / Asset Inspector:**
+   - Ingesta de recortes PNG/WebP con canal alfa.
+   - Control de borde blanco perimetral (`hasStickerBorder`, grosor y color).
+   - Sombra 3D dura direccional consistente y opacidad.
+4. **Modo Autónomo / Manual:** Botón `[+ Add Text Layer]` para diseñar sin requerir conexión a la IA si se desea partir de cero.
+
+### 4.4 Modales de Validación y Exportación
+1. **`SettingsModal`:** Almacenamiento seguro en cliente (`localStorage`) de claves de Gemini, OpenRouter, OpenAI y endpoints de Ollama, con selector de volumen de propuestas por defecto.
+2. **`FeedSimulatorModal`:** Validación multi-contexto en feeds reales de YouTube:
+   - *Mobile Feed (320×180 px):* Miniatura con timestamp `14:25` y título de video.
+   - *Desktop Grid (360×202 px):* Visualización en modo claro y oscuro de YouTube.
+   - *Sidebar Up Next (168×94 px):* Validación extrema de contraste a escala reducida.
+3. **`ExportModal`:** Descarga sin pérdida a 1280×720 y 1920×1080 (PNG / JPEG 1.0) renderizado vía `OffscreenCanvas`.
